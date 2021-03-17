@@ -15,5 +15,9 @@ namespace ClassLibrary1.HELPERS
 
         //LAYER NAMES
         public const string TABLE = "TABLE";
+
+        //INVALID_NUMBER
+        //RETURN THIS EVERYTIME VALUE BECOME INVALID;
+        public const int invalid = -2100000000;
     }
 }

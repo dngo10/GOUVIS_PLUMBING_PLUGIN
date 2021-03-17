@@ -8,24 +8,22 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.HELPERS
 {
-    class FixtureDetails
+    class FixtureDetails : ObjectData
     {
-        public double index;
-        public string FixtureName;
-        public string tag;
-        public double number;
-        public double CW_DIA;
-        public double HW_DIA;
-        public double WASTE_DIA;
-        public double VENT_DIA;
-        public double STORM_DIA;
-        public double WSFU;
-        public double CWSFU;
-        public double HWSFU;
-        public double DFU;
-        public string DESCRIPTION;
-        public Point3d position;
-        public Handle handle;
+        public double index = ConstantName.invalid;
+        public string FixtureName = "";
+        public string tag = "";
+        public double number = ConstantName.invalid;
+        public double CW_DIA = ConstantName.invalid;
+        public double HW_DIA = ConstantName.invalid;
+        public double WASTE_DIA = ConstantName.invalid;
+        public double VENT_DIA = ConstantName.invalid;
+        public double STORM_DIA = ConstantName.invalid;
+        public double WSFU = ConstantName.invalid;
+        public double CWSFU = ConstantName.invalid;
+        public double HWSFU = ConstantName.invalid;
+        public double DFU = ConstantName.invalid;
+        public string DESCRIPTION = "";
 
         public FixtureDetails(BlockReference bref, Transaction tr)
         {

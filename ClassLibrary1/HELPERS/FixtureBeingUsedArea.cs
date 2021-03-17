@@ -10,7 +10,7 @@ using Autodesk.AutoCAD.Geometry;
 
 namespace ClassLibrary1.HELPERS
 {
-    class FixtureBeingUsedArea
+    class FixtureBeingUsedArea : ObjectData
     {
         //x and y are width and height of the XY dynamic dimension.
         const string width = "X";
@@ -24,39 +24,38 @@ namespace ClassLibrary1.HELPERS
 
         public List<FixtureDetails> FDList = new List<FixtureDetails>();
 
-        public FixtureBeingUsedArea(BlockReference block, Transaction tr, Editor ed)
+        public FixtureBeingUsedArea(BlockReference block)
         {
-            GetTopAndBottomPoint(block, ed);
+            GetTopAndBottomPoint(block);
         }
 
-        private void GetTopAndBottomPoint(BlockReference block, Editor ed)
+        private void GetTopAndBottomPoint(BlockReference block)
         {
-            if(Goodies.GetDynamicName(block, ed) == ConstantName.FixtureInformationArea)
+            handle = block.Handle;
+            position = block.Position;
+            DynamicBlockReferencePropertyCollection dynBlockPropCol = block.DynamicBlockReferencePropertyCollection;
+            foreach(DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
             {
-                DynamicBlockReferencePropertyCollection dynBlockPropCol = block.DynamicBlockReferencePropertyCollection;
-                foreach(DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
+                if (dynProp.PropertyName.Equals(width)){
+                    X = (double)dynProp.Value;
+                }else if (dynProp.PropertyName.Equals(height))
                 {
-                    if (dynProp.PropertyName.Equals(width)){
-                        X = (double)dynProp.Value;
-                    }else if (dynProp.PropertyName.Equals(height))
-                    {
-                        Y = (double)dynProp.Value;
-                    }else if (dynProp.PropertyName.Equals(basePoint))
-                    {
-                        origin = (Point3d)dynProp.Value;
-                    }
+                    Y = (double)dynProp.Value;
+                }else if (dynProp.PropertyName.Equals(basePoint))
+                {
+                    origin = (Point3d)dynProp.Value;
                 }
-
-                pointTop = new Point3d(origin.X, origin.Y, 0);
-
-                //Use the regular X,Y coordinate, DO NOT use Game or Web coordinate
-                pointBottom = new Point3d(origin.X + X, origin.Y - Y, 0);
-                pointTop = pointTop.TransformBy(block.BlockTransform);
-                pointBottom = pointBottom.TransformBy(block.BlockTransform);
             }
+
+            pointTop = new Point3d(origin.X, origin.Y, 0);
+
+            //Use the regular X,Y coordinate, DO NOT use Game or Web coordinate
+            pointBottom = new Point3d(origin.X + X, origin.Y - Y, 0);
+            pointTop = pointTop.TransformBy(block.BlockTransform);
+            pointBottom = pointBottom.TransformBy(block.BlockTransform);
         }
 
-        public bool IsInsideTheBox(Point3d point)
+        private bool IsInsideTheBox(Point3d point)
         {
             bool xInside = (point.X > pointTop.X && point.X < pointBottom.X) ||
                            (point.X <= pointTop.X && point.X >= pointBottom.X);
@@ -67,10 +66,9 @@ namespace ClassLibrary1.HELPERS
             return xInside && yInside;
         }
 
-        public bool IsInsideTheBox(BlockReference bref, Editor ed)
+        public bool IsInsideTheBox(BlockReference bref)
         {
-            bool isDetailBlock = Goodies.GetDynamicName(bref, ed).Equals(ConstantName.FixtureDetailsBox);
-            return isDetailBlock && IsInsideTheBox(bref.Position);
+            return IsInsideTheBox(bref.Position);
         }
     }
 }

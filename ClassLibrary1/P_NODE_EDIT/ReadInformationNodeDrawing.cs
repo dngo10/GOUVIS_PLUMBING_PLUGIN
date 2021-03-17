@@ -8,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ClassLibrary1.HELPERS;
+using ClassLibrary1.P_NODE_EDIT;
 
 namespace GouvisPluminbNew.P_NODE_EDIT
 {
-    class ReadInformationInRectangle
+    class ReadInformationInNodeDrawing
     {
         /// <summary>
         /// Run node file, select all fixtures in there to make Fixture Schedule Table.
@@ -20,12 +21,11 @@ namespace GouvisPluminbNew.P_NODE_EDIT
         /// <param name="boxName">dynamic block. It's a box that all FixtureDetails are inside</param>
         /// <param name="blockNameToBeSelected">In this case FixtureDetails block</param>
         /// <param name="P_NodeFileDirectory">Location of P_NODE file</param>
-        public static void FindAllFixturesBeingUsed(string boxName, string blockNameToBeSelected, string P_NodeFileDirectory)
+        public static NODEDWG FindAllFixturesBeingUsed(string P_NodeFileDirectory)
         {
-            Document nodeDoc = Application.DocumentManager.Open(P_NodeFileDirectory, true);
-            FixtureBeingUsedArea fixtureBeingUsedArea = null;
+            NODEDWG nodeP = new NODEDWG();
 
-            List<FixtureDetails> FDList = new List<FixtureDetails>();
+            Document nodeDoc = Application.DocumentManager.Open(P_NodeFileDirectory, true);
 
             using (nodeDoc.LockDocument())
             {
@@ -50,38 +50,29 @@ namespace GouvisPluminbNew.P_NODE_EDIT
                                     string brefName = Goodies.GetDynamicName(bref, nodeDoc.Editor);
                                     if (brefName.Equals(ConstantName.FixtureInformationArea))
                                     {
-                                        fixtureBeingUsedArea = new FixtureBeingUsedArea(bref, tr, nodeDoc.Editor);
+                                        nodeP.fixtureAreaSET.Add(bref);
                                     }
                                 }
                                 else if (bref.Name == ConstantName.FixtureDetailsBox)
                                 {
-                                    FixtureDetails FD = new FixtureDetails(bref, tr);
-                                    FDList.Add(FD);
+                                    nodeP.fixtureDetailSET.Add(bref);
                                 }else if(bref.Name == ConstantName.InsertPoint)
                                 {
-                                    InsertPoint IP = new InsertPoint(bref, tr);
+                                    nodeP.insertionPointSET.Add(bref);
+                                }else if(bref is Table)
+                                {
+                                    Table t = bref as Table;
+                                    nodeP.tableSET.Add(t);
                                 }
                             }
-                        }else if(obj is Table)
-                        {
-                            Table table = (Table)obj;
-                            
                         }
                     }
 
-                    if(fixtureBeingUsedArea != null)
-                    {
-                        foreach (FixtureDetails FD in FDList)
-                        {
-                            if (fixtureBeingUsedArea.IsInsideTheBox(FD.position))
-                            {
-                                fixtureBeingUsedArea.FDList.Add(FD);
-                            }
-                        }
-                    }
+
                 }
             }
             nodeDoc.CloseAndDiscard();
+            return nodeP;
         }
     }
 }

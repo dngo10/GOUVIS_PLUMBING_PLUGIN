@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,33 @@ namespace ClassLibrary1.HELPERS
             bool isDisposed = bref.IsDisposed;
 
             return isVisible && !isCanceling && !isErased && !isDisposed;
+        }
+
+        public static void AddBlockToDrawing(string blockDrawingFile, string blockDestinationFile, string blockName)
+        {
+            Document docBlock = Application.DocumentManager.Open(blockDrawingFile, true);
+
+            using(Database db = new Database())
+            {
+                db.ReadDwgFile(blockDrawingFile, System.IO.FileShare.Read, true, "");
+                ObjectIdCollection ids = new ObjectIdCollection();
+                using (Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                    //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                    foreach(ObjectId id in bt)
+                    {
+                        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(id, OpenMode.ForRead);
+                        if(btr.Name == blockName)
+                        {
+
+                        }
+
+                    }
+                }
+            }
+
+
         }
     }
 }

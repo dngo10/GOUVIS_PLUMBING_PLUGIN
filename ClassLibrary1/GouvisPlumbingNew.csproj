@@ -61,15 +61,16 @@
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\FixtureBeingUsedArea.cs" />
     <Compile Include="HELPERS\FixtureDetails.cs" />
-    <Compile Include="HELPERS\GetXYDynamicPoints.cs" />
     <Compile Include="HELPERS\Goodies.cs" />
     <Compile Include="HELPERS\InsertPoint.cs" />
     <Compile Include="HELPERS\NumberConverter.cs" />
+    <Compile Include="HELPERS\ObjectData.cs" />
     <Compile Include="HELPERS\TableSchedule.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="P_NODE_EDIT\NODEDWG.cs" />
-    <Compile Include="P_NODE_EDIT\ReadInformationInRectangle.cs" />
+    <Compile Include="P_NODE_EDIT\ReadInformationNodeDrawing.cs" />
+    <Compile Include="P_NODE_EDIT\UpdateDataInNodeDrawing.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -9,12 +9,11 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.HELPERS
 {
-    class InsertPoint
+    class InsertPoint : ObjectData
     {
         public string NAME;
         public string ALIAS;
-        public Point3d position;
-        public Handle handle;
+        public ItemHold item;
 
         public InsertPoint(BlockReference bref, Transaction tr)
         {
@@ -32,11 +31,28 @@ namespace ClassLibrary1.HELPERS
                 }
             }
         }
+
+        public void addTable(Point3d position, DBObject obj)
+        {
+            if(this.position.DistanceTo(position) < 0.5)
+            {
+                item = new ItemHold();
+                item.itemHandle = obj.Handle;
+                item.itemPosition = position;
+
+            }
+        }
     }
 
     class InsertPointName
     {
         public static string NAME = "NAME";
         public static string ALIAS = "ALIAS";
+    }
+
+    class ItemHold
+    {
+        public Handle itemHandle;
+        public Point3d itemPosition;
     }
 }

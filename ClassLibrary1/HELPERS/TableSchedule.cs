@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +9,17 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.HELPERS
 {
+    //This is used to create SCHEDULE TABLE table.
+    //It is not tasked to delete one.
     class TableSchedule
     {
-        public Table table = new Table();
         public FixtureBeingUsedArea FBUA;
         public TableSchedule(FixtureBeingUsedArea FBUA)
         {
             this.FBUA = FBUA;
         }
 
-        private Table CreateTable(List<FixtureDetails> FixtureDetails, Transaction tr, InsertPoint insertPoint)
+        public static Table CreateTable(ICollection<FixtureDetails> FixtureDetails, InsertPoint insertPoint)
         {
             Table t = new Table();
             t.Layer = TableScheduleName.TableLayer;
@@ -52,7 +54,7 @@ namespace ClassLibrary1.HELPERS
             t.Columns[6].Width = 0.5;
 
             //Set General ROWS HEIGHT;
-            for (int i = 0; i < rowsNum; i++) { t.Rows[i].Height = TableScheduleName.GeneralRowHeight;}
+            for (int index = 0; index < rowsNum; index++) { t.Rows[index].Height = TableScheduleName.GeneralRowHeight;}
 
             t.Rows[0].Height = TableScheduleName.TitleRowHeight;
             t.Cells[0, 0].TextString = insertPoint.NAME;
@@ -82,13 +84,29 @@ namespace ClassLibrary1.HELPERS
 
             //Index starts at third orw;
             int i = 2;
+
             foreach(FixtureDetails FD in FixtureDetails)
             {
                 t.Cells[i, 1].TextString = FD.FixtureName;
-                t.Cells[i, 2].TextString = FD.CW_DIA;
+
+                t.Cells[i, 2].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.CW_DIA));
+                t.Cells[i, 3].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.HW_DIA));
+                t.Cells[i, 4].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.WASTE_DIA));
+                t.Cells[i, 5].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.STORM_DIA));
+                t.Cells[i, 6].TextString = FD.DESCRIPTION;
+
+                i++;
             }
 
-            return null;
+            t.Position = insertPoint.position;
+
+            return t;
+        }
+
+        //Return "-" if failed to get fractional number, else return fractional number + " sign.
+        private string returnTextStringFinalValue(string numStr)
+        {
+            return numStr != "" ? numStr + "\"" : "-";
         }
     }
 
