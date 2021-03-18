@@ -17,15 +17,21 @@ namespace ClassLibrary1.HELPERS
 
         public InsertPoint(BlockReference bref, Transaction tr)
         {
+            FilloutVariables(bref, tr);
+        }
+
+        private void FilloutVariables(BlockReference bref, Transaction tr)
+        {
             handle = bref.Handle;
             position = bref.Position;
-            foreach(ObjectId id in bref.AttributeCollection)
+            foreach (ObjectId id in bref.AttributeCollection)
             {
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
-                if(aRef.Tag == InsertPointName.NAME)
+                if (aRef.Tag == InsertPointName.NAME)
                 {
                     NAME = aRef.TextString;
-                }else if(aRef.Tag == InsertPointName.ALIAS)
+                }
+                else if (aRef.Tag == InsertPointName.ALIAS)
                 {
                     ALIAS = aRef.TextString;
                 }
@@ -39,7 +45,27 @@ namespace ClassLibrary1.HELPERS
                 item = new ItemHold();
                 item.itemHandle = obj.Handle;
                 item.itemPosition = position;
+            }
+        }
 
+        //Database Must be in write mode
+        //This is to update location in case it is moved;
+        public void UpdateHandle(Database db)
+        {
+            BlockReference bref = (BlockReference)Goodies.GetDBObjFromHandle(handle, db);
+            if(bref != null && !bref.IsErased)
+            {
+                using(Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    FilloutVariables(bref, tr);
+                }
+            }
+
+            //Set Item Back To null;
+            if(item != null)
+            {
+                item.DeleteItemHold(db);
+                item = null;
             }
         }
     }
@@ -50,9 +76,24 @@ namespace ClassLibrary1.HELPERS
         public static string ALIAS = "ALIAS";
     }
 
+    //ItemHold can ONLY HOLD TABLE AND BLOCK (things that have POSITION);
     class ItemHold
     {
         public Handle itemHandle;
         public Point3d itemPosition;
+
+        // Dabatabase must be writable
+        public void DeleteItemHold(Database db)
+        {
+            BlockReference bref = (BlockReference)Goodies.GetDBObjFromHandle(itemHandle, db);
+            if(bref != null && !bref.IsErased)
+            {
+                using(Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    bref.Erase();
+                    tr.Commit();
+                }
+            }
+        }
     }
 }

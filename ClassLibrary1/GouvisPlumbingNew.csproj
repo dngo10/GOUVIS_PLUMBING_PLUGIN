@@ -63,6 +63,7 @@
     <Compile Include="HELPERS\FixtureDetails.cs" />
     <Compile Include="HELPERS\Goodies.cs" />
     <Compile Include="HELPERS\InsertPoint.cs" />
+    <Compile Include="HELPERS\JigBlock.cs" />
     <Compile Include="HELPERS\NumberConverter.cs" />
     <Compile Include="HELPERS\ObjectData.cs" />
     <Compile Include="HELPERS\TableSchedule.cs" />

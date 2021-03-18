@@ -27,9 +27,9 @@ namespace ClassLibrary1.P_NODE_EDIT
     class NODEDWGDATA
     {
         public NODEDWG node;
-        public HashSet<FixtureBeingUsedArea> FixtureBoxSet = new HashSet<FixtureBeingUsedArea>();
-        public HashSet<FixtureDetails> FixtureDetailSet = new HashSet<FixtureDetails>();
-        public HashSet<InsertPoint> InsertPointSet = new HashSet<InsertPoint>();
+        public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>();
+        public SortedSet<FixtureDetails> FixtureDetailSet = new SortedSet<FixtureDetails>(Comparer<FixtureDetails>.Create((a,b) => a.index.CompareTo(b.index)));
+        public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>();
 
         public NODEDWGDATA(NODEDWG node, Transaction tr)
         {

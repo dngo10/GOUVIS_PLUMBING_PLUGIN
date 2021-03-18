@@ -1,8 +1,11 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,11 +41,53 @@ namespace ClassLibrary1.HELPERS
             return isVisible && !isCanceling && !isErased && !isDisposed;
         }
 
+        /// <summary>
+        /// COPY A BLOCK (WITH BLOCK NAME) from ONE FILE TO ANOTHER.
+        /// </summary>
+        /// <param name="blockDrawingFile"></param>
+        /// <param name="blockDestinationFile"></param>
+        /// <param name="blockName"></param>
         public static void AddBlockToDrawing(string blockDrawingFile, string blockDestinationFile, string blockName)
         {
-            Document docBlock = Application.DocumentManager.Open(blockDrawingFile, true);
+            if(IsFileReadable(blockDestinationFile) && IsFileWritable(blockDestinationFile))
+            {
+                using (Database db = new Database())
+                {
+                    db.ReadDwgFile(blockDrawingFile, System.IO.FileShare.Read, true, "");
+                    ObjectIdCollection ids = new ObjectIdCollection();
+                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    {
+                        BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                        //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                        if (bt.Has(blockName))
+                        {
+                            ObjectId id = bt[blockName];
+                            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(id, OpenMode.ForRead);
+                            ObjectIdCollection IdsCol = new ObjectIdCollection();
+                            using (Database dbDest = new Database())
+                            {
+                                dbDest.ReadDwgFile(blockDestinationFile, System.IO.FileShare.Write, true, "");
+                                IdsCol.Add(id);
+                                IdMapping iMap = new IdMapping();
+                                dbDest.WblockCloneObjects(IdsCol, dbDest.BlockTableId, iMap, DuplicateRecordCloning.Ignore, false);
+                                dbDest.Save();
+                                dbDest.Dispose();
+                            }
+                        }
+                        tr.Commit();
+                    }
+                }
+            }
+        }
 
-            using(Database db = new Database())
+        public static void AddBlockToActiveDrawing(string blockDrawingFile, string blockName)
+        {
+            if (!IsFileReadable(blockDrawingFile)) return;
+
+            Database dbDest = Application.DocumentManager.MdiActiveDocument.Database;
+            if (HasBlockDefinition(blockName, dbDest)) return;
+
+            using (Database db = new Database())
             {
                 db.ReadDwgFile(blockDrawingFile, System.IO.FileShare.Read, true, "");
                 ObjectIdCollection ids = new ObjectIdCollection();
@@ -50,19 +95,169 @@ namespace ClassLibrary1.HELPERS
                 {
                     BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
                     //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
-                    foreach(ObjectId id in bt)
+                    if (bt.Has(blockName))
                     {
+                        ObjectId id = bt[blockName];
                         BlockTableRecord btr = (BlockTableRecord)tr.GetObject(id, OpenMode.ForRead);
-                        if(btr.Name == blockName)
-                        {
-
-                        }
-
+                        ObjectIdCollection IdsCol = new ObjectIdCollection();
+                        IdsCol.Add(id);
+                        IdMapping iMap = new IdMapping();
+                        dbDest.WblockCloneObjects(IdsCol, dbDest.BlockTableId, iMap, DuplicateRecordCloning.Ignore, false);
                     }
+                    tr.Commit();
                 }
             }
+        }
+
+        private static bool HasBlockDefinition(string BlockName, Database db)
+        {
+            bool result = false;
+            using(Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                result = bt.Has(BlockName);
+            }
+            return result;
+        }
+
+        //INSERT DYNAMIC BLOCK INTO DATABASE
+        public static Dictionary<ObjectId, ObjectId> InsertDynamicBlock(string blockName, Database db)
+        {
+            Dictionary<ObjectId, ObjectId> atts = new System.Collections.Generic.Dictionary<ObjectId, ObjectId>();
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+                if (bt.Has(blockName))
+                {
+                    BlockReference bref = new BlockReference(Point3d.Origin, bt[blockName]);
+                    btr.AppendEntity(bref);
+                    tr.AddNewlyCreatedDBObject(bref, true);
+
+                    BlockTableRecord brefRec = (BlockTableRecord)tr.GetObject(bref.BlockTableRecord, OpenMode.ForRead);
+                    if (brefRec.HasAttributeDefinitions)
+                    {
+                        foreach (ObjectId id in btr)
+                        {
+                            DBObject dbObj = tr.GetObject(id, OpenMode.ForWrite);
+                            if (dbObj is AttributeDefinition)
+                            {
+                                AttributeDefinition newAttriDef = (AttributeDefinition)dbObj;
+                                AttributeReference attRef = new AttributeReference();
+                                attRef.SetAttributeFromBlock(newAttriDef, bref.BlockTransform);
+                                attRef.AdjustAlignment(bref.Database);
+                                bref.AttributeCollection.AppendAttribute(attRef);
+                                tr.AddNewlyCreatedDBObject(attRef, true);
+                                atts.Add(attRef.ObjectId, id);
+                            }
+                        }
+                    }
+                }
+                tr.Commit();
+            }
+            return atts;
+        }
 
 
+        //INSERT BLOCK INTO TABLE CELL;
+        public static Dictionary<ObjectId,ObjectId> InsertDynamicBlockToTableCell(Cell tCell, Database db, string BlockName)
+        {
+            Dictionary<ObjectId, ObjectId> atts = new System.Collections.Generic.Dictionary<ObjectId, ObjectId>();
+            using(Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                tCell.DeleteContent();
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                if (bt.Has(BlockName))
+                {
+                    tCell.BlockTableRecordId = bt[BlockName];
+                    BlockReference bref = (BlockReference)tCell.Contents[0].Value;
+                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockName], OpenMode.ForRead);
+                    if (btr.HasAttributeDefinitions)
+                    {
+                        foreach (ObjectId id in btr)
+                        {
+                            DBObject dbObj = tr.GetObject(id, OpenMode.ForRead);
+                            if (dbObj is AttributeDefinition)
+                            {
+                                AttributeDefinition attDef = (AttributeDefinition)dbObj;
+                                AttributeReference attRef = new AttributeReference();
+                                attRef.SetAttributeFromBlock(attDef, bref.BlockTransform);
+                                attRef.AdjustAlignment(bref.Database);
+                                bref.AttributeCollection.AppendAttribute(attRef);
+                                tr.AddNewlyCreatedDBObject(attRef, true);
+                                atts.Add(attRef.ObjectId, id);
+                            }
+                        }
+                    }
+                }
+                tr.Commit();
+            }
+            return atts;
+        }
+
+        public static DBObject GetDBObjFromHandle(Handle handle, Database db)
+        {
+            ObjectId id;
+            BlockReference bref = null;
+            if (db.TryGetObjectId(handle, out id))
+            {
+                using (Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    bref = (BlockReference)tr.GetObject(id, OpenMode.ForRead);
+                }
+            }
+            return bref;
+        }
+
+        //ADD LAYER NAME;
+        public static void AddLayer(string LayerName, Database db, ObjectId lineTypeId, short colorIndex = 255)
+        {
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+                if (!lt.Has(LayerName))
+                {
+                    LayerTableRecord ltr = new LayerTableRecord();
+                    ltr.Color = Color.FromColorIndex(ColorMethod.ByAci, colorIndex);
+                    if(lineTypeId != null)
+                    {
+                        ltr.LinetypeObjectId = lineTypeId;
+                    }
+                    lt.UpgradeOpen();
+                    lt.Add(ltr);
+                    tr.AddNewlyCreatedDBObject(ltr, true);
+                }
+                tr.Commit();
+            }
+        }
+
+        public static void AddLineType(string LineTypeName, Database db, string linePattern)
+        {
+
+        }
+
+        public static bool IsFileWritable(string fileDWGPath)
+        {
+            if (!File.Exists(fileDWGPath))
+            {
+                return false;
+            }
+            using(var fs = File.Open(fileDWGPath, FileMode.Open))
+            {
+                return fs.CanWrite;
+            }
+        }
+
+        public static bool IsFileReadable(string fileDWGPath)
+        {
+            if (!File.Exists(fileDWGPath))
+            {
+                return false;
+            }
+            using (var fs = File.Open(fileDWGPath, FileMode.Open))
+            {
+                return fs.CanRead;
+            }
         }
     }
 }

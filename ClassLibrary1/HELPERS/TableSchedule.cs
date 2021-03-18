@@ -104,10 +104,45 @@ namespace ClassLibrary1.HELPERS
         }
 
         //Return "-" if failed to get fractional number, else return fractional number + " sign.
-        private string returnTextStringFinalValue(string numStr)
+        private static string returnTextStringFinalValue(string numStr)
         {
             return numStr != "" ? numStr + "\"" : "-";
         }
+
+        public static void UpdateSingleTable(InsertPoint IP, Database db)
+        {
+
+        }
+
+        //TABLE MUST BE ADDED TO DRAWING BEFORE THIS PROCESS CAN HAPPEND
+        public static void AddBlockToTable(Table table, Database db, SortedSet<FixtureDetails> fixtureDetails)
+        {
+            using(Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                for (int i = 2; i < table.Rows.Count; i++)
+                {
+                    Dictionary<ObjectId, ObjectId> refID = Goodies.InsertDynamicBlockToTableCell(table.Cells[i, 0], db, ConstantName.HexNote);
+                    foreach(ObjectId id in refID.Keys)
+                    {
+                        AttributeReference attRef = (AttributeReference)tr.GetObject(id, OpenMode.ForWrite);
+                        if(attRef.Tag == HexNoteName.ID)
+                        {
+                            attRef.TextString = fixtureDetails.ElementAt(i - 2).tag;
+                        }else if(attRef.Tag == HexNoteName.NUM)
+                        {
+                            attRef.TextString = fixtureDetails.ElementAt(i - 2).number.ToString();
+                        }
+                    }
+                }
+                tr.Commit();
+            }
+        }
+    }
+
+    class HexNoteName
+    {
+        public static string ID = "ID";
+        public static string NUM = "ID_NUM";
     }
 
     class TableScheduleName

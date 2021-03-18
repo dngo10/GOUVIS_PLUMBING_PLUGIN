@@ -9,10 +9,14 @@ namespace ClassLibrary1.P_NODE_EDIT
 {
     class UpdateDataInNodeDrawing
     {
-        public static void UpdateNodeDrawing(string nodeDrawingFile)
+
+        //THIS WILL UPDATE THE HELL OUT OF NODE DRAWING.
+        public void UpdateNodeDrawing(string nodeDrawingFile)
         {
-            Document doc = Application.DocumentManager.Open(nodeDrawingFile, false);
+                
             
-        } 
+        }
+
+
     }
 }
