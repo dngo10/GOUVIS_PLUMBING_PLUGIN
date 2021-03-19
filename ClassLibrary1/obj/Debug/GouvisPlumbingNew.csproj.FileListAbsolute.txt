@@ -4,3 +4,5 @@ C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\Debug\GouvisPlumbin
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\Debug\GouvisPlumbingNew.csproj.CoreCompileInputs.cache
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\Debug\ClassLibrary1.dll
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\Debug\ClassLibrary1.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\Debug\x86\sqlite3.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\Debug\x64\sqlite3.dll

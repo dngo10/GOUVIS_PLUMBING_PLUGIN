@@ -67,8 +67,6 @@ namespace GouvisPluminbNew.P_NODE_EDIT
                             }
                         }
                     }
-
-
                 }
             }
             nodeDoc.CloseAndDiscard();

@@ -43,7 +43,7 @@ namespace ClassLibrary1.HELPERS
 
             if(group3 != "" && group2 != "")
             {
-                group2 = group2 + "-";
+                group2 += "-";
             }
 
             return group1 + group2 + group3;

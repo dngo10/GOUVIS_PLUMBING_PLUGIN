@@ -19,7 +19,9 @@ namespace ClassLibrary1
             string boxName = "FixtureBeingUsedArea";
             string blockName = "FixtureDetails";
 
-            ReadInformationInRectangle.FindAllFixturesBeingUsed(boxName, blockName, pNode_directory);
+            P_NODE_EDIT.TestingFunction.testing1(pNode_directory);
+
+            //ReadInformationInRectangle.FindAllFixturesBeingUsed(boxName, blockName, pNode_directory);
         }
     }
 }

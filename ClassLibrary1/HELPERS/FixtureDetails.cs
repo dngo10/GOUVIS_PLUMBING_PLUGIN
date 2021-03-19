@@ -25,6 +25,8 @@ namespace ClassLibrary1.HELPERS
         public double DFU = ConstantName.invalid;
         public string DESCRIPTION = "";
 
+
+
         public FixtureDetails(BlockReference bref, Transaction tr)
         {
             FillOutVariable(bref, tr);

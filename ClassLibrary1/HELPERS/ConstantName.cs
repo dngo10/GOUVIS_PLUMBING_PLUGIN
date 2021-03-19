@@ -22,5 +22,17 @@ namespace ClassLibrary1.HELPERS
         //RETURN THIS EVERYTIME VALUE BECOME INVALID;
         public const int invalid = -2100000000;
         public static Point3d inValidPoint = new Point3d(invalid, invalid, invalid);
+
+        //PATTERN FOR
+        /// <summary>
+        /// fsPattern: Pattern for regular expression of Alisa.
+        /// </summary>
+        public const string fsPattern = "^[F f][S s].*$";
+
+
+        //DatabaseName;
+
+        //CONSTANT PATH
+        public static string programFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
     }
 }

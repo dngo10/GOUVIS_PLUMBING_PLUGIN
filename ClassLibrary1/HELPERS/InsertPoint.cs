@@ -50,14 +50,16 @@ namespace ClassLibrary1.HELPERS
 
         //Database Must be in write mode
         //This is to update location in case it is moved;
-        public void UpdateHandle(Database db)
+        public bool UpdateHandle(Database db)
         {
+            bool result = false;
             BlockReference bref = (BlockReference)Goodies.GetDBObjFromHandle(handle, db);
             if(bref != null && !bref.IsErased)
             {
                 using(Transaction tr = db.TransactionManager.StartTransaction())
                 {
                     FilloutVariables(bref, tr);
+                    result = true;
                 }
             }
 
@@ -67,6 +69,7 @@ namespace ClassLibrary1.HELPERS
                 item.DeleteItemHold(db);
                 item = null;
             }
+            return result;
         }
     }
 

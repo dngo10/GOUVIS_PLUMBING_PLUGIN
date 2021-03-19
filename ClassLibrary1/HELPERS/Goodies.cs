@@ -7,8 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace ClassLibrary1.HELPERS
 {
@@ -49,7 +52,7 @@ namespace ClassLibrary1.HELPERS
         /// <param name="blockName"></param>
         public static void AddBlockToDrawing(string blockDrawingFile, string blockDestinationFile, string blockName)
         {
-            if(IsFileReadable(blockDestinationFile) && IsFileWritable(blockDestinationFile))
+            if(!IsFileLocked(blockDestinationFile) && !IsFileReadOnly(blockDestinationFile))
             {
                 using (Database db = new Database())
                 {
@@ -82,8 +85,6 @@ namespace ClassLibrary1.HELPERS
 
         public static void AddBlockToActiveDrawing(string blockDrawingFile, string blockName)
         {
-            if (!IsFileReadable(blockDrawingFile)) return;
-
             Database dbDest = Application.DocumentManager.MdiActiveDocument.Database;
             if (HasBlockDefinition(blockName, dbDest)) return;
 
@@ -236,28 +237,54 @@ namespace ClassLibrary1.HELPERS
 
         }
 
-        public static bool IsFileWritable(string fileDWGPath)
+        //THIS IS FROM AUTOCAD DEVELOPER -- Check if file is locked/readonly.
+        //https://spiderinnet1.typepad.com/blog/2015/02/autocad-net-reliably-check-file-lockreadonly.html
+
+        public static bool IsFileLocked(string path)
         {
-            if (!File.Exists(fileDWGPath))
+            try
             {
-                return false;
+                using (File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    return false;
+                }
             }
-            using(var fs = File.Open(fileDWGPath, FileMode.Open))
+            catch (IOException e)
             {
-                return fs.CanWrite;
+                int errorNum = Marshal.GetHRForException(e) & ((1 << 16) - 1);
+                return errorNum == 32 || errorNum == 33;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "IsFileLocked Checking");
+                return true;
             }
         }
 
-        public static bool IsFileReadable(string fileDWGPath)
+        public static bool IsFileReadOnly(string path)
         {
-            if (!File.Exists(fileDWGPath))
+            return new FileInfo(path).IsReadOnly;
+        }
+
+        //Layer Manager ONLY works with "current drawing". So you have OPEN the DRAWING YOU
+        //WANT TO EDIT in order to make it work.
+
+        //in process;
+        public static void CreateLayoutInCurrentDrawing(Database db)
+        {
+            using(Transaction tr = db.TransactionManager.StartTransaction())
             {
-                return false;
-            }
-            using (var fs = File.Open(fileDWGPath, FileMode.Open))
-            {
-                return fs.CanRead;
+                ObjectId layOutDict = db.LayoutDictionaryId;
+                DBDictionary dBOjbect = (DBDictionary)tr.GetObject(layOutDict, OpenMode.ForRead);
+                foreach(DBDictionaryEntry kv in dBOjbect)
+                {
+                    string LayoutName = kv.Key;
+                    ObjectId id = kv.Value;
+                    LayoutEdit obj = (LayoutEdit)tr.GetObject(id, OpenMode.ForRead);
+                    LayoutManager lm = LayoutManager.Current;
+                }
             }
         }
+
     }
 }
