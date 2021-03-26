@@ -34,6 +34,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
       <HintPath>..\..\..\..\..\..\Autodesk\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcCoreMgd.dll</HintPath>
@@ -64,13 +84,14 @@
   <ItemGroup>
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
+    <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />
     <Compile Include="HELPERS\FixtureBeingUsedArea.cs" />
     <Compile Include="HELPERS\FixtureDetails.cs" />
     <Compile Include="HELPERS\Goodies.cs" />
     <Compile Include="HELPERS\GoodiesPath.cs" />
     <Compile Include="HELPERS\InsertPoint.cs" />
     <Compile Include="HELPERS\JigBlock.cs" />
-    <Compile Include="HELPERS\LayoutEdit.cs" />
+    <Compile Include="LAYOUT\LayoutEdit.cs" />
     <Compile Include="HELPERS\NumberConverter.cs" />
     <Compile Include="HELPERS\ObjectData.cs" />
     <Compile Include="HELPERS\TableSchedule.cs" />

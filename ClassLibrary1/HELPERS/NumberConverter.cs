@@ -11,7 +11,7 @@ namespace ClassLibrary1.HELPERS
     {
         public static string ConvertToFractionalNumber(double number)
         {
-            if(number == ConstantName.invalid)
+            if(number == ConstantNameNoExecutable.invalid)
             {
                 return "";
             }

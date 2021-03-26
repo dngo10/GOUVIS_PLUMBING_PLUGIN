@@ -10,19 +10,19 @@ namespace ClassLibrary1.HELPERS
 {
     class FixtureDetails : ObjectData
     {
-        public double index = ConstantName.invalid;
+        public double index = ConstantNameNoExecutable.invalid;
         public string FixtureName = "";
         public string tag = "";
-        public double number = ConstantName.invalid;
-        public double CW_DIA = ConstantName.invalid;
-        public double HW_DIA = ConstantName.invalid;
-        public double WASTE_DIA = ConstantName.invalid;
-        public double VENT_DIA = ConstantName.invalid;
-        public double STORM_DIA = ConstantName.invalid;
-        public double WSFU = ConstantName.invalid;
-        public double CWSFU = ConstantName.invalid;
-        public double HWSFU = ConstantName.invalid;
-        public double DFU = ConstantName.invalid;
+        public double number = ConstantNameNoExecutable.invalid;
+        public double CW_DIA = ConstantNameNoExecutable.invalid;
+        public double HW_DIA = ConstantNameNoExecutable.invalid;
+        public double WASTE_DIA = ConstantNameNoExecutable.invalid;
+        public double VENT_DIA = ConstantNameNoExecutable.invalid;
+        public double STORM_DIA = ConstantNameNoExecutable.invalid;
+        public double WSFU = ConstantNameNoExecutable.invalid;
+        public double CWSFU = ConstantNameNoExecutable.invalid;
+        public double HWSFU = ConstantNameNoExecutable.invalid;
+        public double DFU = ConstantNameNoExecutable.invalid;
         public string DESCRIPTION = "";
 
 

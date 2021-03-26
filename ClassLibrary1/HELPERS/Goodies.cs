@@ -280,7 +280,7 @@ namespace ClassLibrary1.HELPERS
                 {
                     string LayoutName = kv.Key;
                     ObjectId id = kv.Value;
-                    LayoutEdit obj = (LayoutEdit)tr.GetObject(id, OpenMode.ForRead);
+                    //LayoutEdit obj = (LayoutEdit)tr.GetObject(id, OpenMode.ForRead);
                     LayoutManager lm = LayoutManager.Current;
                 }
             }

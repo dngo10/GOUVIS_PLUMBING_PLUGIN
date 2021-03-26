@@ -1,0 +1,6 @@
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\bin\Debug\ReadFileDwg.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\bin\Debug\ReadFileDwg.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\Debug\ReadFileDwg.csproj.CoreCompileInputs.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\Debug\ReadFileDwg.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\Debug\ReadFileDwg.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\Debug\ReadFileDwg.csprojAssemblyReference.cache

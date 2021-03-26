@@ -1,0 +1,10 @@
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\Debug\ProjectManager.exe.config
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\Debug\ProjectManager.exe
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\Debug\ProjectManager.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.csprojAssemblyReference.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.ProgramManagerForm.resources
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.Properties.Resources.resources
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.csproj.GenerateResource.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.csproj.CoreCompileInputs.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.exe
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\Debug\ProjectManager.pdb

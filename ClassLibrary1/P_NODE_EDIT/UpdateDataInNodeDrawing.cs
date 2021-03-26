@@ -44,5 +44,10 @@ namespace ClassLibrary1.P_NODE_EDIT
                 }
             //}
         }
+
+        //This will update Table Schedule.
+        public void UpdateTableSchedule(NODEDWG nodeData)
+        {
+        }
     }
 }

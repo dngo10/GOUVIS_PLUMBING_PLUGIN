@@ -1,0 +1,6 @@
+C:\Users\dngo\source\repos\Plumbing_Gouvis\GetLayoutInFormation\bin\x64\Debug\GetLayoutInFormation.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\GetLayoutInFormation\bin\x64\Debug\GetLayoutInFormation.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\GetLayoutInFormation\obj\x64\Debug\GetLayoutInFormation.csproj.CoreCompileInputs.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\GetLayoutInFormation\obj\x64\Debug\GetLayoutInFormation.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\GetLayoutInFormation\obj\x64\Debug\GetLayoutInFormation.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\GetLayoutInFormation\obj\x64\Debug\GetLayoutInFormation.csprojAssemblyReference.cache

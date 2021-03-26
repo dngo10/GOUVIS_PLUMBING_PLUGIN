@@ -14,13 +14,7 @@ namespace ClassLibrary1.P_NODE_EDIT
         public static void testing1(string FileDWGPath)
         {
             Document doc = Application.DocumentManager.Open(FileDWGPath, false);
-            Application.
-            Database db = doc.Database;
-            using (doc.LockDocument())
-            {
-                HELPERS.Goodies.CreateLayout(db);
-            }
-            
+
         }
         
     }

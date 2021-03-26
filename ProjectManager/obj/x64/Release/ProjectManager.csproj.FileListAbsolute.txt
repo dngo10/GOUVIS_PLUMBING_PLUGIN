@@ -1,0 +1,16 @@
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.csprojAssemblyReference.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.ProgramManagerForm.resources
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.Properties.Resources.resources
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.csproj.GenerateResource.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.csproj.CoreCompileInputs.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\sqlite3.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\ProjectManager.exe.config
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\ProjectManager.exe
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\ProjectManager.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\Microsoft.WindowsAPICodePack.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\Microsoft.WindowsAPICodePack.xml
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Release\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.csproj.CopyComplete
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.exe
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Release\ProjectManager.pdb
