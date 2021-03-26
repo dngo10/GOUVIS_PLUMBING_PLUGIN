@@ -33,6 +33,8 @@
             this.File = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ProjectManagerTab = new System.Windows.Forms.TabControl();
             this.AddButton = new System.Windows.Forms.TabPage();
+            this.label4 = new System.Windows.Forms.Label();
+            this.projectNumTextBox = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label3 = new System.Windows.Forms.Label();
             this.SetUpFolderTreeView = new System.Windows.Forms.TreeView();
@@ -43,8 +45,6 @@
             this.pNodeSearchButton = new System.Windows.Forms.Button();
             this.P_NODE_PATH_BOX = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.projectNumTextBox = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.ProjectManagerTab.SuspendLayout();
             this.AddButton.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -107,6 +107,25 @@
             this.AddButton.TabIndex = 0;
             this.AddButton.Text = "⚙ setup";
             this.AddButton.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(651, 21);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(96, 15);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Project Number:";
+            // 
+            // projectNumTextBox
+            // 
+            this.projectNumTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.projectNumTextBox.Location = new System.Drawing.Point(753, 17);
+            this.projectNumTextBox.Name = "projectNumTextBox";
+            this.projectNumTextBox.Size = new System.Drawing.Size(100, 21);
+            this.projectNumTextBox.TabIndex = 7;
+            this.projectNumTextBox.TextChanged += new System.EventHandler(this.projectNumTextBox_TextChanged);
             // 
             // splitContainer1
             // 
@@ -228,24 +247,6 @@
             this.label1.Size = new System.Drawing.Size(122, 15);
             this.label1.TabIndex = 1;
             this.label1.Text = "P_NODE FILE (.dwg)";
-            // 
-            // projectNumTextBox
-            // 
-            this.projectNumTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.projectNumTextBox.Location = new System.Drawing.Point(753, 17);
-            this.projectNumTextBox.Name = "projectNumTextBox";
-            this.projectNumTextBox.Size = new System.Drawing.Size(100, 21);
-            this.projectNumTextBox.TabIndex = 7;
-            // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(651, 21);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(96, 15);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Project Number:";
             // 
             // ProgramManagerForm
             // 

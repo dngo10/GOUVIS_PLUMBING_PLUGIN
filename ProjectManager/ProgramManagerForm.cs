@@ -28,8 +28,7 @@ namespace ProjectManager
 
         private void pNodeSearchButton_Click(object sender, EventArgs e)
         {
-            
-            Model.GetFiles(P_NODE_PATH_BOX, setupGridView, SetUpFolderTreeView);
+            Model.GetFiles(P_NODE_PATH_BOX, projectNumTextBox, setupGridView, SetUpFolderTreeView);
         }
 
         private void SetUpFolderTreeView_AfterCheck(object sender, TreeViewEventArgs e)
@@ -63,8 +62,12 @@ namespace ProjectManager
 
         private void FinishButton_Click(object sender, EventArgs e)
         {
-            
             Model.UpdateDatabase();
+        }
+
+        private void projectNumTextBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

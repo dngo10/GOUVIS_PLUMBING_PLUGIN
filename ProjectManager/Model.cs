@@ -13,10 +13,11 @@ namespace ProjectManager
     class Model
     {
         public static string ProjectFolder;
+        public static string ProjectNumber = "_unKnown";
         //if file is checked, it's in here.
-        public static void GetFiles(TextBox textBox, DataGridView dataGridView, TreeView treeView)
+        public static void GetFiles(TextBox textBox, TextBox ProjectNumberTextBox, DataGridView dataGridView, TreeView treeView)
         {
-
+            
             CommonOpenFileDialog nodeFileDialog = new CommonOpenFileDialog();
             nodeFileDialog.Title = "Find P Note .dwg File";
 
@@ -45,15 +46,21 @@ namespace ProjectManager
 
             ClearUp(textBox, treeView, dataGridView);
 
+            //LINES BELOW HAVE TO BE IN ORDER
+
             textBox.Text = nodeFileDialog.FileName;
-
-            setProjectDirectory(textBox);
-
+            
             FileElement pe = new FileElement();
             pe.lastModified = File.GetLastWriteTimeUtc(textBox.Text);
             pe.relativePath = "\\" + Path.GetFileName(textBox.Text);
 
             DatabaseManager.projectElement = new ProjectElement(pe, new HashSet<FileElement>());
+
+            //TextBox Hash Path... to find project number
+            setProjectDirectory(textBox);
+
+            //AFTER textBox initated, then check ProjectNumber;
+            ProjectNumberTextBox.Text = ProjectNumber;
 
 
             GetFilesInTreeView(treeView, textBox.Text);
@@ -62,6 +69,7 @@ namespace ProjectManager
         public static void setProjectDirectory(TextBox textBox)
         {
             ProjectFolder = Path.GetDirectoryName(textBox.Text);
+            ProjectNumber = DatabaseManager.GuessProjectNumber();
         }
 
 
@@ -95,6 +103,10 @@ namespace ProjectManager
                         MessageBox.Show(msg1, "Can't delete Database Folder", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+            }
+            else
+            {
+                DatabaseManager.UpdateInitDatabase();
             }
         }
 

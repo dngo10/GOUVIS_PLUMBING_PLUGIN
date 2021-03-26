@@ -23,14 +23,8 @@ namespace ProjectManager
             projectElement.Dwgs = null;
         }
 
-        public static void UpdateInitDatabase()
+        public static string GuessProjectNumber()
         {
-            if (projectElement == null) return;
-            if (projectElement.P_NOTE == null) return;
-            if (projectElement.Dwgs == null) return;
-            if (Model.ProjectFolder == null) return;
-
-            //Trying to Get ProjectNumber
             string fullPNotePath = Model.ProjectFolder + projectElement.P_NOTE.relativePath;
             Regex rex = new Regex(ConstantName.projectNumberPattern, RegexOptions.IgnoreCase);
 
@@ -41,32 +35,43 @@ namespace ProjectManager
             {
                 number = match.Groups[1].Value;
             }
+
+            return number;
+        }
+
+        public static void UpdateInitDatabase()
+        {
+            if (projectElement == null) return;
+            if (projectElement.P_NOTE == null) return;
+            if (projectElement.Dwgs == null) return;
+            if (Model.ProjectFolder == null) return;
+
+            //Trying to Get ProjectNumber
+
             string dbFolder = "";
             if (!HasDataBaseFolder(out dbFolder))
             {
-                CreateDatabaseFolder(number, out dbFolder);
-                CreateDatabase(dbFolder, number);
+                CreateDatabaseFolder(out dbFolder);
+                CreateDatabase(dbFolder);
 
             }
             else
             {
                 if (!DoesDatabaseExist(dbFolder))
                 {
-                    CreateDatabase(dbFolder, number);
+                    CreateDatabase(dbFolder);
                 }
             }
-
-
         }
 
-        public static void CreateDatabaseFolder(string number, out string dbFolder)
+        public static void CreateDatabaseFolder(out string dbFolder)
         {
             dbFolder = "";
             if (string.IsNullOrEmpty(Model.ProjectFolder)) return;
 
             if (GoodiesPath.IsDirectoryWritable(Model.ProjectFolder))
             {
-                string dataBaseFolder = "\\_" + number + ConstantName.centerFolder;
+                string dataBaseFolder = "\\_" + Model.ProjectNumber + ConstantName.centerFolder;
                 dbFolder = Model.ProjectFolder + dataBaseFolder;
                 Directory.CreateDirectory(dbFolder);
             }
@@ -164,9 +169,9 @@ namespace ProjectManager
             return false;
         }
 
-        public static void CreateDatabase(string folder, string number)
+        public static void CreateDatabase(string folder)
         {
-            string dbName = GetDatabaseName(number);
+            string dbName = GetDatabaseName(Model.ProjectNumber);
             string dbFilePath = folder + "\\" + dbName;
 
             if (File.Exists(dbFilePath))
