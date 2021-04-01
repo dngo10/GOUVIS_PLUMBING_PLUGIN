@@ -106,7 +106,7 @@ namespace ProjectManager
                         catch (Exception e)
                         {
                             string msg = string.Format("Can't delete database folder: {0}, Exception: {1}", dir, e.Message);
-                            debugMessage(msg);
+                            DebugMessage(msg);
                             result = false;
                         }
                     }
@@ -115,9 +115,14 @@ namespace ProjectManager
             return result;
         }
 
+        public static SQLiteConnection OpenSqliteConnection(string dbPath)
+        {
+            return new SQLiteConnection(DBCommand.GetConnectionString(dbPath));
+        }
+
         public static void InitTable(string databasePath)
         {
-            string createFileTable = DBCommand.CreateFileTable();
+            string createFileTable = DBCommand.DBFileTable.CreateFileTable();
             SQLiteConnection sqliteConn = new SQLiteConnection(DBCommand.GetConnectionString(databasePath));
             try
             {
@@ -127,12 +132,12 @@ namespace ProjectManager
                 command.CommandText = createFileTable;
                 command.ExecuteNonQuery();
 
-                command.CommandText = DBCommand.InsertToFileTable(projectElement.P_NOTE.relativePath, projectElement.P_NOTE.lastModified.Ticks.ToString());
+                command.CommandText = DBCommand.DBFileTable.InsertIntoFileTable(projectElement.P_NOTE.relativePath, projectElement.P_NOTE.lastModified.Ticks, 1);
                 command.ExecuteNonQuery();
 
                 foreach (FileElement pe in projectElement.Dwgs)
                 {
-                    command.CommandText = DBCommand.InsertToFileTable(pe.relativePath, pe.lastModified.Ticks.ToString());
+                    command.CommandText = DBCommand.DBFileTable.InsertIntoFileTable(pe.relativePath, pe.lastModified.Ticks, 0);
                     command.ExecuteNonQuery();
                 }
 
@@ -145,7 +150,7 @@ namespace ProjectManager
             }
             catch(Exception e)
             {
-                debugMessage(string.Format(@"Error opening Database: {0}, Error:{1}", databasePath, e.Message));
+                DebugMessage(string.Format(@"Error opening Database: {0}, Error:{1}", databasePath, e.Message));
             }
 
         }
@@ -177,10 +182,12 @@ namespace ProjectManager
             if (File.Exists(dbFilePath))
             {
                 string msg = string.Format("Database {0} already exists.", dbFilePath);
-                debugMessage(msg);
+                DebugMessage(msg);
             }
             else
             {
+                string batfile = folder + "\\" + "abc.bat";
+                File.WriteAllText(batfile, string.Format(ConstantName.batchCommand));
                 SQLiteConnection.CreateFile(dbFilePath);
                 InitTable(dbFilePath);
             }
@@ -201,7 +208,7 @@ namespace ProjectManager
             if (!Directory.Exists(DataFolder))
             {
                 string msg = string.Format("Data Folder {0} does not exist", Path.GetFileNameWithoutExtension(DataFolder));
-                debugMessage(msg);
+                DebugMessage(msg);
                 return false;
             }
 
@@ -219,19 +226,83 @@ namespace ProjectManager
             }else if(databaseQuery.Count() > 1)
             {
                 string msg = string.Format("There is more than 1 database in the folder {0}", Path.GetFileNameWithoutExtension(DataFolder));
-                debugMessage(msg);
+                DebugMessage(msg);
                 return false;
             }else if(databaseQuery.Count() == 0)
             {
                 string msg = string.Format("There is no database in the folder {0}", Path.GetFileNameWithoutExtension(DataFolder));
-                debugMessage(msg);
+                DebugMessage(msg);
                 return false;
             }
             return true;
         }
 
+        //READ DATABASE FROM 
+        public static void ReadDataAtBeginning(string dbPath)
+        {
+            SQLiteConnection sqlConn = OpenSqliteConnection(dbPath);
+            projectElement = ReadFileTableDataBase(sqlConn);
+        }
+
+        public static ProjectElement ReadFileTableDataBase(SQLiteConnection sqlConn)
+        {
+            sqlConn.Open();
+            //Do Directory.GetParent 2 times, and we get the projectPath;
+            
+            SQLiteTransaction tr =  sqlConn.BeginTransaction();
+            FileElement notePathFe = GetNotePath(sqlConn);
+            HashSet<FileElement> feDwgs = GetDwgsPath(sqlConn);
+            projectElement = new ProjectElement(notePathFe, feDwgs);
+
+            tr.Commit();
+            tr.Dispose();
+            sqlConn.Close();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            return projectElement;
+        }
+
+
+        //Return all Dwgs relatives path, EXCEPT Note_Path file
+        public static HashSet<FileElement> GetDwgsPath(SQLiteConnection sqlConn)
+        {
+            HashSet<FileElement> dwgsSet = new HashSet<FileElement>();
+            SQLiteCommand command = sqlConn.CreateCommand();
+            command.CommandText = DBCommand.DBFileTable.GetDwgsStringFromTable();
+            SQLiteDataReader dataReader = command.ExecuteReader();
+            while (dataReader.Read())
+            {
+                string relativePath = dataReader.GetString(0);
+                DateTime dt = new DateTime(dataReader.GetInt64(1));
+
+                FileElement feDwg = new FileElement(relativePath, dt);
+                dwgsSet.Add(feDwg);
+            }
+            command.Dispose();
+            return dwgsSet;
+        }
+
+        //SQL connection must be OPEN.
+        //This function should be put between transaction.
+        public static FileElement GetNotePath(SQLiteConnection sqlConn)
+        {
+            string notePath = "";
+            DateTime dt = DateTime.MinValue;
+            SQLiteCommand command = sqlConn.CreateCommand();
+            command.CommandText = DBCommand.DBFileTable.GetPNoteStringFromTable();
+            SQLiteDataReader dataReader = command.ExecuteReader();
+            while (dataReader.Read())
+            {
+                notePath = dataReader.GetString(0);
+                dt = new DateTime(dataReader.GetInt64(1));
+            }
+            FileElement fe = new FileElement(notePath, dt);
+            command.Dispose();
+            return fe;
+        }
+
         [ConditionalAttribute("DEBUG")]
-        public static void debugMessage(string message)
+        public static void DebugMessage(string message)
         {
             Console.WriteLine(message);
         }
@@ -251,6 +322,18 @@ namespace ProjectManager
             this.P_NOTE = P_NOTE;
             this.Dwgs = dwgs;
         }
+
+        public bool ContainsPath(string relativePath)
+        {
+            foreach(FileElement fe in Dwgs)
+            {
+                if (relativePath.Contains(fe.relativePath))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     class FileElement : IEqualityComparer<FileElement>, IEquatable<FileElement>
@@ -258,6 +341,14 @@ namespace ProjectManager
         public int ID;
         public string relativePath;
         public DateTime lastModified;
+
+        public FileElement (string relPath, DateTime dt)
+        {
+            relativePath = relPath;
+            lastModified = dt;
+        }
+
+        public FileElement() { }
 
 
         //CODE BELOW IS USED TO COMPARE FOR HASHSET.

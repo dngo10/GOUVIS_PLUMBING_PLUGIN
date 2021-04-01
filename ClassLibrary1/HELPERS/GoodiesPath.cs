@@ -124,5 +124,23 @@ namespace ClassLibrary1.HELPERS
                     return false;
             }
         }
+
+        /// <summary>
+        /// Check if dwg path 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool IsDwgPath(string path)
+        {
+            Regex rex = new Regex(ConstantName.DwgsPathFile, RegexOptions.IgnoreCase);
+            if (rex.IsMatch(path))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

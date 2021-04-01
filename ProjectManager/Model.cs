@@ -82,9 +82,10 @@ namespace ProjectManager
             setupGridView.Rows.Clear();
         }
 
-        public static void UpdateDatabase()
+        public static bool UpdateDatabase()
+            //For now, update mean delete and recreate.
         {
-            string dbFolder = "";
+            string dbFolder;
             if(DatabaseManager.HasDataBaseFolder(out dbFolder))
             {
                 string msg = string.Format("There is an existing Database Folder(s) {0}, you do want to overwrite it?",
@@ -95,6 +96,7 @@ namespace ProjectManager
                     if (DatabaseManager.DeleteDatabaseFolder())
                     {
                         DatabaseManager.UpdateInitDatabase();
+                        return true;
                     }
                     else
                     {
@@ -107,7 +109,9 @@ namespace ProjectManager
             else
             {
                 DatabaseManager.UpdateInitDatabase();
+                return true;
             }
+            return true;
         }
 
         //Return:
@@ -163,9 +167,6 @@ namespace ProjectManager
         /// <param name="tree">tree view in winform</param>
         public static void GetFilesInTreeView(TreeView tree, string PNotePath)
         {
-            tree.Nodes.Clear();
-            DatabaseManager.projectElement.Dwgs.Clear();
-
             TreeNode treePLBGNode = new TreeNode();
             GetAllDwgFilesInCurrentDirectory(Path.GetDirectoryName(PNotePath), ref treePLBGNode);
 
@@ -219,7 +220,7 @@ namespace ProjectManager
             {
                 if (childNode.Nodes.Count == 0)
                 {
-                    string fullPath = ProjectFolder + getTreeNotePath(childNode);
+                    string fullPath = ProjectFolder + GetTreeNotePath(childNode);
                     if (pNotePath == fullPath)
                     {
                         PNote = childNode;
@@ -241,12 +242,12 @@ namespace ProjectManager
 
             if (string.IsNullOrEmpty(ProjectFolder)) return;
 
-            string relativeDwgPath = getTreeNotePath(tn);
+            string relativeDwgPath = GetTreeNotePath(tn);
 
             if (relativeDwgPath.ToLower().Contains(".dwg"))
             {
                 FileElement fe = new FileElement();
-                fe.lastModified = getModifiedOfFile(relativeDwgPath);
+                fe.lastModified = GetModifiedOfFile(relativeDwgPath);
                 if (fe.lastModified == DateTime.MinValue)
                 {
                     //CHECK THIS
@@ -265,7 +266,7 @@ namespace ProjectManager
             }
         }
 
-        public static DateTime getModifiedOfFile(string relativaPath)
+        public static DateTime GetModifiedOfFile(string relativaPath)
         {
             string fullPath = ProjectFolder + relativaPath;
 
@@ -279,13 +280,96 @@ namespace ProjectManager
 
         //You must understand that the check box event (in winform) is called Recursively, you don't
         //have to check whether down the nodes collection has child or not;
-        private static string getTreeNotePath(TreeNode tn)
+        private static string GetTreeNotePath(TreeNode tn)
         {
             if (tn.Parent == null)
             {
                 return string.Format("");
             }
-            return string.Format(@"{0}\{1}", getTreeNotePath(tn.Parent), tn.Text);
+            return string.Format(@"{0}\{1}", GetTreeNotePath(tn.Parent), tn.Text);
+        }
+
+        //READ DATABASE -- IMPORTANCE --
+
+        //RETURN RELATIVE PATH OF OF PNOTE (to put on text file)
+        public static string ReadDatabase(string databasePath)
+        {
+            if (File.Exists(databasePath))
+            {
+                ProjectFolder = Directory.GetParent(Directory.GetParent(databasePath).FullName).FullName;
+                DatabaseManager.ReadDataAtBeginning(databasePath);
+                DatabaseManager.GuessProjectNumber();
+                return DatabaseManager.projectElement.P_NOTE.relativePath;
+            }return "";
+        }
+
+        public static void UpdateTheForm(TreeView tree, DataGridView gridView, string Pnotepath)
+        {
+            GetFilesInTreeView(tree, Pnotepath);
+            //GetDatas(gridView, Pnotepath);
+            ExpandAndCheckedTree(tree);
+        }
+
+
+        /// <summary>
+        ///Assume the projectElement is filled after read,
+        ///And TreeView is filled after read
+        ///Now Indicate tree expansion and checked
+        ///
+        ///This is a process of READING projectElement
+        ///Find Dwgs SELECTED BEFORE
+        ///AND Indicate them on TREEVIEW
+        /// </summary>
+        /// <param name="tree">setupFolderTreeView</param>
+        public static void ExpandAndCheckedTree(TreeView tree)
+        {
+            foreach(TreeNode tn in tree.Nodes)
+            {
+                if(tn.Nodes.Count > 0)
+                {
+                    CheckNode(tn);
+                }
+            }
+        }
+
+        private static void CheckNode(TreeNode tn)
+        {
+            if (GoodiesPath.IsDwgPath(tn.FullPath) && DatabaseManager.projectElement.ContainsPath(tn.FullPath))
+            {
+                tn.Checked = true;
+                //This function start with parent folder of dwgs
+                ExpandNode(tn.Parent);
+            }
+            else
+            {
+                if(tn.Nodes.Count >= 1)
+                {
+                    foreach (TreeNode treeNode in tn.Nodes)
+                    {
+                        CheckNode(treeNode);
+                    }
+                }
+            }
+        }
+
+        //This function start with parent folder of dwgs
+        private static void ExpandNode(TreeNode tn)
+        {
+            if (tn == null) return;
+
+            var query = from TreeNode childTn in tn.Nodes
+                        where childTn.Checked == false
+                        select childTn;
+
+            var node = query.FirstOrDefault();
+
+            if(node == null)
+            {
+                tn.Checked = true;
+            }
+
+            if(!tn.IsExpanded) tn.Expand();
+            ExpandNode(tn.Parent);
         }
     }
 }

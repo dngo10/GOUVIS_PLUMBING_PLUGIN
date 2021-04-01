@@ -238,6 +238,7 @@
             this.P_NODE_PATH_BOX.Name = "P_NODE_PATH_BOX";
             this.P_NODE_PATH_BOX.Size = new System.Drawing.Size(443, 21);
             this.P_NODE_PATH_BOX.TabIndex = 2;
+            this.P_NODE_PATH_BOX.DragDrop += new System.Windows.Forms.DragEventHandler(this.P_NODE_PATH_BOX_DragDrop);
             // 
             // label1
             // 
@@ -250,6 +251,7 @@
             // 
             // ProgramManagerForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(898, 563);
@@ -257,6 +259,9 @@
             this.Controls.Add(this.FinishButton);
             this.Name = "ProgramManagerForm";
             this.Text = "Project Manager";
+            this.Load += new System.EventHandler(this.ProgramManagerForm_Load);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ProgramManagerForm_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ProgramManagerForm_DragEnter);
             this.ProjectManagerTab.ResumeLayout(false);
             this.AddButton.ResumeLayout(false);
             this.AddButton.PerformLayout();

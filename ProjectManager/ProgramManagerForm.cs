@@ -62,10 +62,58 @@ namespace ProjectManager
 
         private void FinishButton_Click(object sender, EventArgs e)
         {
-            Model.UpdateDatabase();
+            if (Model.UpdateDatabase())
+            {
+                this.Close();
+            }
         }
 
         private void projectNumTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ProgramManagerForm_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+                foreach (string path in fileList)
+                {
+                    if(path.Contains(ConstantName.databasePostFix + ".db"))
+                    {
+                        string relativePNotePath = Model.ReadDatabase(path);
+                        P_NODE_PATH_BOX.Text = Model.ProjectFolder + relativePNotePath;
+                        projectNumTextBox.Text = Model.ProjectNumber;
+                        Model.UpdateTheForm(SetUpFolderTreeView, setupGridView, P_NODE_PATH_BOX.Text);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void P_NODE_PATH_BOX_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void ProgramManagerForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void ProgramManagerForm_Load(object sender, EventArgs e)
         {
 
         }

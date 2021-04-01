@@ -24,15 +24,19 @@ namespace ClassLibrary1.HELPERS
         public const string fsPattern = "^[F f][S s].*$";
         public const string projectNumberPattern = @"^.*(\d{5})(.*)$";
         public static string databaseFolderPattern = string.Format(@"^.*{0}$", centerFolder);
+        public const string DwgsPathFile = @"^.+.dwg$";
 
 
         //DatabaseName;
 
         //CONSTANT PATH
         public static string programFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        public static string projectManagerExePath = @"C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Debug\ProjectManager.exe";
+
+        //BATCH COMMAND
+        public static string batchCommand = string.Format(@"start """" ""{0}""", projectManagerExePath);
 
         public const string PlumbingFolderName = "PLBG";
-
 
         //XDRIVE PROJECT
         public const string XDriveProject = @"\\Ge-fs1\mep\Projects";
@@ -46,9 +50,6 @@ namespace ClassLibrary1.HELPERS
         public const string centerFolder = "_Manager";
 
         public const string databasePostFix = "_Data";
-
-        
-
     }
 
     //DATABASE TABLE
