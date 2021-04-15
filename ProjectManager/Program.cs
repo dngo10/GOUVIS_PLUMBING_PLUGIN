@@ -13,10 +13,16 @@ namespace ProjectManager
         /// </summary>
         [STAThread]
         static void Main(string [] args)
-        {            
+        {
+            string path = "";
+            foreach(string str in args)
+            {
+                path += str;
+            }
+            //System.IO.File.WriteAllText("temp.txt", path);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ProgramManagerForm());
+            Application.Run(new ProgramManagerForm(path));
         }
     }
 }

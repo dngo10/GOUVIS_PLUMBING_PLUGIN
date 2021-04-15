@@ -33,8 +33,6 @@
             this.File = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ProjectManagerTab = new System.Windows.Forms.TabControl();
             this.AddButton = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.projectNumTextBox = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label3 = new System.Windows.Forms.Label();
             this.SetUpFolderTreeView = new System.Windows.Forms.TreeView();
@@ -94,8 +92,6 @@
             // 
             // AddButton
             // 
-            this.AddButton.Controls.Add(this.label4);
-            this.AddButton.Controls.Add(this.projectNumTextBox);
             this.AddButton.Controls.Add(this.splitContainer1);
             this.AddButton.Controls.Add(this.pNodeSearchButton);
             this.AddButton.Controls.Add(this.P_NODE_PATH_BOX);
@@ -107,25 +103,6 @@
             this.AddButton.TabIndex = 0;
             this.AddButton.Text = "⚙ setup";
             this.AddButton.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(651, 21);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(96, 15);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Project Number:";
-            // 
-            // projectNumTextBox
-            // 
-            this.projectNumTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.projectNumTextBox.Location = new System.Drawing.Point(753, 17);
-            this.projectNumTextBox.Name = "projectNumTextBox";
-            this.projectNumTextBox.Size = new System.Drawing.Size(100, 21);
-            this.projectNumTextBox.TabIndex = 7;
-            this.projectNumTextBox.TextChanged += new System.EventHandler(this.projectNumTextBox_TextChanged);
             // 
             // splitContainer1
             // 
@@ -222,7 +199,7 @@
             // pNodeSearchButton
             // 
             this.pNodeSearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pNodeSearchButton.Location = new System.Drawing.Point(583, 16);
+            this.pNodeSearchButton.Location = new System.Drawing.Point(784, 16);
             this.pNodeSearchButton.Name = "pNodeSearchButton";
             this.pNodeSearchButton.Size = new System.Drawing.Size(32, 23);
             this.pNodeSearchButton.TabIndex = 3;
@@ -236,9 +213,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.P_NODE_PATH_BOX.Location = new System.Drawing.Point(134, 18);
             this.P_NODE_PATH_BOX.Name = "P_NODE_PATH_BOX";
-            this.P_NODE_PATH_BOX.Size = new System.Drawing.Size(443, 21);
+            this.P_NODE_PATH_BOX.Size = new System.Drawing.Size(644, 21);
             this.P_NODE_PATH_BOX.TabIndex = 2;
-            this.P_NODE_PATH_BOX.DragDrop += new System.Windows.Forms.DragEventHandler(this.P_NODE_PATH_BOX_DragDrop);
             // 
             // label1
             // 
@@ -259,7 +235,6 @@
             this.Controls.Add(this.FinishButton);
             this.Name = "ProgramManagerForm";
             this.Text = "Project Manager";
-            this.Load += new System.EventHandler(this.ProgramManagerForm_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ProgramManagerForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ProgramManagerForm_DragEnter);
             this.ProjectManagerTab.ResumeLayout(false);
@@ -292,8 +267,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DwgFile;
         private System.Windows.Forms.DataGridViewTextBoxColumn DwgPath;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox projectNumTextBox;
     }
 }
 

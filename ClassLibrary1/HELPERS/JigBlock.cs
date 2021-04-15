@@ -11,6 +11,7 @@ namespace ClassLibrary1.HELPERS
 {
     class JigBlock : EntityJig
     {
+        Point3d p;
         Entity bref;
         Transaction tr; // The Jig Block Attribute if we have it.
         public Point3d insertPoint;

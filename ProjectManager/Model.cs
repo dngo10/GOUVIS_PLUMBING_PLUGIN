@@ -13,9 +13,8 @@ namespace ProjectManager
     class Model
     {
         public static string ProjectFolder;
-        public static string ProjectNumber = "_unKnown";
         //if file is checked, it's in here.
-        public static void GetFiles(TextBox textBox, TextBox ProjectNumberTextBox, DataGridView dataGridView, TreeView treeView)
+        public static void GetFiles(TextBox textBox, DataGridView dataGridView, TreeView treeView)
         {
             
             CommonOpenFileDialog nodeFileDialog = new CommonOpenFileDialog();
@@ -36,6 +35,9 @@ namespace ProjectManager
                     else if (i == 0)
                     {
                         return;
+                    }else if(i == 1)
+                    {
+                        continue;
                     }
                 }
                 else
@@ -44,12 +46,21 @@ namespace ProjectManager
                 }
             } while (true);
 
-            ClearUp(textBox, treeView, dataGridView);
+            
 
             //LINES BELOW HAVE TO BE IN ORDER
 
             textBox.Text = nodeFileDialog.FileName;
-            
+
+            GetFilesDrag(textBox, dataGridView, treeView);
+        }
+
+        //This function is similar to GetFiles, but PNote is defined
+        public static void GetFilesDrag(TextBox textBox, DataGridView dataGridView, TreeView treeView)
+        {
+            //They will clear up everything, so we have to keep path.
+            ClearUp(treeView, dataGridView);
+
             FileElement pe = new FileElement();
             pe.lastModified = File.GetLastWriteTimeUtc(textBox.Text);
             pe.relativePath = "\\" + Path.GetFileName(textBox.Text);
@@ -59,31 +70,26 @@ namespace ProjectManager
             //TextBox Hash Path... to find project number
             setProjectDirectory(textBox);
 
-            //AFTER textBox initated, then check ProjectNumber;
-            ProjectNumberTextBox.Text = ProjectNumber;
-
-
             GetFilesInTreeView(treeView, textBox.Text);
         }
+
 
         public static void setProjectDirectory(TextBox textBox)
         {
             ProjectFolder = Path.GetDirectoryName(textBox.Text);
-            ProjectNumber = DatabaseManager.GuessProjectNumber();
+            //ProjectNumber = DatabaseManager.GuessProjectNumber();
         }
 
 
-        private static void ClearUp(TextBox P_NODE_PATH_BOX, TreeView SetUpFolderTreeView, DataGridView setupGridView)
+        private static void ClearUp(TreeView SetUpFolderTreeView, DataGridView setupGridView)
         {
-            P_NODE_PATH_BOX.Text = "";
             Model.ProjectFolder = "";
             SetUpFolderTreeView.Nodes.Clear();
             DatabaseManager.clear();
             setupGridView.Rows.Clear();
         }
 
-        public static bool UpdateDatabase()
-            //For now, update mean delete and recreate.
+        public static bool UpdateDatabase()//For now, update mean delete and recreate.
         {
             string dbFolder;
             if(DatabaseManager.HasDataBaseFolder(out dbFolder))
@@ -100,8 +106,7 @@ namespace ProjectManager
                     }
                     else
                     {
-                        string msg1 = string.Format("Cannot delete the Folder {0}. Also make sure there should be only one database for each project",
-                        dbFolder);
+                        string msg1 = string.Format("Cannot delete the Folder {0}. Also make sure there should be only one database for each project",dbFolder);
                         MessageBox.Show(msg1, "Can't delete Database Folder", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
@@ -157,8 +162,6 @@ namespace ProjectManager
                 dataGridView.Rows.Add(p, filePath);
             }
         }
-
-
         /// <summary>
         /// Fill up the Tree View, Assume "path" is VALID and path is Directory to PLBG folder.
         /// Because one project can have multiple PnotePath, each notePath is associated with a couple of files
@@ -182,11 +185,11 @@ namespace ProjectManager
 
             string[] directories = Directory.GetDirectories(path);
             TreeNode tn = new TreeNode(Path.GetFileNameWithoutExtension(path));
-            tn.ImageIndex = 1;
+            tn.ImageIndex = 0;
             foreach (string directory in directories)
             {
                 TreeNode newTn = new TreeNode(Path.GetFileNameWithoutExtension(directory));
-                newTn.ImageIndex = 1; //1 is folder icon created in winform constructor
+                newTn.ImageIndex = 0; //1 is folder icon created in winform constructor
                 GetAllDwgFilesInCurrentDirectory(directory, ref newTn);
                 tn.Nodes.Add(newTn);
             }
@@ -195,7 +198,7 @@ namespace ProjectManager
             foreach (string file in files)
             {
                 TreeNode newTn = new TreeNode(Path.GetFileName(file));
-                newTn.ImageIndex = 0; //0 is dwg icon created in winform constructor
+                newTn.ImageIndex = 1; //0 is dwg icon created in winform constructor
                 tn.Nodes.Add(newTn);
             }
 
@@ -298,7 +301,7 @@ namespace ProjectManager
             {
                 ProjectFolder = Directory.GetParent(Directory.GetParent(databasePath).FullName).FullName;
                 DatabaseManager.ReadDataAtBeginning(databasePath);
-                DatabaseManager.GuessProjectNumber();
+                //DatabaseManager.GuessProjectNumber();
                 return DatabaseManager.projectElement.P_NOTE.relativePath;
             }return "";
         }
@@ -309,7 +312,6 @@ namespace ProjectManager
             //GetDatas(gridView, Pnotepath);
             ExpandAndCheckedTree(tree);
         }
-
 
         /// <summary>
         ///Assume the projectElement is filled after read,

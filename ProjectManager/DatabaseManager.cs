@@ -23,22 +23,6 @@ namespace ProjectManager
             projectElement.Dwgs = null;
         }
 
-        public static string GuessProjectNumber()
-        {
-            string fullPNotePath = Model.ProjectFolder + projectElement.P_NOTE.relativePath;
-            Regex rex = new Regex(ConstantName.projectNumberPattern, RegexOptions.IgnoreCase);
-
-            Match match = rex.Match(fullPNotePath);
-            string number = "No_Num";
-
-            if (match.Success)
-            {
-                number = match.Groups[1].Value;
-            }
-
-            return number;
-        }
-
         public static void UpdateInitDatabase()
         {
             if (projectElement == null) return;
@@ -53,7 +37,6 @@ namespace ProjectManager
             {
                 CreateDatabaseFolder(out dbFolder);
                 CreateDatabase(dbFolder);
-
             }
             else
             {
@@ -62,6 +45,8 @@ namespace ProjectManager
                     CreateDatabase(dbFolder);
                 }
             }
+            string batFilePath = Directory.GetParent(dbFolder).FullName + "\\" + ConstantName.batFileName;
+            File.WriteAllText(batFilePath, ConstantName.batchCommand);
         }
 
         public static void CreateDatabaseFolder(out string dbFolder)
@@ -71,7 +56,7 @@ namespace ProjectManager
 
             if (GoodiesPath.IsDirectoryWritable(Model.ProjectFolder))
             {
-                string dataBaseFolder = "\\_" + Model.ProjectNumber + ConstantName.centerFolder;
+                string dataBaseFolder = "\\" + ConstantName.centerFolder;
                 dbFolder = Model.ProjectFolder + dataBaseFolder;
                 Directory.CreateDirectory(dbFolder);
             }
@@ -176,7 +161,7 @@ namespace ProjectManager
 
         public static void CreateDatabase(string folder)
         {
-            string dbName = GetDatabaseName(Model.ProjectNumber);
+            string dbName = ConstantName.databasePostFix;
             string dbFilePath = folder + "\\" + dbName;
 
             if (File.Exists(dbFilePath))
@@ -186,21 +171,9 @@ namespace ProjectManager
             }
             else
             {
-                string batfile = folder + "\\" + "abc.bat";
-                File.WriteAllText(batfile, string.Format(ConstantName.batchCommand));
                 SQLiteConnection.CreateFile(dbFilePath);
                 InitTable(dbFilePath);
             }
-        }
-
-        public static string GetDatabaseName(string number)
-        {
-            return number + ConstantName.databasePostFix + ".db";
-        }
-
-        public static string GetDatabaseFolderName(string number)
-        {
-            return number + ConstantName.centerFolder;
         }
 
         public static bool DoesDatabaseExist(string DataFolder)

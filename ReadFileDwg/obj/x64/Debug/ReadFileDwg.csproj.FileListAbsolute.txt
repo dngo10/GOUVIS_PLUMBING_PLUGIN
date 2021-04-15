@@ -3,4 +3,3 @@ C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\bin\x64\Debug\ReadFileDwg
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\x64\Debug\ReadFileDwg.csproj.CoreCompileInputs.cache
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\x64\Debug\ReadFileDwg.dll
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\x64\Debug\ReadFileDwg.pdb
-C:\Users\dngo\source\repos\Plumbing_Gouvis\ReadFileDwg\obj\x64\Debug\ReadFileDwg.csprojAssemblyReference.cache

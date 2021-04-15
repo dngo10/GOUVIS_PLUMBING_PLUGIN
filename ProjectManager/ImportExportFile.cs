@@ -10,7 +10,6 @@ namespace ProjectManager
     {
         public static void CreateProjectFolder(string projectNumber)
         {
-            string project;
         }
     }
 }

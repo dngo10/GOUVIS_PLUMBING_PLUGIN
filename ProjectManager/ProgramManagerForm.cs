@@ -6,8 +6,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,19 +18,34 @@ namespace ProjectManager
 {
     public partial class ProgramManagerForm : Form
     {
-        public ProgramManagerForm()
+        public ProgramManagerForm(string currentDirectory)
         {
             InitializeComponent();
             ImageList imageList = new ImageList();
-            imageList.Images.Add(Properties.Resources.DWG);
             imageList.Images.Add(Properties.Resources.folder);
+            imageList.Images.Add(Properties.Resources.DWG);
+
+            if (!string.IsNullOrEmpty(currentDirectory))
+            {
+                string dataPath = currentDirectory + "\\" + ConstantName.centerFolder + "\\" + ConstantName.databasePostFix;
+                if (System.IO.Directory.Exists(currentDirectory) && 
+                    System.IO.Directory.Exists(currentDirectory + "\\" + ConstantName.centerFolder) &&
+                    System.IO.File.Exists(dataPath)
+                    )
+                {
+                    string relativePNotePath = Model.ReadDatabase(dataPath);
+                    P_NODE_PATH_BOX.Text = Model.ProjectFolder + relativePNotePath;
+                    Model.UpdateTheForm(SetUpFolderTreeView, setupGridView, P_NODE_PATH_BOX.Text);
+                }
+            }
+            
 
             SetUpFolderTreeView.ImageList = imageList;
         }
 
         private void pNodeSearchButton_Click(object sender, EventArgs e)
         {
-            Model.GetFiles(P_NODE_PATH_BOX, projectNumTextBox, setupGridView, SetUpFolderTreeView);
+            Model.GetFiles(P_NODE_PATH_BOX, setupGridView, SetUpFolderTreeView);
         }
 
         private void SetUpFolderTreeView_AfterCheck(object sender, TreeViewEventArgs e)
@@ -80,13 +97,33 @@ namespace ProjectManager
                 string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
                 foreach (string path in fileList)
                 {
-                    if(path.Contains(ConstantName.databasePostFix + ".db"))
+                    if(path.Contains(ConstantName.databasePostFix))
                     {
                         string relativePNotePath = Model.ReadDatabase(path);
                         P_NODE_PATH_BOX.Text = Model.ProjectFolder + relativePNotePath;
-                        projectNumTextBox.Text = Model.ProjectNumber;
                         Model.UpdateTheForm(SetUpFolderTreeView, setupGridView, P_NODE_PATH_BOX.Text);
                         break;
+                    }
+                    else if(System.IO.Path.GetFileName(path) == ConstantName.centerFolder && Directory.Exists(path))
+                    {
+                        string databasePath = path + "/" + ConstantName.databasePostFix;
+                        if (System.IO.File.Exists(databasePath))
+                        {
+                            string relativePNotePath = Model.ReadDatabase(databasePath);
+                            P_NODE_PATH_BOX.Text = Model.ProjectFolder + relativePNotePath;
+                            Model.UpdateTheForm(SetUpFolderTreeView, setupGridView, P_NODE_PATH_BOX.Text);
+                            break;
+                        }
+                    }
+                    {
+                        Regex rex = new Regex(ConstantName.DwgsPNoteFile, RegexOptions.IgnoreCase);
+                        if (rex.IsMatch(path))
+                        {
+                            P_NODE_PATH_BOX.Text = path;
+                            Model.ProjectFolder = System.IO.Path.GetDirectoryName(path);
+                            Model.GetFilesDrag(P_NODE_PATH_BOX, setupGridView, SetUpFolderTreeView);
+                            break;
+                        }
                     }
                 }
             }
@@ -94,11 +131,6 @@ namespace ProjectManager
             {
                 e.Effect = DragDropEffects.None;
             }
-        }
-
-        private void P_NODE_PATH_BOX_DragDrop(object sender, DragEventArgs e)
-        {
-
         }
 
         private void ProgramManagerForm_DragEnter(object sender, DragEventArgs e)
@@ -115,7 +147,7 @@ namespace ProjectManager
 
         private void ProgramManagerForm_Load(object sender, EventArgs e)
         {
-
+            //pNodeSearchButton_Click(null, null);
         }
     }
 }
