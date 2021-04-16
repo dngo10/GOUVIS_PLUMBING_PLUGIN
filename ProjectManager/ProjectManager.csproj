@@ -115,6 +115,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBCommand.cs">
+      <Link>DBCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\PlumbingDatabaseManager.cs">
+      <Link>PlumbingDatabaseManager.cs</Link>
+    </Compile>
     <Compile Include="..\ClassLibrary1\HELPERS\ConstantName.cs">
       <Link>ConstantName.cs</Link>
     </Compile>
@@ -122,7 +128,6 @@
       <Link>GoodiesPath.cs</Link>
     </Compile>
     <Compile Include="DatabaseManager.cs" />
-    <Compile Include="DBCommand.cs" />
     <Compile Include="ImportExportFile.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ProgramManagerForm.cs">

@@ -103,6 +103,7 @@
             this.AddButton.TabIndex = 0;
             this.AddButton.Text = "⚙ setup";
             this.AddButton.UseVisualStyleBackColor = true;
+            this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
             // splitContainer1
             // 
@@ -235,6 +236,7 @@
             this.Controls.Add(this.FinishButton);
             this.Name = "ProgramManagerForm";
             this.Text = "Project Manager";
+            this.Load += new System.EventHandler(this.ProgramManagerForm_Load_1);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ProgramManagerForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ProgramManagerForm_DragEnter);
             this.ProjectManagerTab.ResumeLayout(false);

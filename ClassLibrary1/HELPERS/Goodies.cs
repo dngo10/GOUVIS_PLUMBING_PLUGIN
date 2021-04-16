@@ -20,6 +20,7 @@ namespace ClassLibrary1.HELPERS
         /***
          *This Must Run Inside a Transaction. 
          *Or it will create errors.
+         *This is to get Program
          */
         public static string GetDynamicName(BlockReference bref, Editor ed)
         {
@@ -52,7 +53,7 @@ namespace ClassLibrary1.HELPERS
         /// <param name="blockName"></param>
         public static void AddBlockToDrawing(string blockDrawingFile, string blockDestinationFile, string blockName)
         {
-            if(!IsFileLocked(blockDestinationFile) && !IsFileReadOnly(blockDestinationFile))
+            if(!GoodiesPath.IsFileLocked(blockDestinationFile) && !GoodiesPath.IsFileReadOnly(blockDestinationFile))
             {
                 using (Database db = new Database())
                 {
@@ -240,32 +241,6 @@ namespace ClassLibrary1.HELPERS
         //THIS IS FROM AUTOCAD DEVELOPER -- Check if file is locked/readonly.
         //https://spiderinnet1.typepad.com/blog/2015/02/autocad-net-reliably-check-file-lockreadonly.html
 
-        public static bool IsFileLocked(string path)
-        {
-            try
-            {
-                using (File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
-                {
-                    return false;
-                }
-            }
-            catch (IOException e)
-            {
-                int errorNum = Marshal.GetHRForException(e) & ((1 << 16) - 1);
-                return errorNum == 32 || errorNum == 33;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "IsFileLocked Checking");
-                return true;
-            }
-        }
-
-        public static bool IsFileReadOnly(string path)
-        {
-            return new FileInfo(path).IsReadOnly;
-        }
-
         //Layer Manager ONLY works with "current drawing". So you have OPEN the DRAWING YOU
         //WANT TO EDIT in order to make it work.
 
@@ -286,5 +261,56 @@ namespace ClassLibrary1.HELPERS
             }
         }
 
+        public static List<string> GetListOfDocumentOpening()
+        {
+            DocumentCollection docCol = Application.DocumentManager;
+            List<string> docPathList = new List<string>(); 
+
+            foreach(Document doc in docCol)
+            {
+                docPathList.Add(doc.Name);
+            }
+
+            return docPathList;
+        }
+
+        /// <summary>
+        /// Whether or you can write to dwg WHILE RUNNING AutoCAD,
+        /// This is NOT intended for dotnet core console.
+        /// </summary>
+        /// <returns></returns>
+        public static Document CanOpenToWrite(string path)
+        {
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("CanOpenToWrite: File does not exists.");
+                return null;
+            }
+
+            if(path == Application.DocumentManager.MdiActiveDocument.Name)
+            {
+                return Application.DocumentManager.MdiActiveDocument;
+            }
+
+            if (GetListOfDocumentOpening().Contains(path))
+            {
+                foreach(Document doc in Application.DocumentManager)
+                {
+                    if(doc.Name == path)
+                    {
+                        return doc;
+                    }
+                }
+            }
+
+            if (!GoodiesPath.IsFileLocked(path))
+            {
+                Document doc = Application.DocumentManager.Open(path);
+                return doc;
+            }
+
+            Console.WriteLine("CanOpenToWrite: Can't open file, Problem unknown");
+            return null;
+        }
     }
 }

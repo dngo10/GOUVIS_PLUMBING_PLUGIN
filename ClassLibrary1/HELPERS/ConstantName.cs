@@ -51,7 +51,9 @@ namespace ClassLibrary1.HELPERS
         public const string centerFolder = "_Manager";
 
         public const string databasePostFix = "_Data.db";
-        public const string batFileName = "runthis.bat";
+        public const string batFileName = "App.bat";
+
+        public const string TEMPPATH = "C:\\Plumbing_Template\\TEMPLATE_FILE_V1_p_notes.dwg";
     }
 
     //DATABASE TABLE

@@ -13,9 +13,10 @@ namespace ClassLibrary1.P_NODE_EDIT
     class UpdateDataInNodeDrawing
     {
 
+
         //THIS WILL UPDATE THE HELL OUT OF NODE DRAWING.
         //YOU MUST OPEN NODE DRAWING
-        public void UpdateNodeDrawing(NODEDWGDATA nodeData)
+        public static void UpdateNodeDrawing(NODEDWGDATA nodeData)
         {
             Regex rx = new Regex(ConstantName.fsPattern);
 
@@ -45,8 +46,26 @@ namespace ClassLibrary1.P_NODE_EDIT
             //}
         }
 
+        /// <summary>
+        /// Update Node Drawing
+        /// </summary>
+        /// <param name="dwgpath">any dwgpath in the project, Note that it must be in the project</param>
+        public static void UpdateNodeDrawing(string dwgpath) {
+            string notePath = GoodiesPath.GetNotePathFromADwgPath(dwgpath);
+            Document doc = Goodies.CanOpenToWrite(notePath);
+            
+            if(doc != null)
+            {
+                Application.DocumentManager.MdiActiveDocument = doc;
+                using (doc.LockDocument())
+                {
+
+                }
+            }
+        }
+
         //This will update Table Schedule.
-        public void UpdateTableSchedule(NODEDWG nodeData)
+        public static void UpdateTableSchedule(NODEDWG nodeData)
         {
         }
     }

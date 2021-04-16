@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ClassLibrary1.HELPERS;
+using ClassLibrary1.DATABASE;
 using System.Windows.Forms;
 using System.IO;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -85,7 +86,7 @@ namespace ProjectManager
         {
             Model.ProjectFolder = "";
             SetUpFolderTreeView.Nodes.Clear();
-            DatabaseManager.clear();
+            PlumbingDatabaseManager.clear();
             setupGridView.Rows.Clear();
         }
 
@@ -125,12 +126,12 @@ namespace ProjectManager
         // 2 -- Ignore
         private static int CheckNodePath(string nodePath)
         {
-            if (Path.GetExtension(nodePath).ToLower() != ".dwg")
+            if (!GoodiesPath.IsDwgPath(nodePath))
             {
                 string msg = string.Format("P_NOTES file ({0}) is not a .dwg file", nodePath);
                 MessageBox.Show(msg, "Not a DWG file", MessageBoxButtons.OK);
                 return 0;
-            }else if (!Path.GetFileNameWithoutExtension(nodePath).ToLower().Contains("p_note"))
+            }else if (!GoodiesPath.IsNotePath(nodePath))
             {
                 string msg = string.Format("Note file {0} does not look like a P_NOTES file.", nodePath);
                 DialogResult result = MessageBox.Show(msg, "Does not look like P_NOTES file", MessageBoxButtons.AbortRetryIgnore);
@@ -247,7 +248,7 @@ namespace ProjectManager
 
             string relativeDwgPath = GetTreeNotePath(tn);
 
-            if (relativeDwgPath.ToLower().Contains(".dwg"))
+            if (GoodiesPath.IsDwgPath(relativeDwgPath))
             {
                 FileElement fe = new FileElement();
                 fe.lastModified = GetModifiedOfFile(relativeDwgPath);
@@ -300,7 +301,7 @@ namespace ProjectManager
             if (File.Exists(databasePath))
             {
                 ProjectFolder = Directory.GetParent(Directory.GetParent(databasePath).FullName).FullName;
-                DatabaseManager.ReadDataAtBeginning(databasePath);
+                PlumbingDatabaseManager.ReadDataAtBeginning(databasePath);
                 //DatabaseManager.GuessProjectNumber();
                 return DatabaseManager.projectElement.P_NOTE.relativePath;
             }return "";

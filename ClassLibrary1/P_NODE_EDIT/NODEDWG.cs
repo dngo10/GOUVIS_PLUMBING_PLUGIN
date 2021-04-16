@@ -2,6 +2,7 @@
 using ClassLibrary1.HELPERS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,14 @@ namespace ClassLibrary1.P_NODE_EDIT
         public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>();
         public SortedSet<FixtureDetails> FixtureDetailSet = new SortedSet<FixtureDetails>(Comparer<FixtureDetails>.Create((a,b) => a.index.CompareTo(b.index)));
         public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>();
+
+        public NODEDWGDATA(string path)
+        {
+            if (File.Exists(path))
+            {
+                
+            }
+        }
 
         public NODEDWGDATA(NODEDWG node, Transaction tr)
         {

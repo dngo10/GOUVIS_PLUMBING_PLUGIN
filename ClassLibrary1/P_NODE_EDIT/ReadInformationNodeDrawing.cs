@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClassLibrary1.HELPERS;
 using ClassLibrary1.P_NODE_EDIT;
+using System.IO;
 
 namespace GouvisPluminbNew.P_NODE_EDIT
 {
@@ -21,11 +22,39 @@ namespace GouvisPluminbNew.P_NODE_EDIT
         /// <param name="boxName">dynamic block. It's a box that all FixtureDetails are inside</param>
         /// <param name="blockNameToBeSelected">In this case FixtureDetails block</param>
         /// <param name="P_NodeFileDirectory">Location of P_NODE file</param>
-        public static NODEDWG FindAllFixturesBeingUsed()
+        public static NODEDWG FindAllFixturesBeingUsed(string pNotePath)
         {
+
+            bool isActiveDoc = false;
+            if (!System.IO.File.Exists(pNotePath))
+            {
+                Console.WriteLine("ReadInformationInNodeDrawing->FindAllFixturesBeingUsed: ERR: pNotePath does not exist");
+                return null;
+            }
+                
+            if (!GoodiesPath.IsNotePath(pNotePath))
+            {
+                Console.WriteLine("ReadInformationInNodeDrawing->FindAllFixturesBeingUsed: ERR: pNotePath does not look like a *p_notes.dwg file");
+                return null;
+            }
+
+            Document nodeDoc = null;
+
+            if (pNotePath == Application.DocumentManager.MdiActiveDocument.Name)
+            {
+                nodeDoc = Application.DocumentManager.MdiActiveDocument;
+                isActiveDoc = true;
+            }else if (Goodies.GetListOfDocumentOpening().Contains(pNotePath))
+            {
+                nodeDoc = Application.DocumentManager.Open(pNotePath, true);
+            }else if(File.Exists(pNotePath) && GoodiesPath.IsNotePath(pNotePath) && !GoodiesPath.IsFileLocked(pNotePath))
+            {
+                nodeDoc = Application.DocumentManager.Open(pNotePath, true);
+            }
+
             NODEDWG nodeP = new NODEDWG();
 
-            Document nodeDoc = Application.DocumentManager.Open("C:\\Plumbing_Template\\TEMPLATE_FILE_V1.dwg", true);
+            //Document nodeDoc = Application.DocumentManager.Open("C:\\Plumbing_Template\\TEMPLATE_FILE_V1.dwg", true);
 
             using (nodeDoc.LockDocument())
             {
@@ -75,7 +104,11 @@ namespace GouvisPluminbNew.P_NODE_EDIT
                     }
                 }
             }
-            nodeDoc.CloseAndDiscard();
+            if (!isActiveDoc)
+            {
+                nodeDoc.CloseAndDiscard();
+            }
+            
             return nodeP;
         }
     }

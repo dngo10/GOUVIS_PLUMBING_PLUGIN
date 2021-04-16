@@ -116,8 +116,7 @@ namespace ProjectManager
                         }
                     }
                     {
-                        Regex rex = new Regex(ConstantName.DwgsPNoteFile, RegexOptions.IgnoreCase);
-                        if (rex.IsMatch(path))
+                        if (GoodiesPath.IsNotePath(path))
                         {
                             P_NODE_PATH_BOX.Text = path;
                             Model.ProjectFolder = System.IO.Path.GetDirectoryName(path);
@@ -148,6 +147,16 @@ namespace ProjectManager
         private void ProgramManagerForm_Load(object sender, EventArgs e)
         {
             //pNodeSearchButton_Click(null, null);
+        }
+
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ProgramManagerForm_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

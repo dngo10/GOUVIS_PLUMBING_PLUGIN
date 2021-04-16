@@ -1,15 +1,44 @@
-﻿using System;
+﻿using ClassLibrary1.DATABASE;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace ClassLibrary1.HELPERS
 {
     class GoodiesPath
     {
+        public static bool IsFileLocked(string path)
+        {
+            try
+            {
+                using (File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    return false;
+                }
+            }
+            catch (IOException e)
+            {
+                int errorNum = Marshal.GetHRForException(e) & ((1 << 16) - 1);
+                return errorNum == 32 || errorNum == 33;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "IsFileLocked Checking");
+                return true;
+            }
+        }
+
+        public static bool IsFileReadOnly(string path)
+        {
+            return new FileInfo(path).IsReadOnly;
+        }
         public static string GetAccoreConsolePath()
         {
             string result = "";
@@ -141,6 +170,54 @@ namespace ClassLibrary1.HELPERS
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Check if dwg is like a Note path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool IsNotePath(string path)
+        {
+            Regex rex = new Regex(ConstantName.DwgsPNoteFile, RegexOptions.IgnoreCase);
+            if (rex.IsMatch(path))
+            {
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("GoodiesPath->Helper: ERROR: Not a NotePaths .dwg file");
+                return false;
+            }
+        }
+
+        public static string GetNotePathFromADwgPath(string path)
+        {
+            string dataPath = "";
+            string directoryPath = Path.GetDirectoryName(path);
+            while(!string.IsNullOrEmpty(directoryPath))
+            {
+                dataPath = directoryPath + "\\" + ConstantName.centerFolder + "\\" + ConstantName.databasePostFix;
+                if (File.Exists(dataPath))
+                {
+                    SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
+                    sqlConn.Open();
+                    SQLiteTransaction tr = sqlConn.BeginTransaction();
+                    FileElement fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
+                    tr.Dispose();
+                    sqlConn.Close();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    string pNotePath = directoryPath + fe.relativePath;
+                    if (File.Exists(pNotePath))
+                    {
+                        return pNotePath;
+                    }
+
+                }
+                directoryPath = Directory.GetParent(directoryPath).FullName;
+            }
+            return "";
         }
     }
 }
