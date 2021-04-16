@@ -98,6 +98,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DATABASE\DBPoint3D.cs" />
     <Compile Include="DATABASE\PlumbingDatabaseManager.cs" />
     <Compile Include="DATABASE\DBCommand.cs" />
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />

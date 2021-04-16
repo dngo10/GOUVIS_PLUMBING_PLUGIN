@@ -191,33 +191,74 @@ namespace ClassLibrary1.HELPERS
             }
         }
 
-        public static string GetNotePathFromADwgPath(string path)
+        //Given a dwg file path, get it's Database path if exists, if not return ""
+        public static string GetDatabasePathFromDwgPath(string path)
         {
             string dataPath = "";
             string directoryPath = Path.GetDirectoryName(path);
-            while(!string.IsNullOrEmpty(directoryPath))
+            while (!string.IsNullOrEmpty(directoryPath))
             {
                 dataPath = directoryPath + "\\" + ConstantName.centerFolder + "\\" + ConstantName.databasePostFix;
                 if (File.Exists(dataPath))
                 {
-                    SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
-                    sqlConn.Open();
-                    SQLiteTransaction tr = sqlConn.BeginTransaction();
-                    FileElement fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
-                    tr.Dispose();
-                    sqlConn.Close();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    string pNotePath = directoryPath + fe.relativePath;
-                    if (File.Exists(pNotePath))
-                    {
-                        return pNotePath;
-                    }
-
+                    return dataPath;
                 }
                 directoryPath = Directory.GetParent(directoryPath).FullName;
             }
             return "";
+        }
+        public static string GetNotePathFromADwgPath(string path)
+        {
+            string dataPath = GetDatabasePathFromDwgPath(path);
+            if (!string.IsNullOrEmpty(dataPath))
+            {
+                string directoryPath = Directory.GetParent(Path.GetDirectoryName(path)).FullName;
+                SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
+                sqlConn.Open();
+                SQLiteTransaction tr = sqlConn.BeginTransaction();
+                FileElement fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
+                tr.Dispose();
+                sqlConn.Close();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                string pNotePath = directoryPath + fe.relativePath;
+                if (File.Exists(pNotePath))
+                {
+                    return pNotePath;
+                }
+            }
+            return "";
+        }
+
+        public static bool HasDwgPathInDatabase(string path)
+        {
+            string dataPath = GetDatabasePathFromDwgPath(path);
+            if (!string.IsNullOrEmpty(dataPath))
+            {
+                string directoryPath = Directory.GetParent(Path.GetDirectoryName(path)).FullName;
+                SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
+                sqlConn.Open();
+                SQLiteTransaction tr = sqlConn.BeginTransaction();
+                HashSet<FileElement> feSet = PlumbingDatabaseManager.GetDwgsPath(sqlConn);
+                tr.Dispose();
+                sqlConn.Close();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                foreach(FileElement fe in feSet)
+                {
+                    string dwgPath = directoryPath + fe.relativePath;
+                    if(dwgPath == path)
+                    {
+                        return true;
+                    }
+                }
+                Console.WriteLine(string.Format("HasDwgPathInDatabase Func -> Database found, but file from file: {0}", path));
+            }
+            else
+            {
+                Console.WriteLine(string.Format("HasDwgPathInDatabase Func -> Could not find database from file: {0}", path));
+            }
+            return false;
         }
     }
 }

@@ -116,6 +116,19 @@ namespace ClassLibrary1.HELPERS
                 }
             }
         }
+
+        /// <summary>
+        /// Update Database in manager folder
+        /// </summary>
+        /// <param name="db">drawing database</param>
+        /// <param name=""></param>
+        public void UpdateDatabaseManager(string path)
+        {
+            if (GoodiesPath.HasDwgPathInDatabase(path))
+            {
+                
+            }
+        }
     }
 
     static class FixtureDetailsName
@@ -134,6 +147,10 @@ namespace ClassLibrary1.HELPERS
         public static string HWSFU = "HWSFU";
         public static string DFU = "DFU";
         public static string DESCRIPTION = "DESCRIPTION";
+    }
+
+    static class FixtureDetailsCommands
+    {
     }
 
     
