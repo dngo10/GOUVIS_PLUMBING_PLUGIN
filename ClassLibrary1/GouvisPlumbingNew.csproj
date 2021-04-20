@@ -98,9 +98,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DATABASE\DBPoint3D.cs" />
-    <Compile Include="DATABASE\PlumbingDatabaseManager.cs" />
-    <Compile Include="DATABASE\DBCommand.cs" />
+    <Compile Include="DATABASE\Controllers\DBFixtureDetails.cs" />
+    <Compile Include="DATABASE\Controllers\DBMatrix3d.cs" />
+    <Compile Include="DATABASE\Controllers\DBPoint3D.cs" />
+    <Compile Include="DATABASE\Controllers\PlumbingDatabaseManager.cs" />
+    <Compile Include="DATABASE\Controllers\DBCommand.cs" />
+    <Compile Include="DATABASE\Models\FixtureBeingUsedAreaModel.cs" />
+    <Compile Include="DATABASE\Models\FixtureDetailsModel.cs" />
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />

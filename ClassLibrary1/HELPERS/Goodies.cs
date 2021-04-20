@@ -312,5 +312,37 @@ namespace ClassLibrary1.HELPERS
             Console.WriteLine("CanOpenToWrite: Can't open file, Problem unknown");
             return null;
         }
+
+        public static string ConvertHandleToString(Handle handle)
+        {
+            return handle.ToString();
+        }
+
+        public static IList<double> ConvertPoint3dToArray(Point3d point)
+        {
+            return new List<double>(point.ToArray());
+        }
+
+        public static IList<double> ConvertMatrix3dToArray(Matrix3d matrix)
+        {
+            return new List<double>(matrix.ToArray());
+        }
+
+        public static Handle ConvertStringToHandle(string handleStr)
+        {
+            long val = Convert.ToInt64(handleStr.ToString(), 16);
+            Handle handle = new Handle(val);
+            return handle;
+        }
+
+        public static Point3d ConvertArrayToPoint3d(IList<double> array)
+        {
+            return new Point3d(array[0], array[1], array[2]);
+        }
+
+        public static Matrix3d ConvertArrayToMatrix3d(IList<double> array)
+        {
+            return new Matrix3d(array.ToArray());
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using ClassLibrary1.DATABASE.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +11,7 @@ namespace ClassLibrary1.HELPERS
 {
     class FixtureDetails : ObjectData
     {
-        public double index = ConstantNameNoExecutable.invalid;
-        public string FixtureName = "";
-        public string tag = "";
-        public double number = ConstantNameNoExecutable.invalid;
-        public double CW_DIA = ConstantNameNoExecutable.invalid;
-        public double HW_DIA = ConstantNameNoExecutable.invalid;
-        public double WASTE_DIA = ConstantNameNoExecutable.invalid;
-        public double VENT_DIA = ConstantNameNoExecutable.invalid;
-        public double STORM_DIA = ConstantNameNoExecutable.invalid;
-        public double WSFU = ConstantNameNoExecutable.invalid;
-        public double CWSFU = ConstantNameNoExecutable.invalid;
-        public double HWSFU = ConstantNameNoExecutable.invalid;
-        public double DFU = ConstantNameNoExecutable.invalid;
-        public string DESCRIPTION = "";
-
-
+        FixtureDetailsModel fixtureDetails = new FixtureDetailsModel();
 
         public FixtureDetails(BlockReference bref, Transaction tr)
         {
@@ -36,6 +22,7 @@ namespace ClassLibrary1.HELPERS
         {
             position = bref.Position;
             handle = bref.Handle;
+            blockTranform = bref.BlockTransform;
             foreach (ObjectId id in bref.AttributeCollection)
             {
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
@@ -47,60 +34,60 @@ namespace ClassLibrary1.HELPERS
                 {
                     if (aRef.Tag == FixtureDetailsName.index)
                     {
-                        index = number;
+                        fixtureDetails.index = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.number)
                     {
-                        this.number = number;
+                        fixtureDetails.number = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.CW_DIA)
                     {
-                        CW_DIA = number;
+                        fixtureDetails.CW_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.HW_DIA)
                     {
-                        HW_DIA = number;
+                        fixtureDetails.HW_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.WASTE_DIA)
                     {
-                        WASTE_DIA = number;
+                        fixtureDetails.WASTE_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.VENT_DIA)
                     {
-                        VENT_DIA = number;
+                        fixtureDetails.VENT_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.STORM_DIA)
                     {
-                        STORM_DIA = number;
+                        fixtureDetails.STORM_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.WSFU)
                     {
-                        WSFU = number;
+                        fixtureDetails.WSFU = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.CWSFU)
                     {
-                        CWSFU = number;
+                        fixtureDetails.CWSFU = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.HWSFU)
                     {
-                        HWSFU = number;
+                        fixtureDetails.HWSFU = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.DFU)
                     {
-                        DFU = number;
+                        fixtureDetails.DFU = number;
                     }
                 }
                 else if (aRef.Tag == FixtureDetailsName.tag)
                 {
-                    tag = textString;
+                    fixtureDetails.tag = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.FixtureName)
                 {
-                    FixtureName = textString;
+                    fixtureDetails.FixtureName = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.DESCRIPTION)
                 {
-                    DESCRIPTION = textString;
+                    fixtureDetails.DESCRIPTION = textString;
                 }
             }
         }
@@ -131,27 +118,7 @@ namespace ClassLibrary1.HELPERS
         }
     }
 
-    static class FixtureDetailsName
-    {
-        public static string index = "INDEX";
-        public static string FixtureName = "FIXTURE_NAME";
-        public static string tag = "TAG";
-        public static string number = "NUMBER";
-        public static string CW_DIA = "CW_DIA";
-        public static string HW_DIA = "HW_DIA";
-        public static string WASTE_DIA = "WASTE_DIA";
-        public static string VENT_DIA = "VENT_DIA";
-        public static string STORM_DIA = "STORM_DIA";
-        public static string WSFU = "WSFU";
-        public static string CWSFU = "CWSFU";
-        public static string HWSFU = "HWSFU";
-        public static string DFU = "DFU";
-        public static string DESCRIPTION = "DESCRIPTION";
-    }
 
-    static class FixtureDetailsCommands
-    {
-    }
 
     
 }

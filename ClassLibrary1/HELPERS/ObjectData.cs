@@ -12,5 +12,6 @@ namespace ClassLibrary1.HELPERS
     {
         public Handle handle;
         public Point3d position;
+        public Matrix3d blockTranform;
     }
 }

@@ -4,6 +4,7 @@ namespace ClassLibrary1.HELPERS
 {
     class ConstantName
     {
+        public const int invalid = -2100000000;
         //BLOCK NAMES
         public const string FixtureInformationArea = "FixtureBeingUsedArea";
         public const string FixtureDetailsBox = "FixtureDetails";
