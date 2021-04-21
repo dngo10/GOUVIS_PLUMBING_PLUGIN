@@ -26,8 +26,10 @@ namespace ClassLibrary1.HELPERS
 
         private void GetTopAndBottomPoint(BlockReference block)
         {
-            handle = block.Handle;
-            position = block.Position;
+            fixtureBeingUsedAreaModel.handle  = block.Handle.ToString();
+            fixtureBeingUsedAreaModel.position = new Point3dModel(block.Position.ToArray());
+            fixtureBeingUsedAreaModel.matrixTransform = new Matrix3dModel(block.BlockTransform.ToArray());
+
             DynamicBlockReferencePropertyCollection dynBlockPropCol = block.DynamicBlockReferencePropertyCollection;
             foreach(DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
             {
@@ -38,25 +40,28 @@ namespace ClassLibrary1.HELPERS
                     fixtureBeingUsedAreaModel.Y = (double)dynProp.Value;
                 }else if (dynProp.PropertyName.Equals(FixtureBeingUsedAreaModel.basePoint))
                 {
-                    fixtureBeingUsedAreaModel.origin = Goodies.ConvertPoint3dToArray((Point3d)dynProp.Value).ToList();
+                    fixtureBeingUsedAreaModel.origin = new Point3dModel(((Point3d)dynProp.Value).ToArray());
                 }
             }
 
-            Point3d pointTop = new Point3d(fixtureBeingUsedAreaModel.origin[0], fixtureBeingUsedAreaModel.origin[2], 0);
+            Point3d pointTop = new Point3d(fixtureBeingUsedAreaModel.origin.X, fixtureBeingUsedAreaModel.origin.Y, 0);
 
             //Use the regular X,Y coordinate, DO NOT use Game or Web coordinate
-            Point3d pointBottom = new Point3d(origin.X + X, origin.Y - Y, 0);
+            Point3d pointBottom = new Point3d(fixtureBeingUsedAreaModel.origin.X + fixtureBeingUsedAreaModel.X, fixtureBeingUsedAreaModel.origin.Y - fixtureBeingUsedAreaModel.Y, 0);
             pointTop = pointTop.TransformBy(block.BlockTransform);
             pointBottom = pointBottom.TransformBy(block.BlockTransform);
+
+            fixtureBeingUsedAreaModel.pointBottom = new Point3dModel(pointBottom.ToArray());
+            fixtureBeingUsedAreaModel.pointTop = new Point3dModel(pointTop.ToArray());
         }
 
         private bool IsInsideTheBox(Point3d point)
         {
-            bool xInside = (point.X > pointTop.X && point.X < pointBottom.X) ||
-                           (point.X <= pointTop.X && point.X >= pointBottom.X);
+            bool xInside = (point.X > fixtureBeingUsedAreaModel.pointTop.X && point.X < fixtureBeingUsedAreaModel.pointBottom.X) ||
+                           (point.X <= fixtureBeingUsedAreaModel.pointTop.X && point.X >= fixtureBeingUsedAreaModel.pointBottom.X);
 
-            bool yInside = (point.Y > pointTop.Y && point.Y < pointBottom.Y) ||
-                           (point.Y <= pointTop.Y && point.Y >= pointBottom.Y);
+            bool yInside = (point.Y > fixtureBeingUsedAreaModel.pointTop.Y && point.Y < fixtureBeingUsedAreaModel.pointBottom.Y) ||
+                           (point.Y <= fixtureBeingUsedAreaModel.pointTop.Y && point.Y >= fixtureBeingUsedAreaModel.pointBottom.Y);
 
             return xInside && yInside;
         }

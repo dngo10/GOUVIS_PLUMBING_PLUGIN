@@ -14,10 +14,11 @@ namespace ClassLibrary1.DATABASE.Models
         public const string basePoint = "Origin";
         public double X;
         public double Y;
-        public List<double> origin;
-        public List<double> pointTop;
-        public List<double> pointBottom;
+        public Point3dModel origin;
+        public Point3dModel pointTop;
+        public Point3dModel pointBottom;
         public string handle;
-        public List<double> position;
+        public Point3dModel position;
+        public Matrix3dModel matrixTransform;
     }
 }

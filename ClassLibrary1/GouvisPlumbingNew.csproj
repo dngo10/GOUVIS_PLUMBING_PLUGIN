@@ -105,6 +105,8 @@
     <Compile Include="DATABASE\Controllers\DBCommand.cs" />
     <Compile Include="DATABASE\Models\FixtureBeingUsedAreaModel.cs" />
     <Compile Include="DATABASE\Models\FixtureDetailsModel.cs" />
+    <Compile Include="DATABASE\Models\Matrix3dModel.cs" />
+    <Compile Include="DATABASE\Models\Point3dModel.cs" />
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />

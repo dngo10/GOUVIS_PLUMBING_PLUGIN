@@ -10,11 +10,12 @@ namespace ClassLibrary1.DATABASE.Models
     class FixtureDetailsModel
     {
         public string handle = "";
-        public List<double> position = new List<double>();
-        public double index = ConstantName.invalid;
-        public string FixtureName = "";
-        public string tag = "";
-        public double number = ConstantName.invalid;
+        public Point3dModel position;
+        public Matrix3dModel matrixTransform;
+        public double INDEX = ConstantName.invalid;
+        public string FIXTURENAME = "";
+        public string TAG = "";
+        public double NUMBER = ConstantName.invalid;
         public double CW_DIA = ConstantName.invalid;
         public double HW_DIA = ConstantName.invalid;
         public double WASTE_DIA = ConstantName.invalid;
@@ -25,6 +26,7 @@ namespace ClassLibrary1.DATABASE.Models
         public double HWSFU = ConstantName.invalid;
         public double DFU = ConstantName.invalid;
         public string DESCRIPTION = "";
+        public long ID;
     }
 
     static class FixtureDetailsName

@@ -20,9 +20,9 @@ namespace ClassLibrary1.HELPERS
 
         private void FillOutVariable(BlockReference bref, Transaction tr)
         {
-            position = bref.Position;
-            handle = bref.Handle;
-            blockTranform = bref.BlockTransform;
+            fixtureDetails.position = new Point3dModel(bref.Position.ToArray());
+            fixtureDetails.handle = bref.Handle.ToString();
+            fixtureDetails.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
             foreach (ObjectId id in bref.AttributeCollection)
             {
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
