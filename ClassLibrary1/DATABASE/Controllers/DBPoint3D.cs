@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClassLibrary1.DATABASE.Models;
+using ClassLibrary1.HELPERS;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
@@ -21,6 +23,25 @@ namespace ClassLibrary1.DATABASE
 
     class DBPoint3D
     {
+        public static Point3dModel SelectRow(SQLiteConnection connection, long ID)
+        {
+            Point3dModel point = null;
+            string commandStr = DBPoint3DCommands.SelectRow(ID);
+            using(SQLiteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = commandStr;
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    double X = (double)reader[DBPoint3DName.X];
+                    double Y = (double)reader[DBPoint3DName.Y];
+                    double Z = (double)reader[DBPoint3DName.Z];
+                    point = new Point3dModel(X, Y, Z, ID);
+                }
+            }
+            return point;
+        }
+
         /// <summary>
         /// Create table DBPoint3d Table
         /// </summary>
@@ -113,6 +134,10 @@ namespace ClassLibrary1.DATABASE
 
     class DBPoint3DCommands
     {
+        public static string SelectRow(long ID)
+        {
+            return string.Format("SELECT * FROM {0} WHERE '{1}' = {2};", DBPoint3DName.tableName, DBPoint3DName.ID, ID);
+        }
         public static string DeleteTable()
         {
             return string.Format("DROP TABLE IF EXISTS '{0}';", DBPoint3DName.tableName);

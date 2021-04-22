@@ -15,7 +15,7 @@ namespace ClassLibrary1.DATABASE.Models
         public double INDEX = ConstantName.invalid;
         public string FIXTURENAME = "";
         public string TAG = "";
-        public double NUMBER = ConstantName.invalid;
+        public string NUMBER = "";
         public double CW_DIA = ConstantName.invalid;
         public double HW_DIA = ConstantName.invalid;
         public double WASTE_DIA = ConstantName.invalid;

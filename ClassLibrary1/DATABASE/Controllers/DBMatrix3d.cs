@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassLibrary1.DATABASE.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
@@ -30,6 +31,44 @@ namespace ClassLibrary1.DATABASE
      */
 	class DBMatrix3d
     {
+		/// <summary>
+		/// This Will return 1 model, if ID not found, will return null.
+		/// </summary>
+		/// <param name="connection"></param>
+		/// <param name="ID">ID of matrix in database</param>
+		/// <returns></returns>
+		public static Matrix3dModel SelectRow(SQLiteConnection connection, long ID)
+        {
+			Matrix3dModel model = null;
+			using(SQLiteCommand command = connection.CreateCommand())
+            {
+				command.CommandText = DBMatrix3dCommands.SelectRow(ID);
+				SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+					double R00 = (double)reader[DBMatrixName.R00];
+					double R01 = (double)reader[DBMatrixName.R01];
+					double R02 = (double)reader[DBMatrixName.R02];
+					double R03 = (double)reader[DBMatrixName.R03];
+					double R10 = (double)reader[DBMatrixName.R10];
+					double R11 = (double)reader[DBMatrixName.R11];
+					double R12 = (double)reader[DBMatrixName.R12];
+					double R13 = (double)reader[DBMatrixName.R13];
+					double R20 = (double)reader[DBMatrixName.R20];
+					double R21 = (double)reader[DBMatrixName.R21];
+					double R22 = (double)reader[DBMatrixName.R22];
+					double R23 = (double)reader[DBMatrixName.R23];
+					double R30 = (double)reader[DBMatrixName.R30];
+					double R31 = (double)reader[DBMatrixName.R31];
+					double R32 = (double)reader[DBMatrixName.R32];
+					double R33 = (double)reader[DBMatrixName.R33];
+
+					double[] arr = new double[] { R00, R01, R02, R03, R10, R11, R12, R13, R20, R21, R22, R23, R30, R31, R32, R33 };
+					model = new Matrix3dModel(arr, ID);
+				}
+            }
+			return model;
+		}
 		public static long DeleteRow(SQLiteConnection connection, int ID)
         {
 			string commandStr = DBMatrix3dCommands.DeleteRow(ID);
@@ -106,7 +145,12 @@ namespace ClassLibrary1.DATABASE
 
 	class DBMatrix3dCommands
     {
-		public static string DeleteRow(int ID)
+		public static string SelectRow(long ID)
+        {
+			return string.Format("SELECT * FROM '{0}' WHERE '{1}' = {2};", DBMatrixName.name, DBMatrixName.ID, ID);
+        }
+
+		public static string DeleteRow(long ID)
         {
 			return string.Format("DELETE FROM '{0}' WHERE '{1}' = {2};", DBMatrixName.name, DBMatrixName.ID, ID);
         }

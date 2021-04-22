@@ -14,7 +14,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 	"ID"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
 	"POSITION_ID"	INTEGER NOT NULL,
 	"TRANFORM_ID"	INTEGER NOT NULL,
-	"HANDLE"	NUMERIC NOT NULL,
+	"HANDLE"	TEXT NOT NULL,
 	"INDEX"	TEXT NOT NULL,
 	"FIXTURE_NAME"	TEXT NOT NULL,
 	"TAG"	TEXT NOT NULL,
@@ -36,15 +36,70 @@ CREATE TABLE "FIXTURE_DETAILS" (
      */
 	class DBFixtureDetails
     {
+		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, long ID)
+        {
+			string commandStr = DBFixtureDetailsCommands.SelectRow(ID);
+			return GetFixtureDetail(connection, commandStr);
+
+        }
 		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, string handle)
         {
 			string commandStr = DBFixtureDetailsCommands.SelectRow(handle);
+			return GetFixtureDetail(connection, commandStr);
+        }
+
+		private static FixtureDetailsModel GetFixtureDetail(SQLiteConnection connection, string commandStr)
+        {
+			FixtureDetailsModel model = null;
 			using(SQLiteCommand command = connection.CreateCommand())
             {
 				command.CommandText = commandStr;
 				SQLiteDataReader reader = command.ExecuteReader();
-            }
-        }
+				while (reader.Read())
+				{
+					long POSITION_ID = (long)reader[DBFixtureDetailsNames.POSITION_ID];
+					long TRANSFORM_ID = (long)reader[DBFixtureDetailsNames.TRANSFORM_ID];
+					string HANDLE = (string)reader[DBFixtureDetailsNames.HANDLE];
+					double INDEX = (double)reader[DBFixtureDetailsNames.INDEXX];
+					string FIXTURE_NAME = (string)reader[DBFixtureDetailsNames.FIXTURE_NAME];
+					string TAG = (string)reader[DBFixtureDetailsNames.TAG];
+					string NUMBER = (string)reader[DBFixtureDetailsNames.NUMBER];
+					double CW_DIA = (double)reader[DBFixtureDetailsNames.CW_DIA];
+					double HW_DIA = (double)reader[DBFixtureDetailsNames.HW_DIA];
+					double WASTE_DIA = (double)reader[DBFixtureDetailsNames.WASTE_DIA];
+					double VENT_DIA = (double)reader[DBFixtureDetailsNames.VENT_DIA];
+					double STORM_DIA = (double)reader[DBFixtureDetailsNames.STORM_DIA];
+					double WSFU = (double)reader[DBFixtureDetailsNames.WSFU];
+					double CWSFU = (double)reader[DBFixtureDetailsNames.CWSFU];
+					double HWSFU = (double)reader[DBFixtureDetailsNames.HWSFU];
+					double DFU = (double)reader[DBFixtureDetailsNames.DFU];
+					string DESCRIPTION = (string)reader[DBFixtureDetailsNames.DESCRIPTION];
+
+					Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, TRANSFORM_ID);
+					Point3dModel position = DBPoint3D.SelectRow(connection, POSITION_ID);
+
+					model = new FixtureDetailsModel();
+					model.position = position;
+					model.matrixTransform = matrix;
+					model.handle = HANDLE;
+					model.INDEX = INDEX;
+					model.FIXTURENAME = FIXTURE_NAME;
+					model.TAG = TAG;
+					model.NUMBER = NUMBER;
+					model.CW_DIA = CW_DIA;
+					model.HW_DIA = HW_DIA;
+					model.WASTE_DIA = WASTE_DIA;
+					model.VENT_DIA = VENT_DIA;
+					model.STORM_DIA = STORM_DIA;
+					model.WSFU = WSFU;
+					model.CWSFU = CWSFU;
+					model.HWSFU = HWSFU;
+					model.DFU = DFU;
+					model.DESCRIPTION = DESCRIPTION;
+				}
+			}
+			return model;
+		} 
 		public static long DeleteRow(SQLiteConnection connection, FixtureDetailsModel fixture)
         {
 			string commandStr = DBFixtureDetailsCommands.DeleteRow(fixture.ID);
@@ -181,29 +236,30 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		}
 		public static string CreateTable()
         {
-			string command = string.Format($"CREATE TABLE '{DBFixtureDetailsNames.name}' (");
-			command += string.Format($"'{DBFixtureDetailsNames.ID}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ");
-			command += string.Format($"'{DBFixtureDetailsNames.POSITION_ID}' INTEGER NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.TRANSFORM_ID}' INTEGER NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.HANDLE}' TEXT NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.INDEXX}' TEXT NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.FIXTURE_NAME}' TEXT NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.TAG}' TEXT NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.NUMBER}' NUMERIC NOT NULL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.CW_DIA}' REAL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.HW_DIA}' REAL, ");
-			command += string.Format($"'{DBFixtureDetailsNames.WASTE_DIA}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.VENT_DIA}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.STORM_DIA}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.WSFU}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.CWSFU}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.HWSFU}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.DFU}' NUMERIC, ");
-			command += string.Format($"'{DBFixtureDetailsNames.DESCRIPTION}' TEXT, ");
-			command += string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.TRANSFORM_ID}') REFERENCES '{DBMatrixName.name}' ON DELETE CASCADE, ");
-			command += string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.POSITION_ID}') REFERENCES '{DBPoint3DName.tableName}' ON DELETE CASCADE");
-			command += string.Format(");");
-			return command;
+			StringBuilder builder = new StringBuilder();
+			builder.Append(string.Format($"CREATE TABLE '{DBFixtureDetailsNames.name}' ("));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.ID}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.POSITION_ID}' INTEGER NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.TRANSFORM_ID}' INTEGER NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.HANDLE}' TEXT NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.INDEXX}' TEXT NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.FIXTURE_NAME}' TEXT NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.TAG}' TEXT NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.NUMBER}' TEXT NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.CW_DIA}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.HW_DIA}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.WASTE_DIA}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.VENT_DIA}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.STORM_DIA}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.WSFU}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.CWSFU}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.HWSFU}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.DFU}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.DESCRIPTION}' TEXT, "));
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.TRANSFORM_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE, "));
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.POSITION_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE"));
+			builder.Append(string.Format(");"));
+			return builder.ToString();
         }
 
 		public static string DeleteTable()
