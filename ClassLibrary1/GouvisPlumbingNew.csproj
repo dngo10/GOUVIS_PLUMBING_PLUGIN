@@ -98,11 +98,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DATABASE\Controllers\DBDwgFile.cs" />
+    <Compile Include="DATABASE\Controllers\DBFixtureBeingUsedArea.cs" />
     <Compile Include="DATABASE\Controllers\DBFixtureDetails.cs" />
     <Compile Include="DATABASE\Controllers\DBMatrix3d.cs" />
     <Compile Include="DATABASE\Controllers\DBPoint3D.cs" />
     <Compile Include="DATABASE\Controllers\PlumbingDatabaseManager.cs" />
     <Compile Include="DATABASE\Controllers\DBCommand.cs" />
+    <Compile Include="DATABASE\Models\DwgFileModel.cs" />
     <Compile Include="DATABASE\Models\FixtureBeingUsedAreaModel.cs" />
     <Compile Include="DATABASE\Models\FixtureDetailsModel.cs" />
     <Compile Include="DATABASE\Models\Matrix3dModel.cs" />

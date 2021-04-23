@@ -42,7 +42,7 @@ namespace ClassLibrary1.DATABASE
 			Matrix3dModel model = null;
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				command.CommandText = DBMatrix3dCommands.SelectRow(ID);
+				DBMatrix3dCommands.SelectRow(command, ID);
 				SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -69,12 +69,11 @@ namespace ClassLibrary1.DATABASE
             }
 			return model;
 		}
-		public static long DeleteRow(SQLiteConnection connection, int ID)
+		public static long DeleteRow(SQLiteConnection connection, long ID)
         {
-			string commandStr = DBMatrix3dCommands.DeleteRow(ID);
 			using (SQLiteCommand command = connection.CreateCommand())
             {
-				command.CommandText = commandStr;
+				DBMatrix3dCommands.DeleteRow(command, ID);
 				long check = command.ExecuteNonQuery();
 				if (check == 1)
 				{
@@ -87,12 +86,11 @@ namespace ClassLibrary1.DATABASE
 				throw new Exception("DBMatrix3d -> DeleteRow -> Delete Row not successful");
 			}
         }
-		public static long Update(SQLiteConnection connection, IList<double> matrix, int ID)
+		public static long Update(SQLiteConnection connection, Matrix3dModel model)
         {
-			string commandStr = DBMatrix3dCommands.Update(ID, matrix);
 			using (SQLiteCommand command = connection.CreateCommand())
 			{
-				command.CommandText = commandStr;
+				DBMatrix3dCommands.Update(command, model);
 				long check = command.ExecuteNonQuery();
 				if (check == 1)
 				{
@@ -105,12 +103,11 @@ namespace ClassLibrary1.DATABASE
 				throw new Exception("DBMatrix3d -> Update -> Update Is Not Successful.");
 			}
 		}
-		public static long Insert(SQLiteConnection connection, IList<double> matrix)
+		public static long Insert(SQLiteConnection connection, Matrix3dModel model)
         {
-			string commandStr = DBMatrix3dCommands.Insert(matrix);
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				command.CommandText = commandStr;
+				DBMatrix3dCommands.Insert(command, model);
 				long check = command.ExecuteNonQuery();
 				if(check == 1)
                 {
@@ -125,19 +122,17 @@ namespace ClassLibrary1.DATABASE
         }
 		public static void DropTable(SQLiteConnection connection)
         {
-			string commandStr = DBMatrix3dCommands.DeleteTable();
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				command.CommandText = commandStr;
+				DBMatrix3dCommands.DeleteTable(command);
 				command.ExecuteNonQuery();
             }
         }
 		public static void CreateTable(SQLiteConnection connection)
         {
-			string commandStr = DBMatrix3dCommands.CreateTable();
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				command.CommandText = commandStr;
+				DBMatrix3dCommands.CreateTable(command);
 				command.ExecuteNonQuery();
             }
         }
@@ -145,80 +140,118 @@ namespace ClassLibrary1.DATABASE
 
 	class DBMatrix3dCommands
     {
-		public static string SelectRow(long ID)
+		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			return string.Format("SELECT * FROM '{0}' WHERE '{1}' = {2};", DBMatrixName.name, DBMatrixName.ID, ID);
+			command.CommandText = string.Format("SELECT * FROM '{0}' WHERE '{1}' = @id;", DBMatrixName.name, DBMatrixName.ID);
+			command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 
-		public static string DeleteRow(long ID)
+		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			return string.Format("DELETE FROM '{0}' WHERE '{1}' = {2};", DBMatrixName.name, DBMatrixName.ID, ID);
+			command.CommandText = string.Format("DELETE FROM '{0}' WHERE '{1}' = @id;", DBMatrixName.name, DBMatrixName.ID);
+			command.Parameters.Add(new SQLiteParameter("@id", ID));
+
         }
-		public static string Update(int ID, IList<double> matrix)
+		public static void Update(SQLiteCommand command, Matrix3dModel model)
         {
-			string command = string.Format("UPDATE {0} SET ", DBMatrixName.name);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R00, matrix[0]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R01, matrix[1]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R02, matrix[2]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R03, matrix[3]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R10, matrix[4]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R11, matrix[5]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R12, matrix[6]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R13, matrix[7]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R20, matrix[8]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R21, matrix[9]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R22, matrix[10]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R23, matrix[11]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R30, matrix[12]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R31, matrix[13]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R32, matrix[14]);
-			command += string.Format("'{0}' = {1}, ", DBMatrixName.R33, matrix[15]);
-			command += string.Format("WHERE '{0}' = '{1}';", DBMatrixName.ID, ID);
-			return command;
+			StringBuilder builder = new StringBuilder();
+			builder.Append(string.Format("UPDATE {0} SET ", DBMatrixName.name));
+			builder.Append(string.Format("'{0}' = @R00, ", DBMatrixName.R00));
+			builder.Append(string.Format("'{0}' = @R01, ", DBMatrixName.R01));
+			builder.Append(string.Format("'{0}' = @R02, ", DBMatrixName.R02));
+			builder.Append(string.Format("'{0}' = @R03, ", DBMatrixName.R03));
+			builder.Append(string.Format("'{0}' = @R10, ", DBMatrixName.R10));
+			builder.Append(string.Format("'{0}' = @R11, ", DBMatrixName.R11));
+			builder.Append(string.Format("'{0}' = @R12, ", DBMatrixName.R12));
+			builder.Append(string.Format("'{0}' = @R13, ", DBMatrixName.R13));
+			builder.Append(string.Format("'{0}' = @R20, ", DBMatrixName.R20));
+			builder.Append(string.Format("'{0}' = @R21, ", DBMatrixName.R21));
+			builder.Append(string.Format("'{0}' = @R22, ", DBMatrixName.R22));
+			builder.Append(string.Format("'{0}' = @R23, ", DBMatrixName.R23));
+			builder.Append(string.Format("'{0}' = @R30, ", DBMatrixName.R30));
+			builder.Append(string.Format("'{0}' = @R31, ", DBMatrixName.R31));
+			builder.Append(string.Format("'{0}' = @R32, ", DBMatrixName.R32));
+			builder.Append(string.Format("'{0}' = @R33, ", DBMatrixName.R33));
+			builder.Append(string.Format("WHERE '{0}' = @id;", DBMatrixName.ID));
+
+			command.CommandText = builder.ToString();
+			command.Parameters.Add(new SQLiteParameter("@R00", model.index[0]));
+			command.Parameters.Add(new SQLiteParameter("@R01", model.index[1]));
+			command.Parameters.Add(new SQLiteParameter("@R02", model.index[2]));
+			command.Parameters.Add(new SQLiteParameter("@R03", model.index[3]));
+			command.Parameters.Add(new SQLiteParameter("@R10", model.index[4]));
+			command.Parameters.Add(new SQLiteParameter("@R11", model.index[5]));
+			command.Parameters.Add(new SQLiteParameter("@R12", model.index[6]));
+			command.Parameters.Add(new SQLiteParameter("@R13", model.index[7]));
+			command.Parameters.Add(new SQLiteParameter("@R20", model.index[8]));
+			command.Parameters.Add(new SQLiteParameter("@R21", model.index[9]));
+			command.Parameters.Add(new SQLiteParameter("@R22", model.index[10]));
+			command.Parameters.Add(new SQLiteParameter("@R23", model.index[11]));
+			command.Parameters.Add(new SQLiteParameter("@R30", model.index[12]));
+			command.Parameters.Add(new SQLiteParameter("@R31", model.index[13]));
+			command.Parameters.Add(new SQLiteParameter("@R32", model.index[14]));
+			command.Parameters.Add(new SQLiteParameter("@R33", model.index[15]));
+			command.Parameters.Add(new SQLiteParameter("@id", model.ID));
+
+
 		}
-		public static string Insert(IList<double> matrix)
+		public static void Insert(SQLiteCommand command, Matrix3dModel model)
         {
-			string command = string.Format("INSERT INTO {0} ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}') VALUES ({17}, {18}, {19}, {20}, {21}, {22}, {23}, {24}, {25}, {26}, {27}, {28}, {29}, {30}, {31}, {32});",
+			string commandStr = string.Format("INSERT INTO {0} ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}') VALUES (@R00, @R01, @R02, @R03, @R10, @R11, @R12, @R13, @R20, @R21, @R22, @R23, @R30, @R31, @R32, @R33);",
 					DBMatrixName.name,
 					DBMatrixName.R00, DBMatrixName.R01, DBMatrixName.R02, DBMatrixName.R03,
 					DBMatrixName.R10, DBMatrixName.R11, DBMatrixName.R12, DBMatrixName.R13,
 					DBMatrixName.R20, DBMatrixName.R21, DBMatrixName.R22, DBMatrixName.R23,
-					DBMatrixName.R30, DBMatrixName.R31, DBMatrixName.R32, DBMatrixName.R33,
-					matrix[0], matrix[1], matrix[2], matrix[3],
-					matrix[4], matrix[5], matrix[6], matrix[7],
-					matrix[8], matrix[9], matrix[10], matrix[11],
-					matrix[12], matrix[13], matrix[14], matrix[15]
+					DBMatrixName.R30, DBMatrixName.R31, DBMatrixName.R32, DBMatrixName.R33
 				);
-			return command;
-		}
-		public static string CreateTable()
-        {
-			string command =    string.Format("CREATE TABLE '{0}' ( ", DBMatrixName.name);
-			command += string.Format("'{0}'	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ", DBMatrixName.ID);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R00);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R01);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R02);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R03);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R10);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R11);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R12);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R13);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R20);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R21);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R22);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R23);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R30);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R31);
-			command += string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R32);
-			command += string.Format("'{0}'	REAL NOT NULL", DBMatrixName.R33);
-			command += string.Format(");");
 
-			return command;
+			command.CommandText = commandStr;
+			command.Parameters.Add(new SQLiteParameter("@R00", model.index[0]));
+			command.Parameters.Add(new SQLiteParameter("@R01", model.index[1]));
+			command.Parameters.Add(new SQLiteParameter("@R02", model.index[2]));
+			command.Parameters.Add(new SQLiteParameter("@R03", model.index[3]));
+			command.Parameters.Add(new SQLiteParameter("@R10", model.index[4]));
+			command.Parameters.Add(new SQLiteParameter("@R11", model.index[5]));
+			command.Parameters.Add(new SQLiteParameter("@R12", model.index[6]));
+			command.Parameters.Add(new SQLiteParameter("@R13", model.index[7]));
+			command.Parameters.Add(new SQLiteParameter("@R20", model.index[8]));
+			command.Parameters.Add(new SQLiteParameter("@R21", model.index[9]));
+			command.Parameters.Add(new SQLiteParameter("@R22", model.index[10]));
+			command.Parameters.Add(new SQLiteParameter("@R23", model.index[11]));
+			command.Parameters.Add(new SQLiteParameter("@R30", model.index[12]));
+			command.Parameters.Add(new SQLiteParameter("@R31", model.index[13]));
+			command.Parameters.Add(new SQLiteParameter("@R32", model.index[14]));
+			command.Parameters.Add(new SQLiteParameter("@R33", model.index[15]));
+		}
+		public static void CreateTable(SQLiteCommand command)
+        {
+			StringBuilder builder = new StringBuilder();
+			builder.Append(string.Format("CREATE TABLE IF NOT EXISTS '{0}' ( ", DBMatrixName.name));
+			builder.Append(string.Format("'{0}'	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ", DBMatrixName.ID));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R00));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R01));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R02));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R03));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R10));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R11));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R12));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R13));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R20));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R21));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R22));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R23));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R30));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R31));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R32));
+			builder.Append(string.Format("'{0}'	REAL NOT NULL", DBMatrixName.R33));
+			builder.Append(string.Format(");"));
+
+			command.CommandText = builder.ToString();
 		}
 
-		public static string DeleteTable()
+		public static void DeleteTable(SQLiteCommand command)
         {
-			return string.Format("DROP TABLE IF EXISTS {0};", DBMatrixName.name);
+			command.CommandText = string.Format("DROP TABLE IF EXISTS {0};", DBMatrixName.name);
 		}
     }
 

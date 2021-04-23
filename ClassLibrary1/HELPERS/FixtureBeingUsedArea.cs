@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ClassLibrary1.HELPERS;
 using Autodesk.AutoCAD.Geometry;
 using ClassLibrary1.DATABASE.Models;
+using ClassLibrary1.DATABASE.Controllers;
 
 namespace ClassLibrary1.HELPERS
 {
@@ -15,7 +16,7 @@ namespace ClassLibrary1.HELPERS
     {
         //x and y are width and height of the XY dynamic dimension.
 
-        FixtureBeingUsedAreaModel fixtureBeingUsedAreaModel;
+        public FixtureBeingUsedAreaModel fixtureBeingUsedAreaModel = null;
 
         //public List<FixtureDetails> FDList = new List<FixtureDetails>();
 
@@ -26,6 +27,7 @@ namespace ClassLibrary1.HELPERS
 
         private void GetTopAndBottomPoint(BlockReference block)
         {
+            fixtureBeingUsedAreaModel = new FixtureBeingUsedAreaModel();
             fixtureBeingUsedAreaModel.handle  = block.Handle.ToString();
             fixtureBeingUsedAreaModel.position = new Point3dModel(block.Position.ToArray());
             fixtureBeingUsedAreaModel.matrixTransform = new Matrix3dModel(block.BlockTransform.ToArray());
@@ -33,12 +35,12 @@ namespace ClassLibrary1.HELPERS
             DynamicBlockReferencePropertyCollection dynBlockPropCol = block.DynamicBlockReferencePropertyCollection;
             foreach(DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
             {
-                if (dynProp.PropertyName.Equals(FixtureBeingUsedAreaModel.width)){
+                if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.X)){
                     fixtureBeingUsedAreaModel.X = (double)dynProp.Value;
-                }else if (dynProp.PropertyName.Equals(FixtureBeingUsedAreaModel.height))
+                }else if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.Y))
                 {
                     fixtureBeingUsedAreaModel.Y = (double)dynProp.Value;
-                }else if (dynProp.PropertyName.Equals(FixtureBeingUsedAreaModel.basePoint))
+                }else if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.basePoint))
                 {
                     fixtureBeingUsedAreaModel.origin = new Point3dModel(((Point3d)dynProp.Value).ToArray());
                 }

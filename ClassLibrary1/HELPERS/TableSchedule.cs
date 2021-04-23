@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using ClassLibrary1.DATABASE.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace ClassLibrary1.HELPERS
             this.FBUA = FBUA;
         }
 
-        public static Table CreateTable(ICollection<FixtureDetails> FixtureDetails, InsertPoint insertPoint)
+        public static Table CreateTable(ICollection<FixtureDetailsModel> FixtureDetails, InsertPoint insertPoint)
         {
             Table t = new Table();
             t.Layer = TableScheduleName.TableLayer;
@@ -85,9 +86,9 @@ namespace ClassLibrary1.HELPERS
             //Index starts at third orw;
             int i = 2;
 
-            foreach(FixtureDetails FD in FixtureDetails)
+            foreach(FixtureDetailsModel FD in FixtureDetails)
             {
-                t.Cells[i, 1].TextString = FD.FixtureName;
+                t.Cells[i, 1].TextString = FD.FIXTURENAME;
 
                 t.Cells[i, 2].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.CW_DIA));
                 t.Cells[i, 3].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.HW_DIA));
@@ -115,7 +116,7 @@ namespace ClassLibrary1.HELPERS
         }
 
         //TABLE MUST BE ADDED TO DRAWING BEFORE THIS PROCESS CAN HAPPEND
-        public static void AddBlockToTable(Table table, Database db, SortedSet<FixtureDetails> fixtureDetails)
+        public static void AddBlockToTable(Table table, Database db, SortedSet<FixtureDetailsModel> fixtureDetails)
         {
             using(Transaction tr = db.TransactionManager.StartTransaction())
             {
@@ -127,10 +128,10 @@ namespace ClassLibrary1.HELPERS
                         AttributeReference attRef = (AttributeReference)tr.GetObject(id, OpenMode.ForWrite);
                         if(attRef.Tag == HexNoteName.ID)
                         {
-                            attRef.TextString = fixtureDetails.ElementAt(i - 2).tag;
+                            attRef.TextString = fixtureDetails.ElementAt(i - 2).TAG;
                         }else if(attRef.Tag == HexNoteName.NUM)
                         {
-                            attRef.TextString = fixtureDetails.ElementAt(i - 2).number.ToString();
+                            attRef.TextString = fixtureDetails.ElementAt(i - 2).NUMBER;
                         }
                     }
                 }

@@ -34,11 +34,7 @@ namespace ClassLibrary1.HELPERS
                 {
                     if (aRef.Tag == FixtureDetailsName.index)
                     {
-                        fixtureDetails.index = number;
-                    }
-                    else if (aRef.Tag == FixtureDetailsName.number)
-                    {
-                        fixtureDetails.number = number;
+                        fixtureDetails.INDEX = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.CW_DIA)
                     {
@@ -77,13 +73,17 @@ namespace ClassLibrary1.HELPERS
                         fixtureDetails.DFU = number;
                     }
                 }
+                else if (aRef.Tag == FixtureDetailsName.number)
+                {
+                    fixtureDetails.NUMBER = textString;
+                }
                 else if (aRef.Tag == FixtureDetailsName.tag)
                 {
-                    fixtureDetails.tag = textString;
+                    fixtureDetails.TAG = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.FixtureName)
                 {
-                    fixtureDetails.FixtureName = textString;
+                    fixtureDetails.FIXTURENAME = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.DESCRIPTION)
                 {

@@ -9,23 +9,24 @@ namespace ClassLibrary1.DATABASE.Models
 {
     class FixtureDetailsModel
     {
-        public string handle = "";
-        public Point3dModel position;
-        public Matrix3dModel matrixTransform;
-        public double INDEX = ConstantName.invalid;
-        public string FIXTURENAME = "";
-        public string TAG = "";
-        public string NUMBER = "";
-        public double CW_DIA = ConstantName.invalid;
-        public double HW_DIA = ConstantName.invalid;
-        public double WASTE_DIA = ConstantName.invalid;
-        public double VENT_DIA = ConstantName.invalid;
-        public double STORM_DIA = ConstantName.invalid;
-        public double WSFU = ConstantName.invalid;
-        public double CWSFU = ConstantName.invalid;
-        public double HWSFU = ConstantName.invalid;
-        public double DFU = ConstantName.invalid;
-        public string DESCRIPTION = "";
+        public string handle = ConstantName.invalidStr;
+        public Point3dModel position = null;
+        public Matrix3dModel matrixTransform = null;
+        public double INDEX = ConstantName.invalidNum;
+        public string FIXTURENAME = ConstantName.invalidStr;
+        public string TAG = ConstantName.invalidStr;
+        public string NUMBER = ConstantName.invalidStr;
+        public double CW_DIA = ConstantName.invalidNum;
+        public double HW_DIA = ConstantName.invalidNum;
+        public double WASTE_DIA = ConstantName.invalidNum;
+        public double VENT_DIA = ConstantName.invalidNum;
+        public double STORM_DIA = ConstantName.invalidNum;
+        public double WSFU = ConstantName.invalidNum;
+        public double CWSFU = ConstantName.invalidNum;
+        public double HWSFU = ConstantName.invalidNum;
+        public double DFU = ConstantName.invalidNum;
+        public string DESCRIPTION = ConstantName.invalidStr;
+        public string FILE_ID = ConstantName.invalidStr;
         public long ID;
     }
 

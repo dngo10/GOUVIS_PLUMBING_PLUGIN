@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using ClassLibrary1.DATABASE.Models;
 using ClassLibrary1.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,8 @@ namespace ClassLibrary1.P_NODE_EDIT
     class NODEDWGDATA
     {
         public NODEDWG node;
-        public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>();
-        public SortedSet<FixtureDetails> FixtureDetailSet = new SortedSet<FixtureDetails>(Comparer<FixtureDetails>.Create((a,b) => a.index.CompareTo(b.index)));
+        public SortedSet<FixtureBeingUsedAreaModel> FixtureBoxSet = new SortedSet<FixtureBeingUsedAreaModel>();
+        public SortedSet<FixtureDetailsModel> FixtureDetailSet = new SortedSet<FixtureDetailsModel>(Comparer<FixtureDetailsModel>.Create((a,b) => a.INDEX .CompareTo(b.INDEX)));
         public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>();
 
         public NODEDWGDATA(string path)
@@ -45,7 +46,7 @@ namespace ClassLibrary1.P_NODE_EDIT
             this.node = node;
             foreach(BlockReference bref in node.fixtureAreaSET)
             {
-                FixtureBeingUsedArea FBUA = new FixtureBeingUsedArea(bref);
+                FixtureBeingUsedAreaModel FBUA = new FixtureBeingUsedArea(bref);
                 FixtureBoxSet.Add(FBUA);
             }
 

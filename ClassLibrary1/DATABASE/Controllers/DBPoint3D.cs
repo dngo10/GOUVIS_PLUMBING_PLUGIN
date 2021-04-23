@@ -26,10 +26,9 @@ namespace ClassLibrary1.DATABASE
         public static Point3dModel SelectRow(SQLiteConnection connection, long ID)
         {
             Point3dModel point = null;
-            string commandStr = DBPoint3DCommands.SelectRow(ID);
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = commandStr;
+                DBPoint3DCommands.SelectRow(command, ID);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -48,20 +47,18 @@ namespace ClassLibrary1.DATABASE
         /// <param name="connection"></param>
         public static void CreateTable(SQLiteConnection connection)
         {
-            string commandStr = DBPoint3DCommands.CreateTable();
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = commandStr;
+                DBPoint3DCommands.CreateTable(command);
                 command.ExecuteNonQuery();
             }
         }
 
         public static void DeleteTable(SQLiteConnection connection)
         {
-            string commandStr = DBPoint3DCommands.DeleteTable();
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = commandStr;
+                DBPoint3DCommands.DeleteTable(command);
                 command.ExecuteNonQuery();
             }
 
@@ -73,12 +70,11 @@ namespace ClassLibrary1.DATABASE
         /// <param name="point"></param>
         /// <param name="connection"></param>
         /// <returns></returns>
-        public static long InsertRow(IList<double> point, SQLiteConnection connection)
+        public static long InsertRow(Point3dModel model, SQLiteConnection connection)
         {
-            string commandStr = DBPoint3DCommands.Insert(point[0], point[1], point[2]);
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = commandStr;
+                DBPoint3DCommands.Insert(command, model);
                 int check = command.ExecuteNonQuery();
                 if (check == 1)
                 {
@@ -91,13 +87,11 @@ namespace ClassLibrary1.DATABASE
                 throw new Exception("DBPoint3D -> Insert -> Insert Point not successful.");
             }
         }
-        public static long UpdateRow(IList<double> point, int ID, SQLiteConnection connection)
+        public static long UpdateRow(Point3dModel model, SQLiteConnection connection)
         {
-            string commandStr = DBPoint3DCommands.Update(ID, point[0], point[1], point[2]);
-
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = commandStr;
+                DBPoint3DCommands.Update(command, model);
                 int check = command.ExecuteNonQuery();
                 if (check == 1)
                 {
@@ -112,12 +106,11 @@ namespace ClassLibrary1.DATABASE
 
         }
 
-        public static long DeleteRow(int ID, SQLiteConnection connection)
+        public static long DeleteRow(long ID, SQLiteConnection connection)
         {
-            string commandStr = DBPoint3DCommands.DeleteRow(ID);
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                command.CommandText = commandStr;
+                DBPoint3DCommands.DeleteRow(command, ID);
                 long check = command.ExecuteNonQuery();
                 if (check == 1)
                 {
@@ -134,55 +127,70 @@ namespace ClassLibrary1.DATABASE
 
     class DBPoint3DCommands
     {
-        public static string SelectRow(long ID)
+        public static void SelectRow(SQLiteCommand command, long ID)
         {
-            return string.Format("SELECT * FROM {0} WHERE '{1}' = {2};", DBPoint3DName.tableName, DBPoint3DName.ID, ID);
+            string commandStr = string.Format("SELECT * FROM {0} WHERE '{1}' = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@ID", ID));
         }
-        public static string DeleteTable()
+        public static void DeleteTable(SQLiteCommand command)
         {
-            return string.Format("DROP TABLE IF EXISTS '{0}';", DBPoint3DName.tableName);
+            string commandStr = string.Format("DROP TABLE IF EXISTS '{0}';", DBPoint3DName.tableName);
+            command.CommandText = commandStr;
         }
 
-        public static string DeleteRow(int ID)
+        public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            return string.Format("DELETE FROM '{0}' WHERE '{1}' = {2};", DBPoint3DName.tableName, DBPoint3DName.ID, ID);
+            string commandStr = string.Format("DELETE FROM '{0}' WHERE '{1}' = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@ID", ID));
         }
-        public static string CreateTable()
+        public static void CreateTable(SQLiteCommand command)
         {
-            return string.Format("CREATE TABLE IF NOT EXISTS '{0}'('{1}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '{2}' REAL NOT NULL, '{3}' REAL NOT NULL, '{4}' REAL NOT NULL));",
+            string commandStr = string.Format("CREATE TABLE IF NOT EXISTS '{0}'('{1}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '{2}' REAL NOT NULL, '{3}' REAL NOT NULL, '{4}' REAL NOT NULL));",
                                     DBPoint3DName.tableName,
                                     DBPoint3DName.ID,
                                     DBPoint3DName.X,
                                     DBPoint3DName.Y,
                                     DBPoint3DName.Z
                                     );
+            command.CommandText = commandStr;
         }
 
 
-        public static string Insert(double X, double Y, double Z)
+        public static void Insert(SQLiteCommand command, Point3dModel model)
         {
             //"INSERT INTO POINT3D ('X', 'Y', 'Z') VALUES (034.34, 233, 0);"
-            return string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}') VALUES ({4}, {5}, {6});",
+            string commandStr = string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}') VALUES (@X, @Y, @Z);",
                                     DBPoint3DName.tableName,
                                     DBPoint3DName.X,
                                     DBPoint3DName.Y,
-                                    DBPoint3DName.Z,
-                                    X,Y,Z
+                                    DBPoint3DName.Z
                                     );
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@X", model.X));
+            command.Parameters.Add(new SQLiteParameter("@Y", model.Y));
+            command.Parameters.Add(new SQLiteParameter("@Z", model.Z));
         }
 
 
 
         //UPDATE POINT3D SET 'X' =1, 'Y' = 2, 'Z' = 3 WHERE ID = 3;
-        public static string Update(int ID, double X, double Y, double Z)
+        public static void Update(SQLiteCommand command, Point3dModel model)
         {
-            return string.Format("UPDATE {0} SET '{1}' = {2}, '{3}' = {4}, '{5}' = {6} WHERE {7} = {8};",
+            string commandStr = string.Format("UPDATE {0} SET '{1}' = @X, '{2}' = @Y, '{3}' = @Z WHERE {4} = @ID;",
                 DBPoint3DName.tableName,
-                DBPoint3DName.X, X,
-                DBPoint3DName.Y, Y,
-                DBPoint3DName.Z, Z,
-                DBPoint3DName.ID, ID
+                DBPoint3DName.X,
+                DBPoint3DName.Y,
+                DBPoint3DName.Z,
+                DBPoint3DName.ID
                 );
+
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@X", model.X));
+            command.Parameters.Add(new SQLiteParameter("@Y", model.Y));
+            command.Parameters.Add(new SQLiteParameter("@Z", model.Z));
+            command.Parameters.Add(new SQLiteParameter("@ID", model.ID));
         }
 
     }

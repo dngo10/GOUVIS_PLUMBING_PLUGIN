@@ -9,12 +9,12 @@ namespace ClassLibrary1.DATABASE.Models
 {
     class Point3dModel
     {
-        public double X;
-        public double Y;
-        public double Z;
-        public long ID;
+        public double X = ConstantName.invalidNum;
+        public double Y = ConstantName.invalidNum;
+        public double Z = ConstantName.invalidNum;
+        public long ID = ConstantName.invalidNum;
 
-        public Point3dModel(double X, double Y, double Z, long ID = ConstantName.invalid)
+        public Point3dModel(double X, double Y, double Z, long ID = ConstantName.invalidNum)
         {
             this.X = X;
             this.Y = Y;
@@ -22,7 +22,7 @@ namespace ClassLibrary1.DATABASE.Models
             this.ID = ID;
         }
 
-        public Point3dModel(IList<double> args, long ID = ConstantName.invalid)
+        public Point3dModel(IList<double> args, long ID = ConstantName.invalidNum)
         {
             X = args[0];
             Y = args[1];
