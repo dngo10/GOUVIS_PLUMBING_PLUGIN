@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE
+namespace ClassLibrary1.DATABASE.Controllers
 {
 	/*
      CREATE TABLE "MATRIX3D" (

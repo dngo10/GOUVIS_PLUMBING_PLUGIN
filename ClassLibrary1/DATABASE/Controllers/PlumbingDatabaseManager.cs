@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Data.SQLite;
 
-namespace ClassLibrary1.DATABASE
+namespace ClassLibrary1.DATABASE.Controllers
 {
     //This class is used exclusively for managing SQLITE Database.
 

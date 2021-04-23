@@ -62,7 +62,7 @@ namespace ClassLibrary1.DATABASE.Controllers
                 model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.TRANSFORM_ID]);
                 model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
                 model.Y = (double)reader[DBFixtureBeingUsedAreaName.Y];
-                model.fileID = (string)reader[DBFixtureBeingUsedAreaName.FILE_ID];
+                model.file = DBDwgFile.SelectRow(command.Connection,(long)reader[DBFixtureBeingUsedAreaName.FILE_ID]);
             }
 
             return model;
@@ -143,13 +143,15 @@ namespace ClassLibrary1.DATABASE.Controllers
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(string.Format("UPDATE {0} SET ", DBFixtureBeingUsedAreaName.name));
-            builder.Append(string.Format("'{0}' = @handle", DBFixtureBeingUsedAreaName.HANDLE));
-            builder.Append(string.Format("'{0}' = @position", DBFixtureBeingUsedAreaName.POSITION_ID));
-            builder.Append(string.Format("'{0}' = @X", DBFixtureBeingUsedAreaName.X));
-            builder.Append(string.Format("'{0}' = @Y", DBFixtureBeingUsedAreaName.Y));
-            builder.Append(string.Format("'{0}' = @origin", DBFixtureBeingUsedAreaName.ORIGIN_ID));
-            builder.Append(string.Format("'{0}' = @pointop", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
-            builder.Append(string.Format("'{0}' = @pointbottom", DBFixtureBeingUsedAreaName.TRANSFORM_ID));
+            builder.Append(string.Format("'{0}' = @handle ,", DBFixtureBeingUsedAreaName.HANDLE));
+            builder.Append(string.Format("'{0}' = @position ,", DBFixtureBeingUsedAreaName.POSITION_ID));
+            builder.Append(string.Format("'{0}' = @X ,", DBFixtureBeingUsedAreaName.X));
+            builder.Append(string.Format("'{0}' = @Y ,", DBFixtureBeingUsedAreaName.Y));
+            builder.Append(string.Format("'{0}' = @origin ,", DBFixtureBeingUsedAreaName.ORIGIN_ID));
+            builder.Append(string.Format("'{0}' = @pointop ,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
+            builder.Append(string.Format("'{0}' = @pointbottom ,", DBFixtureBeingUsedAreaName.TRANSFORM_ID));
+            builder.Append(string.Format("'{0}' = @file WHERE ", DBFixtureBeingUsedAreaName.FILE_ID));
+            builder.Append(string.Format("'{0}' = @id;", DBFixtureBeingUsedAreaName.ID));
 
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
@@ -159,10 +161,12 @@ namespace ClassLibrary1.DATABASE.Controllers
             command.Parameters.Add(new SQLiteParameter("@origin", model.origin.ID));
             command.Parameters.Add(new SQLiteParameter("@pointop", model.pointTop.ID));
             command.Parameters.Add(new SQLiteParameter("@pointbottom", model.pointBottom.ID));
+            command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
+            command.Parameters.Add(new SQLiteParameter("@id", model.ID));
         }
         public static void InsertRow(FixtureBeingUsedAreaModel model, SQLiteCommand command)
         {
-            string commandStr = string.Format("INSERT INTO {0} ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}') VALUES (@handle, @position, @X , @Y, @origin, @pointTop, @pointBottom, @matrix);",
+            string commandStr = string.Format("INSERT INTO {0} ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}') VALUES (@handle, @position, @X , @Y, @origin, @pointTop, @pointBottom, @matrix, @file);",
                 DBFixtureBeingUsedAreaName.name,
                 DBFixtureBeingUsedAreaName.HANDLE,
                 DBFixtureBeingUsedAreaName.POSITION_ID,
@@ -171,7 +175,8 @@ namespace ClassLibrary1.DATABASE.Controllers
                 DBFixtureBeingUsedAreaName.ORIGIN_ID,
                 DBFixtureBeingUsedAreaName.POINT_TOP_ID,
                 DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID,
-                DBFixtureBeingUsedAreaName.TRANSFORM_ID
+                DBFixtureBeingUsedAreaName.TRANSFORM_ID,
+                DBFixtureBeingUsedAreaName.FILE_ID
                 );
 
             command.CommandText = commandStr;
@@ -183,6 +188,7 @@ namespace ClassLibrary1.DATABASE.Controllers
             command.Parameters.Add(new SQLiteParameter("@pointTop", model.pointTop.ID));
             command.Parameters.Add(new SQLiteParameter("@pointBottom", model.pointBottom.ID));
             command.Parameters.Add(new SQLiteParameter("@matrix", model.matrixTransform.ID));
+            command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
         }
         public static void CreateTable(SQLiteCommand command)
         {

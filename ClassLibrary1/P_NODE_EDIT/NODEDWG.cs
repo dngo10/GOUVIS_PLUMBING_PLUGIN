@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using ClassLibrary1.DATABASE.Controllers;
 using ClassLibrary1.DATABASE.Models;
 using ClassLibrary1.HELPERS;
 using System;
@@ -12,15 +13,16 @@ namespace ClassLibrary1.P_NODE_EDIT
 {
     class NODEDWG
     {
-        public HashSet<BlockReference> fixtureAreaSET;
-        public HashSet<BlockReference> fixtureDetailSET;
+        public DwgFileModel model;
+        public HashSet<FixtureBeingUsedArea> fixtureAreaSET;
+        public HashSet<FixtureDetails> fixtureDetailSET;
         public HashSet<BlockReference> insertionPointSET;
         public HashSet<Table> tableSET;
 
         public NODEDWG()
         {
-            fixtureAreaSET = new HashSet<BlockReference>();
-            fixtureDetailSET = new HashSet<BlockReference>();
+            fixtureAreaSET = new HashSet<FixtureBeingUsedArea>();
+            fixtureDetailSET = new HashSet<FixtureDetails>();
             insertionPointSET = new HashSet<BlockReference>();
             tableSET = new HashSet<Table>();
         }
@@ -29,10 +31,10 @@ namespace ClassLibrary1.P_NODE_EDIT
     class NODEDWGDATA
     {
         public NODEDWG node;
-        public SortedSet<FixtureBeingUsedAreaModel> FixtureBoxSet = new SortedSet<FixtureBeingUsedAreaModel>();
-        public SortedSet<FixtureDetailsModel> FixtureDetailSet = new SortedSet<FixtureDetailsModel>(Comparer<FixtureDetailsModel>.Create((a,b) => a.INDEX .CompareTo(b.INDEX)));
+        public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>();
+        public SortedSet<FixtureDetails> FixtureDetailSet = new SortedSet<FixtureDetails>(Comparer<FixtureDetails>.Create((a,b) => a.model.INDEX .CompareTo(b.model.INDEX)));
         public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>();
-
+    
         public NODEDWGDATA(string path)
         {
             if (File.Exists(path))
@@ -40,32 +42,30 @@ namespace ClassLibrary1.P_NODE_EDIT
                 
             }
         }
-
+    
         public NODEDWGDATA(NODEDWG node, Transaction tr)
         {
             this.node = node;
-            foreach(BlockReference bref in node.fixtureAreaSET)
+            foreach(FixtureBeingUsedArea bref in node.fixtureAreaSET)
             {
-                FixtureBeingUsedAreaModel FBUA = new FixtureBeingUsedArea(bref);
-                FixtureBoxSet.Add(FBUA);
+                FixtureBoxSet.Add(bref);
             }
-
-            foreach(BlockReference bref in node.fixtureDetailSET)
+    
+            foreach(FixtureDetails bref in node.fixtureDetailSET)
             {
-                FixtureDetails FD = new FixtureDetails(bref, tr);
-                FixtureDetailSet.Add(FD);
+                FixtureDetailSet.Add(bref);
             }
             
             // THIS ONE IS GOING TO BE A VERY BIG BLOCK.
-            foreach(BlockReference bref in node.insertionPointSET)
-            {
-                InsertPoint IP = new InsertPoint(bref, tr);
-                foreach(Table t in node.tableSET)
-                {
-                    IP.addTable(t.Position, t);
-                }
-                InsertPointSet.Add(IP);
-            }
+            //foreach(BlockReference bref in node.insertionPointSET)
+            //{
+            //    InsertPoint IP = new InsertPoint(bref, tr);
+            //    foreach(Table t in node.tableSET)
+            //    {
+            //        IP.addTable(t.Position, t);
+            //    }
+            //    InsertPointSet.Add(IP);
+            //}
         }
     }
 }

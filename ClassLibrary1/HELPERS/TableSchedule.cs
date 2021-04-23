@@ -20,7 +20,7 @@ namespace ClassLibrary1.HELPERS
             this.FBUA = FBUA;
         }
 
-        public static Table CreateTable(ICollection<FixtureDetailsModel> FixtureDetails, InsertPoint insertPoint)
+        public static Table CreateTable(ICollection<FixtureDetails> FixtureDetails, InsertPoint insertPoint)
         {
             Table t = new Table();
             t.Layer = TableScheduleName.TableLayer;
@@ -86,15 +86,15 @@ namespace ClassLibrary1.HELPERS
             //Index starts at third orw;
             int i = 2;
 
-            foreach(FixtureDetailsModel FD in FixtureDetails)
+            foreach(FixtureDetails FD in FixtureDetails)
             {
-                t.Cells[i, 1].TextString = FD.FIXTURENAME;
+                t.Cells[i, 1].TextString = FD.model.FIXTURENAME;
 
-                t.Cells[i, 2].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.CW_DIA));
-                t.Cells[i, 3].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.HW_DIA));
-                t.Cells[i, 4].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.WASTE_DIA));
-                t.Cells[i, 5].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.STORM_DIA));
-                t.Cells[i, 6].TextString = FD.DESCRIPTION;
+                t.Cells[i, 2].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.CW_DIA));
+                t.Cells[i, 3].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.HW_DIA));
+                t.Cells[i, 4].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.WASTE_DIA));
+                t.Cells[i, 5].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.STORM_DIA));
+                t.Cells[i, 6].TextString = FD.model.DESCRIPTION;
 
                 i++;
             }

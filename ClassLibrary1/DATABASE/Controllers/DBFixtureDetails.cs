@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE
+namespace ClassLibrary1.DATABASE.Controllers
 {
 
 	/*
@@ -16,7 +16,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 	"POSITION_ID"	INTEGER NOT NULL,
 	"TRANFORM_ID"	INTEGER NOT NULL,
 	"HANDLE"	TEXT NOT NULL,
-	"INDEX"	TEXT NOT NULL,
+	"INDEXX"	TEXT NOT NULL,
 	"FIXTURE_NAME"	TEXT NOT NULL,
 	"TAG"	TEXT NOT NULL,
 	"NUMBER"	NUMERIC NOT NULL,
@@ -198,9 +198,9 @@ CREATE TABLE "FIXTURE_DETAILS" (
         }
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			string commandStr = string.Format("DELETE FROM '{0}' WHERE '{1}' = @ID;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID, ID);
+			string commandStr = string.Format("DELETE FROM '{0}' WHERE '{1}' = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
 			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@ID", ID));
+			command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 		public static void UpdateRow(FixtureDetailsModel model, SQLiteCommand command)
         {
@@ -222,8 +222,8 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			sb.Append(string.Format("'{0}' = @cwsfu ,", DBFixtureDetailsNames.CWSFU));
 			sb.Append(string.Format("'{0}' = @hwsfu ,", DBFixtureDetailsNames.CWSFU));
 			sb.Append(string.Format("'{0}' = @dfu ,", DBFixtureDetailsNames.DFU));
-			sb.Append(string.Format("'{0}' = @desc ,", DBFixtureDetailsNames.DFU));
-			sb.Append(string.Format("'{0}' = @file WHERE ", DBFixtureDetailsNames.DESCRIPTION));
+			sb.Append(string.Format("'{0}' = @file ,", DBFixtureDetailsNames.FILE_ID));
+			sb.Append(string.Format("'{0}' = @desc WHERE ", DBFixtureDetailsNames.DESCRIPTION));
 			sb.Append(string.Format("'{0}' = @id;", DBFixtureDetailsNames.ID));
 
 			command.CommandText = sb.ToString();
@@ -244,7 +244,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			command.Parameters.Add(new SQLiteParameter("@hwsfu", model.HWSFU));
 			command.Parameters.Add(new SQLiteParameter("@dfu", model.DFU));
 			command.Parameters.Add(new SQLiteParameter("@desc", model.DESCRIPTION));
-			command.Parameters.Add(new SQLiteParameter("@file", model.FILE_ID));
+			command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
 			command.Parameters.Add(new SQLiteParameter("@id", model.ID));
 		}
 		public static void InsertRow(FixtureDetailsModel model, SQLiteCommand command)
@@ -252,8 +252,8 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			string commandStr = string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}') VALUES ",
 				DBFixtureDetailsNames.name, DBFixtureDetailsNames.POSITION_ID, DBFixtureDetailsNames.TRANSFORM_ID, DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames.INDEXX, DBFixtureDetailsNames.FIXTURE_NAME, DBFixtureDetailsNames.TAG,
 				DBFixtureDetailsNames.NUMBER, DBFixtureDetailsNames.CW_DIA, DBFixtureDetailsNames.HW_DIA, DBFixtureDetailsNames.WASTE_DIA, DBFixtureDetailsNames.VENT_DIA, DBFixtureDetailsNames.STORM_DIA, DBFixtureDetailsNames.WSFU, DBFixtureDetailsNames.CWSFU,
-				DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames.DFU, DBFixtureDetailsNames.DESCRIPTION
-				);
+				DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames.DFU, DBFixtureDetailsNames.DESCRIPTION, DBFixtureDetailsNames.FILE_ID);
+
 			commandStr += string.Format("(@position, @matrix ,@handle ,@indexx ,@fixtureName ,@tag , @number ,@cw_dia ,@hw_dia ,@waste_dia ,@vent_dia ,@storm_dia ,@wsfu ,@cwsfu ,@hwsfu , @dfu, @desc, @file);");
 
 			command.CommandText = commandStr;
@@ -274,7 +274,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			command.Parameters.Add(new SQLiteParameter("@hwsfu", model.HWSFU));
 			command.Parameters.Add(new SQLiteParameter("@dfu", model.DFU));
 			command.Parameters.Add(new SQLiteParameter("@desc", model.DESCRIPTION));
-			command.Parameters.Add(new SQLiteParameter("@file", model.FILE_ID));
+			command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
 		}
 		public static void CreateTable(SQLiteCommand command)
         {
@@ -284,7 +284,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.POSITION_ID}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.TRANSFORM_ID}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.HANDLE}' TEXT NOT NULL, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.INDEXX}' TEXT NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.INDEXX}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.FIXTURE_NAME}' TEXT NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.TAG}' TEXT NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.NUMBER}' TEXT NOT NULL, "));

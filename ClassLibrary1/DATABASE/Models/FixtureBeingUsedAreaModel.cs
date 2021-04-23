@@ -18,6 +18,6 @@ namespace ClassLibrary1.DATABASE.Models
         public long ID = ConstantName.invalidNum;
         public Point3dModel position = null;
         public Matrix3dModel matrixTransform = null;
-        public string fileID = ConstantName.invalidStr;
+        public DwgFileModel file = null;
     }
 }

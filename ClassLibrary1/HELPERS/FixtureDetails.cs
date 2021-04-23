@@ -11,7 +11,7 @@ namespace ClassLibrary1.HELPERS
 {
     class FixtureDetails : ObjectData
     {
-        FixtureDetailsModel fixtureDetails = new FixtureDetailsModel();
+        public FixtureDetailsModel model = new FixtureDetailsModel();
 
         public FixtureDetails(BlockReference bref, Transaction tr)
         {
@@ -20,9 +20,9 @@ namespace ClassLibrary1.HELPERS
 
         private void FillOutVariable(BlockReference bref, Transaction tr)
         {
-            fixtureDetails.position = new Point3dModel(bref.Position.ToArray());
-            fixtureDetails.handle = bref.Handle.ToString();
-            fixtureDetails.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
+            model.position = new Point3dModel(bref.Position.ToArray());
+            model.handle = bref.Handle.ToString();
+            model.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
             foreach (ObjectId id in bref.AttributeCollection)
             {
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
@@ -34,60 +34,60 @@ namespace ClassLibrary1.HELPERS
                 {
                     if (aRef.Tag == FixtureDetailsName.index)
                     {
-                        fixtureDetails.INDEX = number;
+                        model.INDEX = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.CW_DIA)
                     {
-                        fixtureDetails.CW_DIA = number;
+                        model.CW_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.HW_DIA)
                     {
-                        fixtureDetails.HW_DIA = number;
+                        model.HW_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.WASTE_DIA)
                     {
-                        fixtureDetails.WASTE_DIA = number;
+                        model.WASTE_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.VENT_DIA)
                     {
-                        fixtureDetails.VENT_DIA = number;
+                        model.VENT_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.STORM_DIA)
                     {
-                        fixtureDetails.STORM_DIA = number;
+                        model.STORM_DIA = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.WSFU)
                     {
-                        fixtureDetails.WSFU = number;
+                        model.WSFU = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.CWSFU)
                     {
-                        fixtureDetails.CWSFU = number;
+                        model.CWSFU = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.HWSFU)
                     {
-                        fixtureDetails.HWSFU = number;
+                        model.HWSFU = number;
                     }
                     else if (aRef.Tag == FixtureDetailsName.DFU)
                     {
-                        fixtureDetails.DFU = number;
+                        model.DFU = number;
                     }
                 }
                 else if (aRef.Tag == FixtureDetailsName.number)
                 {
-                    fixtureDetails.NUMBER = textString;
+                    model.NUMBER = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.tag)
                 {
-                    fixtureDetails.TAG = textString;
+                    model.TAG = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.FixtureName)
                 {
-                    fixtureDetails.FIXTURENAME = textString;
+                    model.FIXTURENAME = textString;
                 }
                 else if (aRef.Tag == FixtureDetailsName.DESCRIPTION)
                 {
-                    fixtureDetails.DESCRIPTION = textString;
+                    model.DESCRIPTION = textString;
                 }
             }
         }

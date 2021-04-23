@@ -115,10 +115,10 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\ClassLibrary1\DATABASE\DBCommand.cs">
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBCommand.cs">
       <Link>DBCommand.cs</Link>
     </Compile>
-    <Compile Include="..\ClassLibrary1\DATABASE\PlumbingDatabaseManager.cs">
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\PlumbingDatabaseManager.cs">
       <Link>PlumbingDatabaseManager.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\HELPERS\ConstantName.cs">

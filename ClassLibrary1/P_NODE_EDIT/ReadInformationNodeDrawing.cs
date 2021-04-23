@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ClassLibrary1.HELPERS;
 using ClassLibrary1.P_NODE_EDIT;
 using System.IO;
+using ClassLibrary1.DATABASE.Controllers;
 
 namespace GouvisPluminbNew.P_NODE_EDIT
 {
@@ -82,12 +83,14 @@ namespace GouvisPluminbNew.P_NODE_EDIT
                                         string brefName = Goodies.GetDynamicName(bref, nodeDoc.Editor);
                                         if (brefName.Equals(ConstantName.FixtureInformationArea))
                                         {
-                                            nodeP.fixtureAreaSET.Add(bref);
+                                            FixtureBeingUsedArea dbA = new FixtureBeingUsedArea(bref);
+                                            nodeP.fixtureAreaSET.Add(dbA);
                                         }
                                     }
                                     else if (bref.Name == ConstantName.FixtureDetailsBox)
                                     {
-                                        nodeP.fixtureDetailSET.Add(bref);
+                                        FixtureDetails FD = new FixtureDetails(bref, tr);
+                                        nodeP.fixtureDetailSET.Add(FD);
                                     }
                                     else if (bref.Name == ConstantName.InsertPoint)
                                     {

@@ -26,8 +26,8 @@ namespace ClassLibrary1.DATABASE.Models
         public double HWSFU = ConstantName.invalidNum;
         public double DFU = ConstantName.invalidNum;
         public string DESCRIPTION = ConstantName.invalidStr;
-        public string FILE_ID = ConstantName.invalidStr;
-        public long ID;
+        public DwgFileModel file = null;
+        public long ID = ConstantName.invalidNum;
     }
 
     static class FixtureDetailsName

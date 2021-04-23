@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
+using ClassLibrary1.DATABASE.Controllers;
 
 namespace ClassLibrary1.HELPERS
 {

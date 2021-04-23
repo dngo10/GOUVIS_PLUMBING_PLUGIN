@@ -22,6 +22,7 @@ namespace ClassLibrary1.HELPERS
 
         public FixtureBeingUsedArea(BlockReference block)
         {
+            
             GetTopAndBottomPoint(block);
         }
 

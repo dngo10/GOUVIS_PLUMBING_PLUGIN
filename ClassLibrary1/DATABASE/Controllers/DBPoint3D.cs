@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE
+namespace ClassLibrary1.DATABASE.Controllers
 {
     /// <summary>
     /// This class is to access and modify database.
@@ -147,7 +147,7 @@ namespace ClassLibrary1.DATABASE
         }
         public static void CreateTable(SQLiteCommand command)
         {
-            string commandStr = string.Format("CREATE TABLE IF NOT EXISTS '{0}'('{1}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '{2}' REAL NOT NULL, '{3}' REAL NOT NULL, '{4}' REAL NOT NULL));",
+            string commandStr = string.Format("CREATE TABLE IF NOT EXISTS '{0}'('{1}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '{2}' REAL NOT NULL, '{3}' REAL NOT NULL, '{4}' REAL NOT NULL);",
                                     DBPoint3DName.tableName,
                                     DBPoint3DName.ID,
                                     DBPoint3DName.X,
