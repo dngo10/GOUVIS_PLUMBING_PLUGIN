@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClassLibrary1.HELPERS
+namespace GouvisPlumbingNew.HELPERS
 {
     class ConstantName
     {

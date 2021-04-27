@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ClassLibrary1.HELPERS;
-using ClassLibrary1.DATABASE;
+using GouvisPlumbingNew.HELPERS;
 using System.Windows.Forms;
 using System.IO;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using ClassLibrary1.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE;
+using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.DBModels;
 
 namespace ProjectManager
 {
@@ -63,11 +64,12 @@ namespace ProjectManager
             //They will clear up everything, so we have to keep path.
             ClearUp(treeView, dataGridView);
 
-            FileElement pe = new FileElement();
-            pe.lastModified = File.GetLastWriteTimeUtc(textBox.Text);
+            DwgFileModel pe = new DwgFileModel();
+            pe.modifieddate = File.GetLastWriteTimeUtc(textBox.Text).Ticks;
             pe.relativePath = "\\" + Path.GetFileName(textBox.Text);
+            pe.isP_Notes = 1;
 
-            DatabaseManager.projectElement = new ProjectElement(pe, new HashSet<FileElement>());
+            PlumbingDatabaseManager.projectElement = new ProjectElement(pe, new HashSet<DwgFileModel>());
 
             //TextBox Hash Path... to find project number
             setProjectDirectory(textBox);
@@ -156,7 +158,7 @@ namespace ProjectManager
         {
             dataGridView.Rows.Clear();
 
-            foreach (FileElement fileElement in DatabaseManager.projectElement.Dwgs)
+            foreach (DwgFileModel fileElement in PlumbingDatabaseManager.projectElement.Dwgs)
             {
                 string filePath = fileElement.relativePath;
                 string p = Path.GetFileName(filePath);
@@ -251,9 +253,10 @@ namespace ProjectManager
 
             if (GoodiesPath.IsDwgPath(relativeDwgPath))
             {
-                FileElement fe = new FileElement();
-                fe.lastModified = GetModifiedOfFile(relativeDwgPath);
-                if (fe.lastModified == DateTime.MinValue)
+                DwgFileModel fe = new DwgFileModel();
+                fe.modifieddate = GetModifiedOfFile(relativeDwgPath).Ticks;
+                fe.isP_Notes = 0;
+                if (fe.modifieddate == DateTime.MinValue.Ticks)
                 {
                     //CHECK THIS
                 }
@@ -262,11 +265,11 @@ namespace ProjectManager
                 //string fullDwgPath = Root + relativeDwgPath;
                 if (tn.Checked)
                 {
-                    DatabaseManager.projectElement.Dwgs.Add(fe);
+                    PlumbingDatabaseManager.projectElement.Dwgs.Add(fe);
                 }
                 else
                 {
-                    DatabaseManager.projectElement.Dwgs.Remove(fe);
+                    PlumbingDatabaseManager.projectElement.Dwgs.Remove(fe);
                 }
             }
         }
@@ -304,7 +307,7 @@ namespace ProjectManager
                 ProjectFolder = Directory.GetParent(Directory.GetParent(databasePath).FullName).FullName;
                 PlumbingDatabaseManager.ReadDataAtBeginning(databasePath);
                 //DatabaseManager.GuessProjectNumber();
-                return DatabaseManager.projectElement.P_NOTE.relativePath;
+                return PlumbingDatabaseManager.projectElement.P_NOTE.relativePath;
             }return "";
         }
 
@@ -338,7 +341,7 @@ namespace ProjectManager
 
         private static void CheckNode(TreeNode tn)
         {
-            if (GoodiesPath.IsDwgPath(tn.FullPath) && DatabaseManager.projectElement.ContainsPath(tn.FullPath))
+            if (GoodiesPath.IsDwgPath(tn.FullPath) && PlumbingDatabaseManager.projectElement.ContainsPath(tn.FullPath))
             {
                 tn.Checked = true;
                 //This function start with parent folder of dwgs

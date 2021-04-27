@@ -1,5 +1,5 @@
-﻿using ClassLibrary1.DATABASE.Controllers;
-using ClassLibrary1.DATABASE.Models;
+﻿using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE.Controllers
+namespace GouvisPlumbingNew.DATABASE.Controllers
 {
 
 	/*
@@ -186,19 +186,19 @@ CREATE TABLE "FIXTURE_DETAILS" (
     {
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			string commandStr = string.Format("SELECT * FROM {0} WHERE '{1}' = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
+			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
 			command.CommandText = commandStr;
 			command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 		public static void SelectRow(SQLiteCommand command, string handle)
         {
-			string commandStr = string.Format("SELECT * FROM {0} WHERE '{1}' = @handle;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.HANDLE);
+			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @handle;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.HANDLE);
 			command.CommandText = commandStr;
 			command.Parameters.Add(new SQLiteParameter("@handle", handle));
         }
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			string commandStr = string.Format("DELETE FROM '{0}' WHERE '{1}' = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
+			string commandStr = string.Format("DELETE FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
 			command.CommandText = commandStr;
 			command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
@@ -206,25 +206,25 @@ CREATE TABLE "FIXTURE_DETAILS" (
         {
 			StringBuilder sb = new StringBuilder();
 			sb.Append(string.Format("UPDATE {0} SET ", DBFixtureDetailsNames.name));
-			sb.Append(string.Format("'{0}' = @position ,", DBFixtureDetailsNames.POSITION_ID));
-			sb.Append(string.Format("'{0}' = @matrix ,", DBFixtureDetailsNames.TRANSFORM_ID));
-			sb.Append(string.Format("'{0}' = @handle ,", DBFixtureDetailsNames.HANDLE));
-			sb.Append(string.Format("'{0}' = @indexx ,", DBFixtureDetailsNames.INDEXX));
-			sb.Append(string.Format("'{0}' = @fixture_name ,", DBFixtureDetailsNames.FIXTURE_NAME));
-			sb.Append(string.Format("'{0}' = @tag ,", DBFixtureDetailsNames.TAG));
-			sb.Append(string.Format("'{0}' = @number ,", DBFixtureDetailsNames.NUMBER));
-			sb.Append(string.Format("'{0}' = @cw_dia ,", DBFixtureDetailsNames.CW_DIA));
-			sb.Append(string.Format("'{0}' = @hw_dia ,", DBFixtureDetailsNames.HW_DIA));
-			sb.Append(string.Format("'{0}' = @waste_dia ,", DBFixtureDetailsNames.WASTE_DIA));
-			sb.Append(string.Format("'{0}' = @vent_dia ,", DBFixtureDetailsNames.VENT_DIA));
-			sb.Append(string.Format("'{0}' = @storm_dia ,", DBFixtureDetailsNames.STORM_DIA));
-			sb.Append(string.Format("'{0}' = @wsfu ,", DBFixtureDetailsNames.WSFU));
-			sb.Append(string.Format("'{0}' = @cwsfu ,", DBFixtureDetailsNames.CWSFU));
-			sb.Append(string.Format("'{0}' = @hwsfu ,", DBFixtureDetailsNames.CWSFU));
-			sb.Append(string.Format("'{0}' = @dfu ,", DBFixtureDetailsNames.DFU));
-			sb.Append(string.Format("'{0}' = @file ,", DBFixtureDetailsNames.FILE_ID));
-			sb.Append(string.Format("'{0}' = @desc WHERE ", DBFixtureDetailsNames.DESCRIPTION));
-			sb.Append(string.Format("'{0}' = @id;", DBFixtureDetailsNames.ID));
+			sb.Append(string.Format("{0} = @position ,", DBFixtureDetailsNames.POSITION_ID));
+			sb.Append(string.Format("{0} = @matrix ,", DBFixtureDetailsNames.TRANSFORM_ID));
+			sb.Append(string.Format("{0} = @handle ,", DBFixtureDetailsNames.HANDLE));
+			sb.Append(string.Format("{0} = @indexx ,", DBFixtureDetailsNames.INDEXX));
+			sb.Append(string.Format("{0} = @fixture_name ,", DBFixtureDetailsNames.FIXTURE_NAME));
+			sb.Append(string.Format("{0} = @tag ,", DBFixtureDetailsNames.TAG));
+			sb.Append(string.Format("{0} = @number ,", DBFixtureDetailsNames.NUMBER));
+			sb.Append(string.Format("{0} = @cw_dia ,", DBFixtureDetailsNames.CW_DIA));
+			sb.Append(string.Format("{0} = @hw_dia ,", DBFixtureDetailsNames.HW_DIA));
+			sb.Append(string.Format("{0} = @waste_dia ,", DBFixtureDetailsNames.WASTE_DIA));
+			sb.Append(string.Format("{0} = @vent_dia ,", DBFixtureDetailsNames.VENT_DIA));
+			sb.Append(string.Format("{0} = @storm_dia ,", DBFixtureDetailsNames.STORM_DIA));
+			sb.Append(string.Format("{0} = @wsfu ,", DBFixtureDetailsNames.WSFU));
+			sb.Append(string.Format("{0} = @cwsfu ,", DBFixtureDetailsNames.CWSFU));
+			sb.Append(string.Format("{0} = @hwsfu ,", DBFixtureDetailsNames.CWSFU));
+			sb.Append(string.Format("{0} = @dfu ,", DBFixtureDetailsNames.DFU));
+			sb.Append(string.Format("{0} = @file ,", DBFixtureDetailsNames.FILE_ID));
+			sb.Append(string.Format("{0} = @desc WHERE ", DBFixtureDetailsNames.DESCRIPTION));
+			sb.Append(string.Format("{0} = @id;", DBFixtureDetailsNames.ID));
 
 			command.CommandText = sb.ToString();
 			command.Parameters.Add(new SQLiteParameter("@position", model.position.ID));

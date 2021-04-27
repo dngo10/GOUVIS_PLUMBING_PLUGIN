@@ -1,4 +1,4 @@
-﻿using ClassLibrary1.DATABASE.Models;
+﻿using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE.Controllers
+namespace GouvisPlumbingNew.DATABASE.Controllers
 {
     /*
      CREATE TABLE "FILE" (
@@ -19,6 +19,46 @@ namespace ClassLibrary1.DATABASE.Controllers
 
     class DBDwgFile
     {
+        public static List<DwgFileModel> GetDwgFilesExceptPNote(SQLiteConnection connection)
+        {
+            List<DwgFileModel> dwgs = new List<DwgFileModel>();
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBDwgFileCommands.GetDwgFiles(command);
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    DwgFileModel model = new DwgFileModel();
+                    model.ID = (long)reader[DBDwgFileName.ID];
+                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
+                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
+                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+
+                    dwgs.Add(model);
+                }
+            }
+            return dwgs;
+        }
+
+        public static DwgFileModel GetPNote(SQLiteConnection connection)
+        {
+            DwgFileModel model = null;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBDwgFileCommands.GetPNoteFile(command);
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    model = new DwgFileModel();
+                    model.ID = (long)reader[DBDwgFileName.ID];
+                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
+                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
+                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+                }
+            }
+            return model;
+        }
+
         public static DwgFileModel SelectRow(SQLiteConnection connection, long ID)
         {
             DwgFileModel model = null;
@@ -101,16 +141,31 @@ namespace ClassLibrary1.DATABASE.Controllers
     }
     class DBDwgFileCommands
     {
+        public static void GetDwgFiles(SQLiteCommand command)
+        {
+            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ispNote;", DBDwgFileName.name, DBDwgFileName.ISP_NOTES);
+            command.CommandText = commandStr;
+            int temp = 0;
+            command.Parameters.Add(new SQLiteParameter("@ispNote", temp));
+        }
+        public static void GetPNoteFile(SQLiteCommand command)
+        {
+            //SELECT RELATIVE_PATH , MODIFIEDDATE FROM FILE WHERE ISP_NOTES = 1;
+            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ispNote;", DBDwgFileName.name, DBDwgFileName.ISP_NOTES);
+            command.CommandText = commandStr;
+            int temp = 1;
+            command.Parameters.Add(new SQLiteParameter("@ispNote", temp));
+        }
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("SELECT * FROM '{0}' WHERE '{1}' = @id;", DBDwgFileName.name, DBDwgFileName.ID);
+            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID);
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
         public static void DeleteRow(SQLiteCommand command, DwgFileModel model)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append(string.Format("DELETE FROM {0} WHERE '{1}' = @id;", DBDwgFileName.name, DBDwgFileName.ID));
+            builder.Append(string.Format("DELETE FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID));
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@id", model.ID));
         }
@@ -127,7 +182,7 @@ namespace ClassLibrary1.DATABASE.Controllers
         public static void GetAllFixtureDetailsID(SQLiteCommand command, DwgFileModel model)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append($"SELECT '{DBFixtureDetailsNames.ID}' FROM '{DBFixtureDetailsNames.name}' WHERE '{DBFixtureDetailsNames.FILE_ID}' = @id;");
+            builder.Append($"SELECT {DBFixtureDetailsNames.ID} FROM {DBFixtureDetailsNames.name} WHERE {DBFixtureDetailsNames.FILE_ID} = @id;");
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@id", model.ID));
         }

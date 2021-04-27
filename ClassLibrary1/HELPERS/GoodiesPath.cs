@@ -1,17 +1,14 @@
-﻿using ClassLibrary1.DATABASE;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
-using ClassLibrary1.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.DBModels;
 
-namespace ClassLibrary1.HELPERS
+namespace GouvisPlumbingNew.HELPERS
 {
     class GoodiesPath
     {
@@ -217,7 +214,7 @@ namespace ClassLibrary1.HELPERS
                 SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
                 sqlConn.Open();
                 SQLiteTransaction tr = sqlConn.BeginTransaction();
-                FileElement fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
+                DwgFileModel fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
                 tr.Dispose();
                 sqlConn.Close();
                 GC.Collect();
@@ -240,12 +237,12 @@ namespace ClassLibrary1.HELPERS
                 SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
                 sqlConn.Open();
                 SQLiteTransaction tr = sqlConn.BeginTransaction();
-                HashSet<FileElement> feSet = PlumbingDatabaseManager.GetDwgsPath(sqlConn);
+                HashSet<DwgFileModel> feSet = PlumbingDatabaseManager.GetDwgsPath(sqlConn);
                 tr.Dispose();
                 sqlConn.Close();
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                foreach(FileElement fe in feSet)
+                foreach(DwgFileModel fe in feSet)
                 {
                     string dwgPath = directoryPath + fe.relativePath;
                     if(dwgPath == path)

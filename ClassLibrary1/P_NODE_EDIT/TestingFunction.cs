@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using ClassLibrary1.DATABASE.Controllers;
-using ClassLibrary1.HELPERS;
+using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.HELPERS;
 using GouvisPluminbNew.P_NODE_EDIT;
 
-namespace ClassLibrary1.P_NODE_EDIT
+namespace GouvisPlumbingNew.P_NODE_EDIT
 {
     class TestingFunction
     {

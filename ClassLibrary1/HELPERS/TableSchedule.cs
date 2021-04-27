@@ -1,14 +1,14 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using ClassLibrary1.DATABASE.Models;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.HELPERS
+namespace GouvisPlumbingNew.HELPERS
 {
     //This is used to create SCHEDULE TABLE table.
     //It is not tasked to delete one.

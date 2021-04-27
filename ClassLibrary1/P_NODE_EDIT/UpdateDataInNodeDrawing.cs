@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using ClassLibrary1.HELPERS;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.P_NODE_EDIT
+namespace GouvisPlumbingNew.P_NODE_EDIT
 {
     class UpdateDataInNodeDrawing
     {

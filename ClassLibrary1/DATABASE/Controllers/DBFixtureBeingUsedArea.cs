@@ -1,4 +1,4 @@
-﻿using ClassLibrary1.DATABASE.Models;
+﻿using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE.Controllers
+namespace GouvisPlumbingNew.DATABASE.Controllers
 {
 
     /*
@@ -120,38 +120,38 @@ namespace ClassLibrary1.DATABASE.Controllers
     {
         public static void SelectRow(SQLiteCommand command, string handle)
         {
-            command.CommandText = string.Format("SELECT * FROM '{0}' WHERE '{1}' = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
+            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
             command.Parameters.Add(new SQLiteParameter("@handle", handle));
         }
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("SELECT * FROM '{0}' WHERE '{1}' = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
+            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("DELETE FROM '{0}' WHERE '{1}' = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
+            command.CommandText = string.Format("DELETE FROM {0} WHERE {1} = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 
         public static void DeleteRow(SQLiteCommand command, string handle)
         {
-            command.CommandText = string.Format("DELETE FROM '{0}' WHERE '{1}' = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
+            command.CommandText = string.Format("DELETE FROM {0} WHERE {1} = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
             command.Parameters.Add(new SQLiteParameter("@handle", handle));
         }
         public static void UpdateRow(SQLiteCommand command, FixtureBeingUsedAreaModel model)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(string.Format("UPDATE {0} SET ", DBFixtureBeingUsedAreaName.name));
-            builder.Append(string.Format("'{0}' = @handle ,", DBFixtureBeingUsedAreaName.HANDLE));
-            builder.Append(string.Format("'{0}' = @position ,", DBFixtureBeingUsedAreaName.POSITION_ID));
-            builder.Append(string.Format("'{0}' = @X ,", DBFixtureBeingUsedAreaName.X));
-            builder.Append(string.Format("'{0}' = @Y ,", DBFixtureBeingUsedAreaName.Y));
-            builder.Append(string.Format("'{0}' = @origin ,", DBFixtureBeingUsedAreaName.ORIGIN_ID));
-            builder.Append(string.Format("'{0}' = @pointop ,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
-            builder.Append(string.Format("'{0}' = @pointbottom ,", DBFixtureBeingUsedAreaName.TRANSFORM_ID));
-            builder.Append(string.Format("'{0}' = @file WHERE ", DBFixtureBeingUsedAreaName.FILE_ID));
-            builder.Append(string.Format("'{0}' = @id;", DBFixtureBeingUsedAreaName.ID));
+            builder.Append(string.Format(" {0} = @handle ,", DBFixtureBeingUsedAreaName.HANDLE));
+            builder.Append(string.Format(" {0} = @position ,", DBFixtureBeingUsedAreaName.POSITION_ID));
+            builder.Append(string.Format(" {0} = @X ,", DBFixtureBeingUsedAreaName.X));
+            builder.Append(string.Format(" {0} = @Y ,", DBFixtureBeingUsedAreaName.Y));
+            builder.Append(string.Format(" {0} = @origin ,", DBFixtureBeingUsedAreaName.ORIGIN_ID));
+            builder.Append(string.Format(" {0} = @pointop ,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
+            builder.Append(string.Format(" {0} = @pointbottom ,", DBFixtureBeingUsedAreaName.TRANSFORM_ID));
+            builder.Append(string.Format(" {0} = @file WHERE ", DBFixtureBeingUsedAreaName.FILE_ID));
+            builder.Append(string.Format(" {0} = @id;", DBFixtureBeingUsedAreaName.ID));
 
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@handle", model.handle));

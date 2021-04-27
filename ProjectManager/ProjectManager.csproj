@@ -116,10 +116,46 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBCommand.cs">
-      <Link>DBCommand.cs</Link>
+      <Link>DATABASECOPIED\Controllers\DBCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBDwgFile.cs">
+      <Link>DATABASECOPIED\Controllers\DBDwgFile.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBFixtureBeingUsedArea.cs">
+      <Link>DATABASECOPIED\Controllers\DBFixtureBeingUsedArea.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBFixtureDetails.cs">
+      <Link>DATABASECOPIED\Controllers\DBFixtureDetails.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBInsertPoint.cs">
+      <Link>DATABASECOPIED\Controllers\DBInsertPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBMatrix3d.cs">
+      <Link>DATABASECOPIED\Controllers\DBMatrix3d.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBPoint3D.cs">
+      <Link>DATABASECOPIED\Controllers\DBPoint3D.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\PlumbingDatabaseManager.cs">
-      <Link>PlumbingDatabaseManager.cs</Link>
+      <Link>DATABASECOPIED\Controllers\PlumbingDatabaseManager.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\DwgFileModel.cs">
+      <Link>DATABASECOPIED\DBModels\DwgFileModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\FixtureBeingUsedAreaModel.cs">
+      <Link>DATABASECOPIED\DBModels\FixtureBeingUsedAreaModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\FixtureDetailsModel.cs">
+      <Link>DATABASECOPIED\DBModels\FixtureDetailsModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\InsertPointModel.cs">
+      <Link>DATABASECOPIED\DBModels\InsertPointModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\Matrix3dModel.cs">
+      <Link>DATABASECOPIED\DBModels\Matrix3dModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\Point3dModel.cs">
+      <Link>DATABASECOPIED\DBModels\Point3dModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\HELPERS\ConstantName.cs">
       <Link>ConstantName.cs</Link>

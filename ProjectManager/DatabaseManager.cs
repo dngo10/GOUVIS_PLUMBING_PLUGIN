@@ -1,13 +1,12 @@
-﻿using ClassLibrary1.HELPERS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Data.SQLite;
-using ClassLibrary1.DATABASE;
-using ClassLibrary1.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.HELPERS;
 
 namespace ProjectManager
 {
@@ -15,8 +14,6 @@ namespace ProjectManager
 
     class DatabaseManager
     {
-
-        public static ProjectElement projectElement;
 
 
         public static bool HasDataBaseFolder(out string dBDirectory)
@@ -40,9 +37,9 @@ namespace ProjectManager
 
         public static void UpdateInitDatabase()
         {
-            if (projectElement == null) return;
-            if (projectElement.P_NOTE == null) return;
-            if (projectElement.Dwgs == null) return;
+            if (PlumbingDatabaseManager.projectElement == null) return;
+            if (PlumbingDatabaseManager.projectElement.P_NOTE == null) return;
+            if (PlumbingDatabaseManager.projectElement.Dwgs == null) return;
             if (Model.ProjectFolder == null) return;
 
             //Trying to Get ProjectNumber

@@ -1,5 +1,5 @@
-﻿using ClassLibrary1.DATABASE.Models;
-using ClassLibrary1.HELPERS;
+﻿using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE.Controllers
+namespace GouvisPlumbingNew.DATABASE.Controllers
 {
     /// <summary>
     /// This class is to access and modify database.
@@ -129,19 +129,19 @@ namespace ClassLibrary1.DATABASE.Controllers
     {
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("SELECT * FROM {0} WHERE '{1}' = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
+            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@ID", ID));
         }
         public static void DeleteTable(SQLiteCommand command)
         {
-            string commandStr = string.Format("DROP TABLE IF EXISTS '{0}';", DBPoint3DName.tableName);
+            string commandStr = string.Format("DROP TABLE IF EXISTS {0};", DBPoint3DName.tableName);
             command.CommandText = commandStr;
         }
 
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("DELETE FROM '{0}' WHERE '{1}' = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
+            string commandStr = string.Format("DELETE FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@ID", ID));
         }

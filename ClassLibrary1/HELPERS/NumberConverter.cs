@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.HELPERS
+namespace GouvisPlumbingNew.HELPERS
 {
     class NumberConverter
     {

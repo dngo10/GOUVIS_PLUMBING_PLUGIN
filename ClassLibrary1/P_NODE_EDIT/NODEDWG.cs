@@ -1,7 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
-using ClassLibrary1.DATABASE.Controllers;
-using ClassLibrary1.DATABASE.Models;
-using ClassLibrary1.HELPERS;
+using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.P_NODE_EDIT
+namespace GouvisPlumbingNew.P_NODE_EDIT
 {
     class NODEDWG
     {
@@ -17,14 +17,12 @@ namespace ClassLibrary1.P_NODE_EDIT
         public HashSet<FixtureBeingUsedArea> fixtureAreaSET;
         public HashSet<FixtureDetails> fixtureDetailSET;
         public HashSet<BlockReference> insertionPointSET;
-        public HashSet<Table> tableSET;
 
         public NODEDWG()
         {
             fixtureAreaSET = new HashSet<FixtureBeingUsedArea>();
             fixtureDetailSET = new HashSet<FixtureDetails>();
             insertionPointSET = new HashSet<BlockReference>();
-            tableSET = new HashSet<Table>();
         }
     }
 

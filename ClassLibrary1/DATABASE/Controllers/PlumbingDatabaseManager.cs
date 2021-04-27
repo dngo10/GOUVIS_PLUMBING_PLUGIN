@@ -1,4 +1,4 @@
-﻿using ClassLibrary1.HELPERS;
+﻿using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,8 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Data.SQLite;
+using GouvisPlumbingNew.DATABASE.DBModels;
 
-namespace ClassLibrary1.DATABASE.Controllers
+namespace GouvisPlumbingNew.DATABASE.Controllers
 {
     //This class is used exclusively for managing SQLITE Database.
 
@@ -30,27 +31,28 @@ namespace ClassLibrary1.DATABASE.Controllers
 
         public static void InitTable(string databasePath)
         {
-            string createFileTable = DBCommand.DBFileTable.CreateFileTable();
             SQLiteConnection sqliteConn = new SQLiteConnection(DBCommand.GetConnectionString(databasePath));
             try
             {
                 sqliteConn.Open();
                 SQLiteTransaction sqliteTrans = sqliteConn.BeginTransaction();
-                SQLiteCommand command = sqliteConn.CreateCommand();
-                command.CommandText = createFileTable;
-                command.ExecuteNonQuery();
 
-                command.CommandText = DBCommand.DBFileTable.InsertIntoFileTable(projectElement.P_NOTE.relativePath, projectElement.P_NOTE.lastModified.Ticks, 1);
-                command.ExecuteNonQuery();
+                DBMatrix3d.CreateTable(sqliteConn);
+                DBPoint3D.CreateTable(sqliteConn);
+                DBInsertPoint.CreateTable(sqliteConn);
+                DBFixtureDetails.CreateTable(sqliteConn);
+                DBFixtureBeingUsedArea.CreateTable(sqliteConn);
+                DBDwgFile.CreateTable(sqliteConn);
 
-                foreach (FileElement pe in projectElement.Dwgs)
+                if(projectElement.P_NOTE != null) DBDwgFile.InsertRow(sqliteConn, projectElement.P_NOTE);
+
+                if(projectElement.Dwgs != null)
+                foreach(DwgFileModel model in projectElement.Dwgs)
                 {
-                    command.CommandText = DBCommand.DBFileTable.InsertIntoFileTable(pe.relativePath, pe.lastModified.Ticks, 0);
-                    command.ExecuteNonQuery();
+                    DBDwgFile.InsertRow(sqliteConn, model);
                 }
 
                 sqliteTrans.Commit();
-                command.Dispose();
                 sqliteTrans.Dispose();
                 sqliteConn.Close();
                 GC.Collect();
@@ -129,8 +131,8 @@ namespace ClassLibrary1.DATABASE.Controllers
             //Do Directory.GetParent 2 times, and we get the projectPath;
 
             SQLiteTransaction tr = sqlConn.BeginTransaction();
-            FileElement notePathFe = GetNotePath(sqlConn);
-            HashSet<FileElement> feDwgs = GetDwgsPath(sqlConn);
+            DwgFileModel notePathFe = GetNotePath(sqlConn);
+            HashSet<DwgFileModel> feDwgs = GetDwgsPath(sqlConn);
             projectElement = new ProjectElement(notePathFe, feDwgs);
 
             tr.Commit();
@@ -143,41 +145,23 @@ namespace ClassLibrary1.DATABASE.Controllers
 
 
         //Return all Dwgs relatives path, EXCEPT Note_Path file
-        public static HashSet<FileElement> GetDwgsPath(SQLiteConnection sqlConn)
+        public static HashSet<DwgFileModel> GetDwgsPath(SQLiteConnection sqlConn)
         {
-            HashSet<FileElement> dwgsSet = new HashSet<FileElement>();
-            SQLiteCommand command = sqlConn.CreateCommand();
-            command.CommandText = DBCommand.DBFileTable.GetDwgsStringFromTable();
-            SQLiteDataReader dataReader = command.ExecuteReader();
-            while (dataReader.Read())
+            HashSet<DwgFileModel> dwgsSet = new HashSet<DwgFileModel>();
+            List<DwgFileModel> files = DBDwgFile.GetDwgFilesExceptPNote(sqlConn);
+            foreach(DwgFileModel file in files)
             {
-                string relativePath = dataReader.GetString(0);
-                DateTime dt = new DateTime(dataReader.GetInt64(1));
-
-                FileElement feDwg = new FileElement(relativePath, dt);
-                dwgsSet.Add(feDwg);
+                dwgsSet.Add(file);
             }
-            command.Dispose();
             return dwgsSet;
         }
 
         //SQL connection must be OPEN.
         //This function should be put between transaction.
-        public static FileElement GetNotePath(SQLiteConnection sqlConn)
+        public static DwgFileModel GetNotePath(SQLiteConnection sqlConn)
         {
-            string notePath = "";
-            DateTime dt = DateTime.MinValue;
-            SQLiteCommand command = sqlConn.CreateCommand();
-            command.CommandText = DBCommand.DBFileTable.GetPNoteStringFromTable();
-            SQLiteDataReader dataReader = command.ExecuteReader();
-            while (dataReader.Read())
-            {
-                notePath = dataReader.GetString(0);
-                dt = new DateTime(dataReader.GetInt64(1));
-            }
-            FileElement fe = new FileElement(notePath, dt);
-            command.Dispose();
-            return fe;
+            DwgFileModel model = DBDwgFile.GetPNote(sqlConn);
+            return model;
         }
 
         [ConditionalAttribute("DEBUG")]
@@ -191,12 +175,12 @@ namespace ClassLibrary1.DATABASE.Controllers
     //UPDRAGE THIS to check DateTime UTC
     class ProjectElement
     {
-        public FileElement P_NOTE;
-        public HashSet<FileElement> Dwgs;
+        public DwgFileModel P_NOTE;
+        public HashSet<DwgFileModel> Dwgs;
 
         public ProjectElement() { }
 
-        public ProjectElement(FileElement P_NOTE, HashSet<FileElement> dwgs)
+        public ProjectElement(DwgFileModel P_NOTE, HashSet<DwgFileModel> dwgs)
         {
             this.P_NOTE = P_NOTE;
             this.Dwgs = dwgs;
@@ -204,7 +188,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 
         public bool ContainsPath(string relativePath)
         {
-            foreach (FileElement fe in Dwgs)
+            foreach (DwgFileModel fe in Dwgs)
             {
                 if (relativePath.Contains(fe.relativePath))
                 {
@@ -212,94 +196,6 @@ namespace ClassLibrary1.DATABASE.Controllers
                 }
             }
             return false;
-        }
-    }
-
-    class FileElement : IEqualityComparer<FileElement>, IEquatable<FileElement>
-    {
-        public int ID;
-        public string relativePath;
-        public DateTime lastModified;
-
-        public FileElement(string relPath, DateTime dt)
-        {
-            relativePath = relPath;
-            lastModified = dt;
-        }
-
-        public FileElement() { }
-
-
-        //CODE BELOW IS USED TO COMPARE FOR HASHSET.
-
-        public bool Equals(FileElement x, FileElement y)
-        {
-            bool xIsNull = ReferenceEquals(x, null);
-            bool yIsNull = ReferenceEquals(y, null);
-            if (xIsNull && yIsNull) return true;
-            if (xIsNull && !yIsNull) return false;
-            if (!xIsNull && yIsNull) return true;
-
-            bool isXempty = string.IsNullOrEmpty(x.relativePath);
-            bool isYempty = string.IsNullOrEmpty(y.relativePath);
-            if (isXempty && isYempty) { return true; }
-            if ((isXempty && !isYempty) || (!isXempty && isYempty)) { return false; }
-
-            return x.relativePath == y.relativePath;
-        }
-
-        public bool Equals(FileElement other)
-        {
-            if (Object.ReferenceEquals(other, null))
-            {
-                return false;
-            }
-            if (Object.ReferenceEquals(this, other))
-            {
-                return true;
-            }
-            if (this.GetType() != other.GetType())
-            {
-                return false;
-            }
-
-            bool isXempty = string.IsNullOrEmpty(relativePath);
-            bool isYempty = string.IsNullOrEmpty(other.relativePath);
-            if (isXempty && isYempty) { return true; }
-            if ((isXempty && !isYempty) || (!isXempty && isYempty)) { return false; }
-
-            return relativePath == other.relativePath;
-
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(obj, this))
-            {
-                FileElement fe = obj as FileElement;
-                return Equals(fe);
-            }
-            return false;
-        }
-
-        public int GetHashCode(FileElement obj)
-        {
-            return obj.relativePath.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            return this.relativePath.GetHashCode();
-        }
-
-        public static bool operator ==(FileElement x, FileElement y)
-        {
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(FileElement x, FileElement y)
-        {
-            return !x.Equals(y);
         }
     }
 }

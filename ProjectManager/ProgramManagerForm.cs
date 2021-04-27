@@ -1,4 +1,4 @@
-﻿using ClassLibrary1.HELPERS;
+﻿using GouvisPlumbingNew.HELPERS;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -97,10 +97,13 @@ namespace ProjectManager
                 string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
                 foreach (string path in fileList)
                 {
-                    if(path.Contains(ConstantName.databasePostFix))
+                    if(System.IO.Path.GetFileName(path) == (ConstantName.databasePostFix))
                     {
+                        
                         string relativePNotePath = Model.ReadDatabase(path);
                         P_NODE_PATH_BOX.Text = Model.ProjectFolder + relativePNotePath;
+                        SetUpFolderTreeView.Nodes.Clear();
+                        setupGridView.Rows.Clear();
                         Model.UpdateTheForm(SetUpFolderTreeView, setupGridView, P_NODE_PATH_BOX.Text);
                         break;
                     }

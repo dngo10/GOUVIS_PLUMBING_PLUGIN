@@ -1,4 +1,4 @@
-﻿using ClassLibrary1.DATABASE.Models;
+﻿using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.DATABASE.Controllers
+namespace GouvisPlumbingNew.DATABASE.Controllers
 {
 	/*
      CREATE TABLE "MATRIX3D" (
@@ -142,13 +142,13 @@ namespace ClassLibrary1.DATABASE.Controllers
     {
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			command.CommandText = string.Format("SELECT * FROM '{0}' WHERE '{1}' = @id;", DBMatrixName.name, DBMatrixName.ID);
+			command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);
 			command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			command.CommandText = string.Format("DELETE FROM '{0}' WHERE '{1}' = @id;", DBMatrixName.name, DBMatrixName.ID);
+			command.CommandText = string.Format("DELETE FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);
 			command.Parameters.Add(new SQLiteParameter("@id", ID));
 
         }

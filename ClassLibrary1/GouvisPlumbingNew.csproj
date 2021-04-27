@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ClassLibrary1</RootNamespace>
     <AssemblyName>ClassLibrary1</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -101,15 +101,17 @@
     <Compile Include="DATABASE\Controllers\DBDwgFile.cs" />
     <Compile Include="DATABASE\Controllers\DBFixtureBeingUsedArea.cs" />
     <Compile Include="DATABASE\Controllers\DBFixtureDetails.cs" />
+    <Compile Include="DATABASE\Controllers\DBInsertPoint.cs" />
     <Compile Include="DATABASE\Controllers\DBMatrix3d.cs" />
     <Compile Include="DATABASE\Controllers\DBPoint3D.cs" />
+    <Compile Include="DATABASE\DBModels\InsertPointModel.cs" />
     <Compile Include="DATABASE\Controllers\PlumbingDatabaseManager.cs" />
     <Compile Include="DATABASE\Controllers\DBCommand.cs" />
-    <Compile Include="DATABASE\Models\DwgFileModel.cs" />
-    <Compile Include="DATABASE\Models\FixtureBeingUsedAreaModel.cs" />
-    <Compile Include="DATABASE\Models\FixtureDetailsModel.cs" />
-    <Compile Include="DATABASE\Models\Matrix3dModel.cs" />
-    <Compile Include="DATABASE\Models\Point3dModel.cs" />
+    <Compile Include="DATABASE\DBModels\DwgFileModel.cs" />
+    <Compile Include="DATABASE\DBModels\FixtureBeingUsedAreaModel.cs" />
+    <Compile Include="DATABASE\DBModels\FixtureDetailsModel.cs" />
+    <Compile Include="DATABASE\DBModels\Matrix3dModel.cs" />
+    <Compile Include="DATABASE\DBModels\Point3dModel.cs" />
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />
@@ -134,6 +136,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PNOTE\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
