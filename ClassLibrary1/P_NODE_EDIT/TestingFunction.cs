@@ -38,7 +38,7 @@ namespace GouvisPlumbingNew.P_NODE_EDIT
                     DBDwgFile.CreateTable(sqliteConn);
                     foreach (FixtureBeingUsedArea blockRef in temp.fixtureAreaSET)
                     {
-                        long id = DBFixtureBeingUsedArea.InsertRow(sqliteConn, blockRef.fixtureBeingUsedAreaModel);
+                        long id = DBFixtureBeingUsedArea.InsertRow(sqliteConn, blockRef.model);
                     }
                     tr.Commit();
                 }

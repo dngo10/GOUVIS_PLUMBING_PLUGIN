@@ -23,12 +23,22 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBPoint3D
     {
+        public static bool HasRow(SQLiteConnection connection, long ID)
+        {
+            long count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBPoint3DCommands.SelectRow(command, ID);
+                count = Convert.ToInt64(command.ExecuteScalar());
+            }
+            return count == 1;
+        }
         public static Point3dModel SelectRow(SQLiteConnection connection, long ID)
         {
             Point3dModel point = null;
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBPoint3DCommands.SelectRow(command, ID);
+                DBPoint3DCommands.SelectCount(command, ID);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -66,11 +76,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         /// <summary>
         /// Insert a point to Table, return id the row inserted.
+        /// After inserting, ID will be added to model
         /// </summary>
         /// <param name="point"></param>
         /// <param name="connection"></param>
         /// <returns></returns>
-        public static long InsertRow(Point3dModel model, SQLiteConnection connection)
+        public static long InsertRow(ref Point3dModel model, SQLiteConnection connection)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
@@ -78,7 +89,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 int check = command.ExecuteNonQuery();
                 if (check == 1)
                 {
-                    return connection.LastInsertRowId;
+                    model.ID = connection.LastInsertRowId;
+                    return model.ID;
                 }
                 else if (check == 0)
                 {
@@ -99,7 +111,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 }
                 else if (check == 0)
                 {
-                    throw new Exception("DBPoint3d -> UpdateRow -> No Row is Updated.");
+                    //throw new Exception("DBPoint3d -> UpdateRow -> No Row is Updated.");
                 }
                 throw new Exception("DBPoint3D -> UpdateRow -> Update Point not successful.");
             }
@@ -127,6 +139,13 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBPoint3DCommands
     {
+        public static void SelectCount(SQLiteCommand command, long ID)
+        {
+            string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@ID", ID));
+        }
+
         public static void SelectRow(SQLiteCommand command, long ID)
         {
             string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);

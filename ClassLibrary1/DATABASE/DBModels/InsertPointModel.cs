@@ -1,5 +1,7 @@
-﻿using System;
+﻿using GouvisPlumbingNew.DATABASE.Controllers;
+using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,25 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
 
         public InsertPointModel()
         {
+
+        }
+
+        public void WriteToDataBase(SQLiteConnection connection)
+        {
+            position.WriteToDatabase(connection);
+            matrixTransform.WriteToDatabase(connection);
+
+            //File must be inserted to Database first (meaning it must have ID).
+
+            if(!DBInsertPoint.HasRow(connection, ID))
+            {
+                var temp = this;
+                ID = DBInsertPoint.InsertRow(ref temp, connection);
+            }
+            else
+            {
+                DBInsertPoint.UpdateRow(this, connection);
+            }
 
         }
     }

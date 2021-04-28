@@ -59,12 +59,70 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return model;
         }
 
+        public static bool HasRowPath(SQLiteConnection connection, string path)
+        {
+            long count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBDwgFileCommands.SelectRowPath(command, path);
+                count = Convert.ToInt64(command.ExecuteReader());
+            }
+            return count == 1;
+        }
+
+        public static bool HasRowID(SQLiteConnection connection, long ID)
+        {
+            long count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBDwgFileCommands.SelectCountID(command, ID);
+                count = Convert.ToInt64(command.ExecuteReader());
+            }
+            return count == 1;
+        }
+
         public static DwgFileModel SelectRow(SQLiteConnection connection, long ID)
         {
             DwgFileModel model = null;
             using(SQLiteCommand command = connection.CreateCommand())
             {
                 DBDwgFileCommands.SelectRow(command, ID);
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    model = new DwgFileModel();
+                    model.ID = (long)reader[DBDwgFileName.ID];
+                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
+                    model.isP_Notes = (int)reader[DBDwgFileName.ISP_NOTES];
+                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+                }
+            }
+            return model;
+        }
+
+        public static void UpdateRow(SQLiteConnection connection, DwgFileModel model)
+        {
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBDwgFileCommands.UpdateRow(command, model);
+                long check = command.ExecuteNonQuery();
+                if (check == 1)
+                {
+                }
+                else if (check == 0)
+                {
+                    //throw new Exception("DBFixtureDetails -> UpdateRow -> No Row is Updated.");
+                }
+                throw new Exception("DBFixtureDetails -> UpdateRow -> Update Not Successful.");
+            }
+        }
+
+        public static DwgFileModel SelectRow(SQLiteConnection connection, string relPath)
+        {
+            DwgFileModel model = null;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBDwgFileCommands.SelectRow(command, relPath);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -100,12 +158,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     if(fDArea != null) DBFixtureBeingUsedArea.DeleteRow(connection, fDArea);
                 }
 
-                DBFixtureBeingUsedAreaCommands.DeleteRow(command, model.ID);
+                DBDwgFileCommands.DeleteRow(command, model.ID);
                 command.ExecuteNonQuery();
             }
         }
 
-        public static long InsertRow(SQLiteConnection connection, DwgFileModel model)
+        public static long InsertRow(SQLiteConnection connection, ref DwgFileModel model)
         {
             using(SQLiteCommand command = connection.CreateCommand())
             {
@@ -156,24 +214,45 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             int temp = 1;
             command.Parameters.Add(new SQLiteParameter("@ispNote", temp));
         }
+
+        public static void SelectRowPath(SQLiteCommand command, string relPath)
+        {
+            string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @relPath;", DBDwgFileName.name, DBDwgFileName.RELATIVE_PATH);
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@relPath", relPath));
+        }
+
+        public static void SelectCountID(SQLiteCommand command, long ID)
+        {
+            string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID);
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@id", ID));
+        }
         public static void SelectRow(SQLiteCommand command, long ID)
         {
             string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID);
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
-        public static void DeleteRow(SQLiteCommand command, DwgFileModel model)
+
+        public static void SelectRow(SQLiteCommand command, string relPath)
+        {
+            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @relPath;", DBDwgFileName.name, DBDwgFileName.RELATIVE_PATH);
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@relPath", relPath));
+        }
+        public static void DeleteRow(SQLiteCommand command, long ID)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append(string.Format("DELETE FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID));
             command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@id", model.ID));
+            command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 
         public static void GetAllFixtureBeingUsedAreaID(SQLiteCommand command, DwgFileModel model)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append($"SELECT '{DBFixtureBeingUsedAreaName.ID}' FROM '{DBFixtureBeingUsedAreaName.name}' WHERE '{DBFixtureBeingUsedAreaName.FILE_ID}' = @id;");
+            builder.Append($"SELECT '{DBFixtureBeingUsedAreaName.ID}' FROM '{DBFixtureBeingUsedAreaName.name}' WHERE {DBFixtureBeingUsedAreaName.FILE_ID} = @id;");
 
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@id", model.ID));

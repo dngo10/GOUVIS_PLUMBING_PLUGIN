@@ -29,6 +29,17 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBFixtureBeingUsedArea
     {
+        public static bool SelectCount(SQLiteConnection connection, long ID)
+        {
+            long count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBFixtureBeingUsedAreaCommands.SelectCount(command, ID);
+                count = Convert.ToInt64(GetFixtureBeingUsedAreaModel(command));
+            }
+            return count == 1;
+        }
+
         public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, string handle)
         {
             using (SQLiteCommand command = connection.CreateCommand())
@@ -68,6 +79,25 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return model;
         }
 
+        public static long UpdateRow(SQLiteConnection connection, FixtureBeingUsedAreaModel model)
+        {
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBFixtureBeingUsedAreaCommands.UpdateRow(command, model);
+                long check = command.ExecuteNonQuery();
+                if (check == 1)
+                {
+                    model.ID = connection.LastInsertRowId;
+                    return model.ID;
+                }
+                else if (check == 0)
+                {
+                    //throw new Exception("FixtureBeingUsedAreaModel -> UpdateRow -> No Row is Updated.");
+                }
+                throw new Exception("FixtureBeingUsedAreaModel -> UpdateRow -> Insert Not Successful.");
+            }
+        }
+
         public static void DeleteRow(SQLiteConnection connection, FixtureBeingUsedAreaModel model)
         {
             using(SQLiteCommand command = connection.CreateCommand())
@@ -81,15 +111,17 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
         }
         
-        public static long InsertRow(SQLiteConnection connection, FixtureBeingUsedAreaModel model)
+        public static long HasRow(SQLiteConnection connection, ref FixtureBeingUsedAreaModel model)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
+
                 DBFixtureBeingUsedAreaCommands.InsertRow(model, command);
                 long check = command.ExecuteNonQuery();
                 if(check == 1)
                 {
-                    return connection.LastInsertRowId;
+                    model.ID = connection.LastInsertRowId;
+                    return model.ID;
                 }else if(check == 0)
                 {
                     throw new Exception("DBFixtureBeingUsed -> insertRow -> No Row is inserted.");
@@ -122,6 +154,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
             command.Parameters.Add(new SQLiteParameter("@handle", handle));
+        }
+
+        public static void SelectCount(SQLiteCommand command, long ID)
+        {
+            command.CommandText = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
+            command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
         public static void SelectRow(SQLiteCommand command, long ID)
         {

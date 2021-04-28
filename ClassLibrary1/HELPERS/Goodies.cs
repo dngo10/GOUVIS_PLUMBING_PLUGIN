@@ -22,7 +22,7 @@ namespace GouvisPlumbingNew.HELPERS
          *Or it will create errors.
          *This is to get Program
          */
-        public static string GetDynamicName(BlockReference bref, Editor ed)
+        public static string GetDynamicName(BlockReference bref)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace GouvisPlumbingNew.HELPERS
                 return blockTableRecord.Name;
             }catch(Exception e)
             {
-                ed.WriteMessage("The HELPERS/GetDyamicName function error, check it " + e.Message);
+                Console.WriteLine("The HELPERS/GetDyamicName function error, check it " + e.Message);
             }
             return null;
         }

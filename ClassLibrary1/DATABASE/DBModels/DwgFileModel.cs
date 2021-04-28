@@ -1,5 +1,7 @@
-﻿using System;
+﻿using GouvisPlumbingNew.DATABASE.Controllers;
+using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,20 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
         public string relativePath;
         public long modifieddate;
         public long isP_Notes;
+
+        public void WriteToDatabase(SQLiteConnection connection)
+        {
+            //File must be inserted to Database first (meaning it must have ID).
+            if (!DBDwgFile.HasRowPath(connection, relativePath))
+            {
+                var temp = this;
+                ID = DBDwgFile.InsertRow(connection, ref temp);
+            }
+            else
+            {
+                DBDwgFile.UpdateRow(connection, this);
+            }
+        }
 
         //CODE BELOW IS USED TO COMPARE FOR HASHSET.
 

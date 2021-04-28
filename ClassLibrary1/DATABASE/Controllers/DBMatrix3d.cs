@@ -31,6 +31,17 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
      */
 	class DBMatrix3d
     {
+		public static bool HasRow(SQLiteConnection connection, long ID)
+        {
+			long count = 0;
+			using (SQLiteCommand command = connection.CreateCommand())
+			{
+				DBMatrix3dCommands.SelectCount(command, ID);
+				count = Convert.ToInt64(command.ExecuteScalar());
+			}
+			return count == 1;
+		}
+
 		/// <summary>
 		/// This Will return 1 model, if ID not found, will return null.
 		/// </summary>
@@ -98,12 +109,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 				}
 				else if (check == 0)
 				{
-					throw new Exception("DBMatrix3d -> Update -> No Row Is Update.");
+					//throw new Exception("DBMatrix3d -> Update -> No Row Is Update.");
 				}
 				throw new Exception("DBMatrix3d -> Update -> Update Is Not Successful.");
 			}
 		}
-		public static long Insert(SQLiteConnection connection, Matrix3dModel model)
+		public static long Insert(SQLiteConnection connection, ref Matrix3dModel model)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
@@ -111,7 +122,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 				long check = command.ExecuteNonQuery();
 				if(check == 1)
                 {
-					return connection.LastInsertRowId;
+					model.ID =  connection.LastInsertRowId;
+					return model.ID;
                 }
                 else if(check == 0)
                 {
@@ -140,6 +152,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
 	class DBMatrix3dCommands
     {
+		public static void SelectCount(SQLiteCommand command, long ID)
+		{
+			command.CommandText = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);
+			command.Parameters.Add(new SQLiteParameter("@id", ID));
+		}
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
 			command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);

@@ -39,6 +39,27 @@ CREATE TABLE "FIXTURE_DETAILS" (
      */
 	class DBFixtureDetails
     {
+		public static List<FixtureDetailsModel> SelectRows(SQLiteConnection connection, long fileID)
+		{
+			using (SQLiteCommand command = connection.CreateCommand())
+			{
+				DBFixtureDetailsCommands.SelectRows(command, fileID);
+				return GetFixtureDetails(command, fileID);
+			}
+		}
+
+		public static bool HasRow(SQLiteConnection connection, long ID)
+		{
+			long count = 0;
+			using (SQLiteCommand command = connection.CreateCommand())
+			{
+				
+				DBFixtureDetailsCommands.SelectCount(command, ID);
+				count = Convert.ToInt64(command.ExecuteScalar());
+			}
+			return count == 1;
+		}
+
 		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, long ID)
         {
 			using (SQLiteCommand command = connection.CreateCommand())
@@ -57,54 +78,77 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			
         }
 
+		private static List<FixtureDetailsModel> GetFixtureDetails(SQLiteCommand command, long fileID)
+        {
+
+			List<FixtureDetailsModel> fixtures = new List<FixtureDetailsModel>();
+			DBFixtureDetailsCommands.SelectRows(command, fileID);
+			SQLiteDataReader reader = command.ExecuteReader();
+			while (reader.Read())
+			{
+				FixtureDetailsModel model = GetFixture(reader, command);
+				if (model != null) fixtures.Add(model);
+			}
+			return fixtures;
+		}
+
 		private static FixtureDetailsModel GetFixtureDetail(SQLiteCommand command)
         {
 			FixtureDetailsModel model = null;
 			SQLiteDataReader reader = command.ExecuteReader();
 			while (reader.Read())
 			{
-				long POSITION_ID = (long)reader[DBFixtureDetailsNames.POSITION_ID];
-				long TRANSFORM_ID = (long)reader[DBFixtureDetailsNames.TRANSFORM_ID];
-				string HANDLE = (string)reader[DBFixtureDetailsNames.HANDLE];
-				double INDEX = (double)reader[DBFixtureDetailsNames.INDEXX];
-				string FIXTURE_NAME = (string)reader[DBFixtureDetailsNames.FIXTURE_NAME];
-				string TAG = (string)reader[DBFixtureDetailsNames.TAG];
-				string NUMBER = (string)reader[DBFixtureDetailsNames.NUMBER];
-				double CW_DIA = (double)reader[DBFixtureDetailsNames.CW_DIA];
-				double HW_DIA = (double)reader[DBFixtureDetailsNames.HW_DIA];
-				double WASTE_DIA = (double)reader[DBFixtureDetailsNames.WASTE_DIA];
-				double VENT_DIA = (double)reader[DBFixtureDetailsNames.VENT_DIA];
-				double STORM_DIA = (double)reader[DBFixtureDetailsNames.STORM_DIA];
-				double WSFU = (double)reader[DBFixtureDetailsNames.WSFU];
-				double CWSFU = (double)reader[DBFixtureDetailsNames.CWSFU];
-				double HWSFU = (double)reader[DBFixtureDetailsNames.HWSFU];
-				double DFU = (double)reader[DBFixtureDetailsNames.DFU];
-				string DESCRIPTION = (string)reader[DBFixtureDetailsNames.DESCRIPTION];
-
-				Matrix3dModel matrix = DBMatrix3d.SelectRow(command.Connection, TRANSFORM_ID);
-				Point3dModel position = DBPoint3D.SelectRow(command.Connection, POSITION_ID);
-
-				model = new FixtureDetailsModel();
-				model.position = position;
-				model.matrixTransform = matrix;
-				model.handle = HANDLE;
-				model.INDEX = INDEX;
-				model.FIXTURENAME = FIXTURE_NAME;
-				model.TAG = TAG;
-				model.NUMBER = NUMBER;
-				model.CW_DIA = CW_DIA;
-				model.HW_DIA = HW_DIA;
-				model.WASTE_DIA = WASTE_DIA;
-				model.VENT_DIA = VENT_DIA;
-				model.STORM_DIA = STORM_DIA;
-				model.WSFU = WSFU;
-				model.CWSFU = CWSFU;
-				model.HWSFU = HWSFU;
-				model.DFU = DFU;
-				model.DESCRIPTION = DESCRIPTION;
+				model = GetFixture(reader, command);
 			}
 			return model;
 		} 
+
+		private static FixtureDetailsModel GetFixture(SQLiteDataReader reader, SQLiteCommand command)
+        {
+			FixtureDetailsModel model;
+
+			long POSITION_ID = (long)reader[DBFixtureDetailsNames.POSITION_ID];
+			long TRANSFORM_ID = (long)reader[DBFixtureDetailsNames.TRANSFORM_ID];
+			string HANDLE = (string)reader[DBFixtureDetailsNames.HANDLE];
+			double INDEX = (double)reader[DBFixtureDetailsNames.INDEXX];
+			string FIXTURE_NAME = (string)reader[DBFixtureDetailsNames.FIXTURE_NAME];
+			string TAG = (string)reader[DBFixtureDetailsNames.TAG];
+			string NUMBER = (string)reader[DBFixtureDetailsNames.NUMBER];
+			double CW_DIA = (double)reader[DBFixtureDetailsNames.CW_DIA];
+			double HW_DIA = (double)reader[DBFixtureDetailsNames.HW_DIA];
+			double WASTE_DIA = (double)reader[DBFixtureDetailsNames.WASTE_DIA];
+			double VENT_DIA = (double)reader[DBFixtureDetailsNames.VENT_DIA];
+			double STORM_DIA = (double)reader[DBFixtureDetailsNames.STORM_DIA];
+			double WSFU = (double)reader[DBFixtureDetailsNames.WSFU];
+			double CWSFU = (double)reader[DBFixtureDetailsNames.CWSFU];
+			double HWSFU = (double)reader[DBFixtureDetailsNames.HWSFU];
+			double DFU = (double)reader[DBFixtureDetailsNames.DFU];
+			string DESCRIPTION = (string)reader[DBFixtureDetailsNames.DESCRIPTION];
+
+			Matrix3dModel matrix = DBMatrix3d.SelectRow(command.Connection, TRANSFORM_ID);
+			Point3dModel position = DBPoint3D.SelectRow(command.Connection, POSITION_ID);
+
+			model = new FixtureDetailsModel();
+			model.position = position;
+			model.matrixTransform = matrix;
+			model.handle = HANDLE;
+			model.INDEX = INDEX;
+			model.FIXTURENAME = FIXTURE_NAME;
+			model.TAG = TAG;
+			model.NUMBER = NUMBER;
+			model.CW_DIA = CW_DIA;
+			model.HW_DIA = HW_DIA;
+			model.WASTE_DIA = WASTE_DIA;
+			model.VENT_DIA = VENT_DIA;
+			model.STORM_DIA = STORM_DIA;
+			model.WSFU = WSFU;
+			model.CWSFU = CWSFU;
+			model.HWSFU = HWSFU;
+			model.DFU = DFU;
+			model.DESCRIPTION = DESCRIPTION;
+
+			return model;
+		}
 		public static long DeleteRow(SQLiteConnection connection, FixtureDetailsModel fixture)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
@@ -143,10 +187,10 @@ CREATE TABLE "FIXTURE_DETAILS" (
 				{
 					throw new Exception("DBFixtureDetails -> UpdateRow -> No Row is Updated.");
 				}
-				throw new Exception("DBFixtureDetails -> UpdateRow -> Insert Not Successful.");
+				throw new Exception("DBFixtureDetails -> UpdateRow -> Update Not Successful.");
 			}
 		}
-		public static long InsertRow(SQLiteConnection connection, FixtureDetailsModel model)
+		public static long InsertRow(SQLiteConnection connection, ref FixtureDetailsModel model)
         {
 			long index;
 			using(SQLiteCommand command = connection.CreateCommand())
@@ -184,6 +228,18 @@ CREATE TABLE "FIXTURE_DETAILS" (
 
 	class DBFixtureDetailsCommands
     {
+		public static void SelectCount(SQLiteCommand command, long ID)
+		{
+			string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
+			command.CommandText = commandStr;
+			command.Parameters.Add(new SQLiteParameter("@id", ID));
+		}
+		public static void SelectRows(SQLiteCommand command, long fileID)
+		{
+			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.FILE_ID);
+			command.CommandText = commandStr;
+			command.Parameters.Add(new SQLiteParameter("@id", fileID));
+		}
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
 			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);

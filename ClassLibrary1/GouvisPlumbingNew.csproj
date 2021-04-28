@@ -127,8 +127,10 @@
     <Compile Include="HELPERS\ObjectData.cs" />
     <Compile Include="HELPERS\TableSchedule.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="PNOTE\ReadPNote.cs" />
+    <Compile Include="PNOTE\WritePNote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="P_NODE_EDIT\NODEDWG.cs" />
+    <Compile Include="PNOTE\NODEDWG.cs" />
     <Compile Include="P_NODE_EDIT\ReadInformationNodeDrawing.cs" />
     <Compile Include="P_NODE_EDIT\TestingFunction.cs" />
     <Compile Include="P_NODE_EDIT\UpdateDataInNodeDrawing.cs" />
@@ -137,9 +139,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PNOTE\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

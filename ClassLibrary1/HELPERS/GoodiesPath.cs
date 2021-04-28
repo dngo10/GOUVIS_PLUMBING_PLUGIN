@@ -127,6 +127,30 @@ namespace GouvisPlumbingNew.HELPERS
             return relativePath;
         }
 
+        //RETURN RELATIVE PATH BASE ON BASE FOLDER
+        public static string MakeRelativePath(string toPath)
+        {
+            string fromPath = GetBaseFolderPathFromDwgPath(toPath);
+            if (string.IsNullOrEmpty(fromPath)) return "";
+
+            if (string.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+            if (string.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+
+            Uri fromUri = new Uri(fromPath);
+            Uri toUri = new Uri(toPath);
+
+            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+            {
+                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            }
+            return relativePath;
+        }
+
         //Code from: https://stackoverflow.com/questions/1410127/c-sharp-test-if-user-has-write-access-to-a-folder
         public static bool IsDirectoryWritable(string dirPath, bool throwIfFails = false)
         {
@@ -203,7 +227,20 @@ namespace GouvisPlumbingNew.HELPERS
                 }
                 directoryPath = Directory.GetParent(directoryPath).FullName;
             }
-            return "";
+            return dataPath;
+        }
+
+        public static string GetBaseFolderPathFromDwgPath(string path)
+        {
+            string databasePath = GetDatabasePathFromDwgPath(path);
+            if (!string.IsNullOrEmpty(databasePath))
+            {
+                return Directory.GetParent(Directory.GetParent(databasePath).FullName).FullName;
+            }
+            else
+            {
+                return "";
+            }
         }
         public static string GetNotePathFromADwgPath(string path)
         {

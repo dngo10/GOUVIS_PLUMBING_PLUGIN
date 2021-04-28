@@ -1,6 +1,8 @@
-﻿using GouvisPlumbingNew.HELPERS;
+﻿using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +30,25 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
         public string DESCRIPTION = ConstantName.invalidStr;
         public DwgFileModel file = null;
         public long ID = ConstantName.invalidNum;
+
+        public void WriteToDatabase(SQLiteConnection connection)
+        {
+            position.WriteToDatabase(connection);
+            matrixTransform.WriteToDatabase(connection);
+
+            //File must be inserted to Database first (meaning it must have ID).
+
+            if(DBFixtureDetails.HasRow(connection, ID))
+            {
+                var temp = this;
+                ID = DBFixtureDetails.InsertRow(connection, ref temp);
+            }
+            else
+            {
+                DBFixtureDetails.UpdateRow(connection, this);
+            }
+
+        }
     }
 
     static class FixtureDetailsName

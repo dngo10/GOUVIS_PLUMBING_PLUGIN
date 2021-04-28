@@ -24,6 +24,17 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
      */
     class DBInsertPoint
     {
+        public static bool HasRow(SQLiteConnection connection, long ID)
+        {
+            long count = 0;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBInsertPointCommands.SelectCount(command, ID);
+                 count = Convert.ToInt64(command.ExecuteScalar());
+
+            }
+            return count == 1;
+        }
         public static InsertPointModel SelectRow(SQLiteConnection connection, string handle)
         {
             InsertPointModel model = null;
@@ -87,7 +98,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
 
         }
-        public static long InsertRow(InsertPointModel model, SQLiteConnection connection)
+        public static long InsertRow(ref InsertPointModel model, SQLiteConnection connection)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
@@ -95,7 +106,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 int check = command.ExecuteNonQuery();
                 if (check == 1)
                 {
-                    return connection.LastInsertRowId;
+                    model.ID = connection.LastInsertRowId;
+                    return model.ID;
                 }
                 else if (check == 0)
                 {
@@ -144,23 +156,30 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBInsertPointCommands {
 
+        public static void SelectCount(SQLiteCommand command, long ID)
+        {
+            string commandStr = $"SELECT COUNT(*) FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@id", ID));
+        }
+
         public static void SelectRow(SQLiteCommand command, string handle)
         {
-            string commandStr = $"SELECT * FROM '{DBInsertPointName.tableName}' WHERE '{DBInsertPointName.HANDLE}' = @handle;";
+            string commandStr = $"SELECT * FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.HANDLE} = @handle;";
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@handle", handle));
         }
 
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            string commandStr = $"SELECT * FROM '{DBInsertPointName.tableName}' WHERE '{DBInsertPointName.ID}' = @id;";
+            string commandStr = $"SELECT * FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
 
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            string commandStr = $"DELETE FROM '{DBInsertPointName.tableName}' WHERE '{DBInsertPointName.ID}' = @id;";
+            string commandStr = $"DELETE FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }

@@ -1,6 +1,8 @@
-﻿using GouvisPlumbingNew.HELPERS;
+﻿using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +30,19 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
             Y = args[1];
             Z = args[2];
             this.ID = ID;
+        }
+
+        public void WriteToDatabase(SQLiteConnection connection)
+        {
+            if (!DBPoint3D.HasRow(connection, ID))
+            {
+                var temp = this;
+                ID = DBPoint3D.InsertRow(ref temp, connection);
+            }
+            else
+            {
+                DBPoint3D.UpdateRow(this, connection);
+            }
         }
     }
 }

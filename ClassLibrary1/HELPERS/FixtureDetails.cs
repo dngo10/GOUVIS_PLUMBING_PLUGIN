@@ -13,16 +13,18 @@ namespace GouvisPlumbingNew.HELPERS
     {
         public FixtureDetailsModel model = new FixtureDetailsModel();
 
-        public FixtureDetails(BlockReference bref, Transaction tr)
+        public FixtureDetails(BlockReference bref, Transaction tr, DwgFileModel fileModel)
         {
-            FillOutVariable(bref, tr);
+            FillOutVariable(bref, tr, fileModel);
         }
 
-        private void FillOutVariable(BlockReference bref, Transaction tr)
+        private void FillOutVariable(BlockReference bref, Transaction tr, DwgFileModel fileModel)
         {
             model.position = new Point3dModel(bref.Position.ToArray());
             model.handle = bref.Handle.ToString();
             model.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
+            model.file = fileModel;
+
             foreach (ObjectId id in bref.AttributeCollection)
             {
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
@@ -89,31 +91,6 @@ namespace GouvisPlumbingNew.HELPERS
                 {
                     model.DESCRIPTION = textString;
                 }
-            }
-        }
-
-        public void UpdateFixtureDetail(Database db)
-        {
-            BlockReference bref = (BlockReference)Goodies.GetDBObjFromHandle(handle, db);
-            if(bref != null && !bref.IsErased)
-            {
-                using(Transaction tr = db.TransactionManager.StartTransaction())
-                {
-                    FillOutVariable(bref, tr);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Update Database in manager folder
-        /// </summary>
-        /// <param name="db">drawing database</param>
-        /// <param name=""></param>
-        public void UpdateDatabaseManager(string path)
-        {
-            if (GoodiesPath.HasDwgPathInDatabase(path))
-            {
-                
             }
         }
     }

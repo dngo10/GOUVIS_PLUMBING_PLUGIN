@@ -9,6 +9,7 @@ using GouvisPlumbingNew.HELPERS;
 using Autodesk.AutoCAD.Geometry;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.DATABASE.Controllers;
+using System.Data.SQLite;
 
 namespace GouvisPlumbingNew.HELPERS
 {
@@ -16,55 +17,54 @@ namespace GouvisPlumbingNew.HELPERS
     {
         //x and y are width and height of the XY dynamic dimension.
 
-        public FixtureBeingUsedAreaModel fixtureBeingUsedAreaModel = null;
+        public FixtureBeingUsedAreaModel model = null;
 
         //public List<FixtureDetails> FDList = new List<FixtureDetails>();
 
         public FixtureBeingUsedArea(BlockReference block)
         {
-            
             GetTopAndBottomPoint(block);
         }
 
         private void GetTopAndBottomPoint(BlockReference block)
         {
-            fixtureBeingUsedAreaModel = new FixtureBeingUsedAreaModel();
-            fixtureBeingUsedAreaModel.handle  = block.Handle.ToString();
-            fixtureBeingUsedAreaModel.position = new Point3dModel(block.Position.ToArray());
-            fixtureBeingUsedAreaModel.matrixTransform = new Matrix3dModel(block.BlockTransform.ToArray());
+            model = new FixtureBeingUsedAreaModel();
+            model.handle  = block.Handle.ToString();
+            model.position = new Point3dModel(block.Position.ToArray());
+            model.matrixTransform = new Matrix3dModel(block.BlockTransform.ToArray());
 
             DynamicBlockReferencePropertyCollection dynBlockPropCol = block.DynamicBlockReferencePropertyCollection;
             foreach(DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
             {
                 if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.X)){
-                    fixtureBeingUsedAreaModel.X = (double)dynProp.Value;
+                    model.X = (double)dynProp.Value;
                 }else if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.Y))
                 {
-                    fixtureBeingUsedAreaModel.Y = (double)dynProp.Value;
+                    model.Y = (double)dynProp.Value;
                 }else if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.basePoint))
                 {
-                    fixtureBeingUsedAreaModel.origin = new Point3dModel(((Point3d)dynProp.Value).ToArray());
+                    model.origin = new Point3dModel(((Point3d)dynProp.Value).ToArray());
                 }
             }
 
-            Point3d pointTop = new Point3d(fixtureBeingUsedAreaModel.origin.X, fixtureBeingUsedAreaModel.origin.Y, 0);
+            Point3d pointTop = new Point3d(model.origin.X, model.origin.Y, 0);
 
             //Use the regular X,Y coordinate, DO NOT use Game or Web coordinate
-            Point3d pointBottom = new Point3d(fixtureBeingUsedAreaModel.origin.X + fixtureBeingUsedAreaModel.X, fixtureBeingUsedAreaModel.origin.Y - fixtureBeingUsedAreaModel.Y, 0);
+            Point3d pointBottom = new Point3d(model.origin.X + model.X, model.origin.Y - model.Y, 0);
             pointTop = pointTop.TransformBy(block.BlockTransform);
             pointBottom = pointBottom.TransformBy(block.BlockTransform);
 
-            fixtureBeingUsedAreaModel.pointBottom = new Point3dModel(pointBottom.ToArray());
-            fixtureBeingUsedAreaModel.pointTop = new Point3dModel(pointTop.ToArray());
+            model.pointBottom = new Point3dModel(pointBottom.ToArray());
+            model.pointTop = new Point3dModel(pointTop.ToArray());
         }
 
         private bool IsInsideTheBox(Point3d point)
         {
-            bool xInside = (point.X > fixtureBeingUsedAreaModel.pointTop.X && point.X < fixtureBeingUsedAreaModel.pointBottom.X) ||
-                           (point.X <= fixtureBeingUsedAreaModel.pointTop.X && point.X >= fixtureBeingUsedAreaModel.pointBottom.X);
+            bool xInside = (point.X > model.pointTop.X && point.X < model.pointBottom.X) ||
+                           (point.X <= model.pointTop.X && point.X >= model.pointBottom.X);
 
-            bool yInside = (point.Y > fixtureBeingUsedAreaModel.pointTop.Y && point.Y < fixtureBeingUsedAreaModel.pointBottom.Y) ||
-                           (point.Y <= fixtureBeingUsedAreaModel.pointTop.Y && point.Y >= fixtureBeingUsedAreaModel.pointBottom.Y);
+            bool yInside = (point.Y > model.pointTop.Y && point.Y < model.pointBottom.Y) ||
+                           (point.Y <= model.pointTop.Y && point.Y >= model.pointBottom.Y);
 
             return xInside && yInside;
         }
@@ -73,5 +73,7 @@ namespace GouvisPlumbingNew.HELPERS
         {
             return IsInsideTheBox(bref.Position);
         }
+
+
     }
 }

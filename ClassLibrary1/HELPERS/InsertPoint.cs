@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GouvisPlumbingNew.DATABASE.DBModels;
 
 namespace GouvisPlumbingNew.HELPERS
 {
     class InsertPoint : ObjectData
     {
-        public string NAME;
-        public string ALIAS;
-        public ItemHold item;
+        public InsertPointModel model;
 
         public InsertPoint(BlockReference bref, Transaction tr)
         {
@@ -22,6 +21,7 @@ namespace GouvisPlumbingNew.HELPERS
 
         private void FilloutVariables(BlockReference bref, Transaction tr)
         {
+            model = new InsertPointModel();
             handle = bref.Handle;
             position = bref.Position;
             foreach (ObjectId id in bref.AttributeCollection)
@@ -29,11 +29,11 @@ namespace GouvisPlumbingNew.HELPERS
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
                 if (aRef.Tag == InsertPointName.NAME)
                 {
-                    NAME = aRef.TextString;
+                    model.name = aRef.TextString;
                 }
                 else if (aRef.Tag == InsertPointName.ALIAS)
                 {
-                    ALIAS = aRef.TextString;
+                    model.alias = aRef.TextString;
                 }
             }
         }
@@ -77,26 +77,5 @@ namespace GouvisPlumbingNew.HELPERS
     {
         public static string NAME = "NAME";
         public static string ALIAS = "ALIAS";
-    }
-
-    //ItemHold can ONLY HOLD TABLE AND BLOCK (things that have POSITION);
-    class ItemHold
-    {
-        public Handle itemHandle;
-        public Point3d itemPosition;
-
-        // Dabatabase must be writable
-        public void DeleteItemHold(Database db)
-        {
-            BlockReference bref = (BlockReference)Goodies.GetDBObjFromHandle(itemHandle, db);
-            if(bref != null && !bref.IsErased)
-            {
-                using(Transaction tr = db.TransactionManager.StartTransaction())
-                {
-                    bref.Erase();
-                    tr.Commit();
-                }
-            }
-        }
     }
 }
