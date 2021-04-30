@@ -29,8 +29,9 @@ namespace GouvisPlumbingNew.HELPERS
             int rowsNum = 2 + FixtureDetails.Count;
             int columnsNum = 8;
 
-            t.InsertRows(0, 1.5, rowsNum);
-            t.InsertColumns(0, 1, columnsNum);
+            // table already has 1 row, 1 column, that's why we insert - 1;
+            t.InsertRows(0, 1.5, rowsNum-1);
+            t.InsertColumns(0, 1, columnsNum-1);
 
             //Merge the Title ROWS
             CellRange crTitle = CellRange.Create(t, 0, 0, 0, columnsNum - 1);
@@ -45,6 +46,8 @@ namespace GouvisPlumbingNew.HELPERS
             //Column Description -- Align Left
             t.Columns[columnsNum - 1].Alignment = CellAlignment.MiddleLeft;
 
+            t.Cells[1, 7].Alignment = CellAlignment.MiddleCenter;
+
             //Set WIDTH FOR EARCH COLUMN:
             t.Columns[0].Width = 0.67;
             t.Columns[1].Width = 2;
@@ -53,6 +56,7 @@ namespace GouvisPlumbingNew.HELPERS
             t.Columns[4].Width = 0.5;
             t.Columns[5].Width = 0.5;
             t.Columns[6].Width = 0.5;
+            t.Columns[7].Width = 4.25;
 
             //Set General ROWS HEIGHT;
             for (int index = 0; index < rowsNum; index++) { t.Rows[index].Height = TableScheduleName.GeneralRowHeight;}
@@ -93,8 +97,9 @@ namespace GouvisPlumbingNew.HELPERS
                 t.Cells[i, 2].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.CW_DIA));
                 t.Cells[i, 3].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.HW_DIA));
                 t.Cells[i, 4].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.WASTE_DIA));
-                t.Cells[i, 5].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.STORM_DIA));
-                t.Cells[i, 6].TextString = FD.model.DESCRIPTION;
+                t.Cells[i, 5].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.VENT_DIA));
+                t.Cells[i, 6].TextString = returnTextStringFinalValue(NumberConverter.ConvertToFractionalNumber(FD.model.STORM_DIA));
+                t.Cells[i, 7].TextString = FD.model.DESCRIPTION;
 
                 i++;
             }

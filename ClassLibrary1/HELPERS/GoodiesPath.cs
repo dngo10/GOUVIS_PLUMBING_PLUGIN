@@ -246,7 +246,7 @@ namespace GouvisPlumbingNew.HELPERS
             string dataPath = GetDatabasePathFromDwgPath(path);
             if (!string.IsNullOrEmpty(dataPath))
             {
-                string directoryPath = Directory.GetParent(Path.GetDirectoryName(path)).FullName;
+                string directoryPath = Directory.GetParent(Path.GetDirectoryName(dataPath)).FullName;
 
                 DwgFileModel fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
 

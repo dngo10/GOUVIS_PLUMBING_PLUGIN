@@ -3,6 +3,7 @@ using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using ClassLibrary1.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,7 +50,6 @@ namespace GouvisPlumbingNew.HELPERS
         {
             btr.AppendEntity(table);
             tr.AddNewlyCreatedDBObject(table, true);
-            
         }
 
         /// <summary>
@@ -282,17 +282,18 @@ namespace GouvisPlumbingNew.HELPERS
         /// </summary>
         /// <param name="path">Full DWG PATH</param>
         /// <returns></returns>
-        public static Document CanOpenToWrite(string path)
+        public static FileStatus CanOpenToWrite(string path)
         {
+            FileStatus fileStatus = new FileStatus(3, path);
             if (!File.Exists(path))
             {
                 Console.WriteLine("CanOpenToWrite: File does not exists.");
-                return null;
+                return new FileStatus(3, path);
             }
 
             if(path == Application.DocumentManager.MdiActiveDocument.Name)
             {
-                return Application.DocumentManager.MdiActiveDocument;
+                return new FileStatus(0, path);
             }
 
             if (GetListOfDocumentOpening().Contains(path))
@@ -301,8 +302,47 @@ namespace GouvisPlumbingNew.HELPERS
                 {
                     if(doc.Name == path)
                     {
+                        //Application.DocumentManager.MdiActiveDocument = doc;
+                        return new FileStatus(1, path);
+                    }
+                }
+            }
+
+            if (!GoodiesPath.IsFileLocked(path))
+            {
+                //Document doc = Application.DocumentManager.Open(path, false, "");
+                //Application.DocumentManager.MdiActiveDocument = doc;
+                return new FileStatus(2, path);
+            }
+
+            Console.WriteLine("CanOpenToWrite: Can't open file, Problem unknown");
+            return new FileStatus(3, path);
+        }
+
+
+        public static Document CanOpenToWrite1(string path)
+        {
+            FileStatus fileStatus = new FileStatus(3, path);
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("CanOpenToWrite: File does not exists.");
+                return null;
+            }
+
+            if (path == Application.DocumentManager.MdiActiveDocument.Name)
+            {
+                return Application.DocumentManager.MdiActiveDocument;
+            }
+
+            if (GetListOfDocumentOpening().Contains(path))
+            {
+                foreach (Document doc in Application.DocumentManager)
+                {
+                    if (doc.Name == path)
+                    {
                         Application.DocumentManager.MdiActiveDocument = doc;
-                        return doc;
+                        Application.DocumentManager.DocumentActivationEnabled = true;
+                        return Application.DocumentManager.MdiActiveDocument;
                     }
                 }
             }
@@ -311,13 +351,13 @@ namespace GouvisPlumbingNew.HELPERS
             {
                 Document doc = Application.DocumentManager.Open(path, false, "");
                 Application.DocumentManager.MdiActiveDocument = doc;
-                return doc;
+                Application.DocumentManager.DocumentActivationEnabled = true;
+                return Application.DocumentManager.MdiActiveDocument;
             }
 
             Console.WriteLine("CanOpenToWrite: Can't open file, Problem unknown");
             return null;
         }
-
         public static string ConvertHandleToString(Handle handle)
         {
             return handle.ToString();

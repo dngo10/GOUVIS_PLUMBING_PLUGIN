@@ -115,6 +115,7 @@
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />
+    <Compile Include="HELPERS\FileStatus.cs" />
     <Compile Include="HELPERS\FixtureBeingUsedArea.cs" />
     <Compile Include="HELPERS\FixtureDetails.cs" />
     <Compile Include="HELPERS\Goodies.cs" />

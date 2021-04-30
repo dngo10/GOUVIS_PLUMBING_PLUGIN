@@ -1,9 +1,6 @@
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\ClassLibrary1.dll.config
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\ClassLibrary1.dll
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\ClassLibrary1.pdb
-C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\GouvisPlumbingNew.csproj.CoreCompileInputs.cache
-C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\ClassLibrary1.dll
-C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\ClassLibrary1.pdb
-C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\ClassLibrary1.dll.config
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\EntityFramework.dll
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\EntityFramework.SqlServer.dll
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\System.Data.SQLite.dll
@@ -12,4 +9,7 @@ C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\System.Da
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\EntityFramework.xml
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\EntityFramework.SqlServer.xml
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\bin\x64\Debug\System.Data.SQLite.xml
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\GouvisPlumbingNew.csproj.CoreCompileInputs.cache
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\GouvisPlumbingNew.csproj.CopyComplete
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\ClassLibrary1.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\ClassLibrary1\obj\x64\Debug\ClassLibrary1.pdb
