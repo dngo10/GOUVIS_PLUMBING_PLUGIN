@@ -13,17 +13,21 @@ namespace GouvisPlumbingNew.HELPERS
     {
         public FixtureDetailsModel model = new FixtureDetailsModel();
 
-        public FixtureDetails(BlockReference bref, Transaction tr, DwgFileModel fileModel)
+        public FixtureDetails(BlockReference bref, Transaction tr)
         {
-            FillOutVariable(bref, tr, fileModel);
+            FillOutVariable(bref, tr);
         }
 
-        private void FillOutVariable(BlockReference bref, Transaction tr, DwgFileModel fileModel)
+        public FixtureDetails(FixtureDetailsModel model)
+        {
+            this.model = model;
+        }
+
+        private void FillOutVariable(BlockReference bref, Transaction tr)
         {
             model.position = new Point3dModel(bref.Position.ToArray());
-            model.handle = bref.Handle.ToString();
+            model.handle = Goodies.ConvertHandleToString(bref.Handle);
             model.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
-            model.file = fileModel;
 
             foreach (ObjectId id in bref.AttributeCollection)
             {

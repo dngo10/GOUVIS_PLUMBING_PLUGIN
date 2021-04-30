@@ -136,17 +136,10 @@ namespace GouvisPlumbingNew.HELPERS
             if (string.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
             if (string.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
 
-            Uri fromUri = new Uri(fromPath);
-            Uri toUri = new Uri(toPath);
-
-            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
-
-            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
-            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
-
-            if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+            string relativePath = "";
+            if (toPath.Contains(fromPath))
             {
-                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+                relativePath = toPath.Replace(fromPath, "");
             }
             return relativePath;
         }
@@ -214,6 +207,12 @@ namespace GouvisPlumbingNew.HELPERS
         }
 
         //Given a dwg file path, get it's Database path if exists, if not return ""
+
+        /// <summary>
+        /// Get Datapath from FULL DWG PATH
+        /// </summary>
+        /// <param name="path">FULL PATH</param>
+        /// <returns></returns>
         public static string GetDatabasePathFromDwgPath(string path)
         {
             string dataPath = "";
@@ -242,20 +241,15 @@ namespace GouvisPlumbingNew.HELPERS
                 return "";
             }
         }
-        public static string GetNotePathFromADwgPath(string path)
+        public static string GetNotePathFromADwgPath(string path, SQLiteConnection sqlConn)
         {
             string dataPath = GetDatabasePathFromDwgPath(path);
             if (!string.IsNullOrEmpty(dataPath))
             {
                 string directoryPath = Directory.GetParent(Path.GetDirectoryName(path)).FullName;
-                SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
-                sqlConn.Open();
-                SQLiteTransaction tr = sqlConn.BeginTransaction();
+
                 DwgFileModel fe = PlumbingDatabaseManager.GetNotePath(sqlConn);
-                tr.Dispose();
-                sqlConn.Close();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+
                 string pNotePath = directoryPath + fe.relativePath;
                 if (File.Exists(pNotePath))
                 {
@@ -265,20 +259,13 @@ namespace GouvisPlumbingNew.HELPERS
             return "";
         }
 
-        public static bool HasDwgPathInDatabase(string path)
+        public static bool HasDwgPathInDatabase(string path, SQLiteConnection sqlConn)
         {
             string dataPath = GetDatabasePathFromDwgPath(path);
             if (!string.IsNullOrEmpty(dataPath))
             {
                 string directoryPath = Directory.GetParent(Path.GetDirectoryName(path)).FullName;
-                SQLiteConnection sqlConn = PlumbingDatabaseManager.OpenSqliteConnection(dataPath);
-                sqlConn.Open();
-                SQLiteTransaction tr = sqlConn.BeginTransaction();
                 HashSet<DwgFileModel> feSet = PlumbingDatabaseManager.GetDwgsPath(sqlConn);
-                tr.Dispose();
-                sqlConn.Close();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
                 foreach(DwgFileModel fe in feSet)
                 {
                     string dwgPath = directoryPath + fe.relativePath;

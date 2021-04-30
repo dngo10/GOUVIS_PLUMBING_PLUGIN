@@ -1,4 +1,5 @@
 ﻿using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -29,13 +30,30 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBFixtureBeingUsedArea
     {
+        public static List<FixtureBeingUsedAreaModel> SelectRows(SQLiteConnection connection, long fileID)
+        {
+            List<FixtureBeingUsedAreaModel> fixtureBoxs = new List<FixtureBeingUsedAreaModel>();
+
+            using(SQLiteCommand command = connection.CreateCommand())
+            {
+                DBFixtureBeingUsedAreaCommands.SelectRows(command, fileID);
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    FixtureBeingUsedAreaModel model = GetModelFromReader(reader, command);
+                    if (model != null) fixtureBoxs.Add(model);
+                }
+            }
+
+            return fixtureBoxs;
+        }
         public static bool SelectCount(SQLiteConnection connection, long ID)
         {
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 DBFixtureBeingUsedAreaCommands.SelectCount(command, ID);
-                count = Convert.ToInt64(GetFixtureBeingUsedAreaModel(command));
+                count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
         }
@@ -64,16 +82,29 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                model = new FixtureBeingUsedAreaModel();
-                model.ID = (long)reader[DBFixtureBeingUsedAreaName.ID];
-                model.handle = (string)reader[DBFixtureBeingUsedAreaName.HANDLE];
-                model.position = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
-                model.pointTop = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_TOP_ID]);
-                model.pointBottom = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
-                model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.TRANSFORM_ID]);
-                model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
-                model.Y = (double)reader[DBFixtureBeingUsedAreaName.Y];
-                model.file = DBDwgFile.SelectRow(command.Connection,(long)reader[DBFixtureBeingUsedAreaName.FILE_ID]);
+                model = GetModelFromReader(reader, command);
+            }
+            reader.Close();
+
+            return model;
+        }
+
+        private static FixtureBeingUsedAreaModel GetModelFromReader(SQLiteDataReader reader, SQLiteCommand command)
+        {
+            FixtureBeingUsedAreaModel model = new FixtureBeingUsedAreaModel();
+            model.ID = (long)reader[DBFixtureBeingUsedAreaName.ID];
+            model.handle = (string)reader[DBFixtureBeingUsedAreaName.HANDLE];
+            model.position = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
+            model.pointTop = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_TOP_ID]);
+            model.pointBottom = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
+            model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.TRANSFORM_ID]);
+            model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
+            model.Y = (double)reader[DBFixtureBeingUsedAreaName.Y];
+            model.file = DBDwgFile.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.FILE_ID]);
+
+            if (model.ID == ConstantName.invalidNum)
+            {
+                model = null;
             }
 
             return model;
@@ -150,6 +181,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBFixtureBeingUsedAreaCommands
     {
+        public static void SelectRows(SQLiteCommand command, long FileID)
+        {
+            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.FILE_ID);
+            command.Parameters.Add(new SQLiteParameter("@id", FileID));
+        }
         public static void SelectRow(SQLiteCommand command, string handle)
         {
             command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
@@ -158,12 +194,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void SelectCount(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
+            command.CommandText = string.Format("SELECT COUNT (*) FROM {0} WHERE {1} = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
+            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
         public static void DeleteRow(SQLiteCommand command, long ID)

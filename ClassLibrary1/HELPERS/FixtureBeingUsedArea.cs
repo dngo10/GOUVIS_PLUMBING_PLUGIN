@@ -26,10 +26,15 @@ namespace GouvisPlumbingNew.HELPERS
             GetTopAndBottomPoint(block);
         }
 
+        public FixtureBeingUsedArea(FixtureBeingUsedAreaModel model)
+        {
+            this.model = model;
+        }
+
         private void GetTopAndBottomPoint(BlockReference block)
         {
             model = new FixtureBeingUsedAreaModel();
-            model.handle  = block.Handle.ToString();
+            model.handle = Goodies.ConvertHandleToString(block.Handle);
             model.position = new Point3dModel(block.Position.ToArray());
             model.matrixTransform = new Matrix3dModel(block.BlockTransform.ToArray());
 

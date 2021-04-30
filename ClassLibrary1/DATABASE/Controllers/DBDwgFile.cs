@@ -36,6 +36,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
                     dwgs.Add(model);
                 }
+                reader.Close();
             }
             return dwgs;
         }
@@ -55,6 +56,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
                     model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
                 }
+                reader.Close();
             }
             return model;
         }
@@ -65,7 +67,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 DBDwgFileCommands.SelectRowPath(command, path);
-                count = Convert.ToInt64(command.ExecuteReader());
+                count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
         }
@@ -93,9 +95,10 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     model = new DwgFileModel();
                     model.ID = (long)reader[DBDwgFileName.ID];
                     model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
-                    model.isP_Notes = (int)reader[DBDwgFileName.ISP_NOTES];
+                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
                     model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
                 }
+                reader.Close();
             }
             return model;
         }
@@ -108,10 +111,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 long check = command.ExecuteNonQuery();
                 if (check == 1)
                 {
+                    return;
                 }
                 else if (check == 0)
                 {
                     //throw new Exception("DBFixtureDetails -> UpdateRow -> No Row is Updated.");
+                    return;
                 }
                 throw new Exception("DBFixtureDetails -> UpdateRow -> Update Not Successful.");
             }
@@ -129,9 +134,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     model = new DwgFileModel();
                     model.ID = (long)reader[DBDwgFileName.ID];
                     model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
-                    model.isP_Notes = (int)reader[DBDwgFileName.ISP_NOTES];
+                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
                     model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
                 }
+                reader.Close();
+                
             }
             return model;
         }
@@ -148,7 +155,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     FixtureDetailsModel fDetails = DBFixtureDetails.SelectRow(connection, fixtureDetailsID);
                     if(fDetails != null) DBFixtureDetails.DeleteRow(connection, fDetails);
                 }
-
+                reader.Close();
                 DBDwgFileCommands.GetAllFixtureBeingUsedAreaID(command, model);
                 reader = command.ExecuteReader();
                 while (reader.Read())
@@ -157,9 +164,10 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     FixtureBeingUsedAreaModel fDArea = DBFixtureBeingUsedArea.SelectRow(connection, fixtureBeingUsedAreaID);
                     if(fDArea != null) DBFixtureBeingUsedArea.DeleteRow(connection, fDArea);
                 }
+                reader.Close();
 
                 DBDwgFileCommands.DeleteRow(command, model.ID);
-                command.ExecuteNonQuery();
+                long check = command.ExecuteNonQuery();
             }
         }
 
@@ -272,14 +280,15 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             StringBuilder builder = new StringBuilder();
             builder.Append($"UPDATE '{DBDwgFileName.name}' SET ");
-            builder.Append($"'{DBDwgFileName.RELATIVE_PATH}' = @path ,");
-            builder.Append($"'{DBDwgFileName.MODIFIEDDATE}' = @date ,");
-            builder.Append($"'{DBDwgFileName.ISP_NOTES}' = @note WHERE ");
-            builder.Append($"'{DBDwgFileName.ID}' = @id;");
+            builder.Append($" {DBDwgFileName.RELATIVE_PATH} = @path ,");
+            builder.Append($" {DBDwgFileName.MODIFIEDDATE} = @date ,");
+            builder.Append($" {DBDwgFileName.ISP_NOTES} = @note WHERE ");
+            builder.Append($" {DBDwgFileName.ID} = @id;");
 
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@path", model.relativePath));
             command.Parameters.Add(new SQLiteParameter("@date", model.modifieddate));
+            command.Parameters.Add(new SQLiteParameter("@note", model.isP_Notes));
             command.Parameters.Add(new SQLiteParameter("@id", model.ID));
         }
         public static void InsertRow(SQLiteCommand command, DwgFileModel model)

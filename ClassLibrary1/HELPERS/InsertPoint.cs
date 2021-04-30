@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.DATABASE.Controllers;
 
 namespace GouvisPlumbingNew.HELPERS
 {
@@ -19,11 +20,17 @@ namespace GouvisPlumbingNew.HELPERS
             FilloutVariables(bref, tr);
         }
 
+        public InsertPoint(InsertPointModel model)
+        {
+            this.model = model;
+        }
+
         private void FilloutVariables(BlockReference bref, Transaction tr)
         {
             model = new InsertPointModel();
-            handle = bref.Handle;
-            position = bref.Position;
+            model.handle = Goodies.ConvertHandleToString(bref.Handle);
+            model.position = new Point3dModel(bref.Position.ToArray());
+            model.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
             foreach (ObjectId id in bref.AttributeCollection)
             {
                 AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
@@ -36,40 +43,6 @@ namespace GouvisPlumbingNew.HELPERS
                     model.alias = aRef.TextString;
                 }
             }
-        }
-
-        public void addTable(Point3d position, DBObject obj)
-        {
-            if(this.position.DistanceTo(position) < 0.5)
-            {
-                item = new ItemHold();
-                item.itemHandle = obj.Handle;
-                item.itemPosition = position;
-            }
-        }
-
-        //Database Must be in write mode
-        //This is to update location in case it is moved;
-        public bool UpdateHandle(Database db)
-        {
-            bool result = false;
-            BlockReference bref = (BlockReference)Goodies.GetDBObjFromHandle(handle, db);
-            if(bref != null && !bref.IsErased)
-            {
-                using(Transaction tr = db.TransactionManager.StartTransaction())
-                {
-                    FilloutVariables(bref, tr);
-                    result = true;
-                }
-            }
-
-            //Set Item Back To null;
-            if(item != null)
-            {
-                item.DeleteItemHold(db);
-                item = null;
-            }
-            return result;
         }
     }
 

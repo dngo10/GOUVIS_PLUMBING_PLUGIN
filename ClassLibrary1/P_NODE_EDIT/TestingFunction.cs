@@ -9,7 +9,6 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.HELPERS;
-using GouvisPluminbNew.P_NODE_EDIT;
 
 namespace GouvisPlumbingNew.P_NODE_EDIT
 {
@@ -17,35 +16,8 @@ namespace GouvisPlumbingNew.P_NODE_EDIT
     {
         public static void testing1(string FileDWGPath)
         {
-            var temp = ReadInformationInNodeDrawing.FindAllFixturesBeingUsed(ConstantName.TEMPPATH);
-            //UpdateDataInNodeDrawing.UpdateNodeDrawing(Application.DocumentManager.MdiActiveDocument.Name);
 
             string tempFile = "C:\\Users\\dngo\\Documents\\TESTING111\\temp1.db";
-            if (File.Exists(tempFile)) File.Delete(tempFile);
-            SQLiteConnection.CreateFile(tempFile);
-
-
-            string connectionStr = DBCommand.GetConnectionString(tempFile);
-            using (SQLiteConnection sqliteConn = new SQLiteConnection(connectionStr))
-            {
-                sqliteConn.Open();
-                using (SQLiteTransaction tr = sqliteConn.BeginTransaction())
-                {
-                    DBPoint3D.CreateTable(sqliteConn);
-                    DBMatrix3d.CreateTable(sqliteConn);
-                    DBFixtureDetails.CreateTable(sqliteConn);
-                    DBFixtureBeingUsedArea.CreateTable(sqliteConn);
-                    DBDwgFile.CreateTable(sqliteConn);
-                    foreach (FixtureBeingUsedArea blockRef in temp.fixtureAreaSET)
-                    {
-                        long id = DBFixtureBeingUsedArea.InsertRow(sqliteConn, blockRef.model);
-                    }
-                    tr.Commit();
-                }
-                sqliteConn.Close();
-            }
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
         }
         

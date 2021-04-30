@@ -23,7 +23,7 @@ namespace GouvisPlumbingNew.HELPERS
         public static Table CreateTable(ICollection<FixtureDetails> FixtureDetails, InsertPoint insertPoint)
         {
             Table t = new Table();
-            t.Layer = TableScheduleName.TableLayer;
+            //t.Layer = TableScheduleName.TableLayer;
             t.Width = TableScheduleName.Width;
 
             int rowsNum = 2 + FixtureDetails.Count;
@@ -58,7 +58,7 @@ namespace GouvisPlumbingNew.HELPERS
             for (int index = 0; index < rowsNum; index++) { t.Rows[index].Height = TableScheduleName.GeneralRowHeight;}
 
             t.Rows[0].Height = TableScheduleName.TitleRowHeight;
-            t.Cells[0, 0].TextString = insertPoint.NAME;
+            t.Cells[0, 0].TextString = insertPoint.model.name;
             t.Cells[0, 0].TextHeight = TableScheduleName.TitleTextHeight;
 
             //SET UP SECOND ROW TITLES
@@ -99,7 +99,7 @@ namespace GouvisPlumbingNew.HELPERS
                 i++;
             }
 
-            t.Position = insertPoint.position;
+            t.Position = new Point3d(insertPoint.model.position.X, insertPoint.model.position.Y, insertPoint.model.position.Z);
 
             return t;
         }

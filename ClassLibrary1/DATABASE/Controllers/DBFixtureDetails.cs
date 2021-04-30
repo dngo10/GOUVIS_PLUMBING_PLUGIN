@@ -89,6 +89,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 				FixtureDetailsModel model = GetFixture(reader, command);
 				if (model != null) fixtures.Add(model);
 			}
+			reader.Close();
 			return fixtures;
 		}
 
@@ -100,6 +101,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			{
 				model = GetFixture(reader, command);
 			}
+			reader.Close();
 			return model;
 		} 
 
@@ -185,7 +187,8 @@ CREATE TABLE "FIXTURE_DETAILS" (
 				}
 				else if (check == 0)
 				{
-					throw new Exception("DBFixtureDetails -> UpdateRow -> No Row is Updated.");
+					//throw new Exception("DBFixtureDetails -> UpdateRow -> No Row is Updated.");
+					return 0;
 				}
 				throw new Exception("DBFixtureDetails -> UpdateRow -> Update Not Successful.");
 			}
@@ -306,9 +309,25 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		public static void InsertRow(FixtureDetailsModel model, SQLiteCommand command)
         {
 			string commandStr = string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}') VALUES ",
-				DBFixtureDetailsNames.name, DBFixtureDetailsNames.POSITION_ID, DBFixtureDetailsNames.TRANSFORM_ID, DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames.INDEXX, DBFixtureDetailsNames.FIXTURE_NAME, DBFixtureDetailsNames.TAG,
-				DBFixtureDetailsNames.NUMBER, DBFixtureDetailsNames.CW_DIA, DBFixtureDetailsNames.HW_DIA, DBFixtureDetailsNames.WASTE_DIA, DBFixtureDetailsNames.VENT_DIA, DBFixtureDetailsNames.STORM_DIA, DBFixtureDetailsNames.WSFU, DBFixtureDetailsNames.CWSFU,
-				DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames.DFU, DBFixtureDetailsNames.DESCRIPTION, DBFixtureDetailsNames.FILE_ID);
+				DBFixtureDetailsNames.name,
+				DBFixtureDetailsNames.POSITION_ID,
+				DBFixtureDetailsNames.TRANSFORM_ID,
+				DBFixtureDetailsNames.HANDLE,
+				DBFixtureDetailsNames.INDEXX,
+				DBFixtureDetailsNames.FIXTURE_NAME,
+				DBFixtureDetailsNames.TAG,
+				DBFixtureDetailsNames.NUMBER,
+				DBFixtureDetailsNames.CW_DIA,
+				DBFixtureDetailsNames.HW_DIA,
+				DBFixtureDetailsNames.WASTE_DIA,
+				DBFixtureDetailsNames.VENT_DIA,
+				DBFixtureDetailsNames.STORM_DIA,
+				DBFixtureDetailsNames.WSFU,
+				DBFixtureDetailsNames.CWSFU,
+				DBFixtureDetailsNames.HWSFU,
+				DBFixtureDetailsNames.DFU,
+				DBFixtureDetailsNames.DESCRIPTION,
+				DBFixtureDetailsNames.FILE_ID);
 
 			commandStr += string.Format("(@position, @matrix ,@handle ,@indexx ,@fixtureName ,@tag , @number ,@cw_dia ,@hw_dia ,@waste_dia ,@vent_dia ,@storm_dia ,@wsfu ,@cwsfu ,@hwsfu , @dfu, @desc, @file);");
 
@@ -340,19 +359,19 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.POSITION_ID}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.TRANSFORM_ID}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.HANDLE}' TEXT NOT NULL, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.INDEXX}' INTEGER NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.INDEXX}' REAL NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.FIXTURE_NAME}' TEXT NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.TAG}' TEXT NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.NUMBER}' TEXT NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.CW_DIA}' REAL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.HW_DIA}' REAL, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.WASTE_DIA}' NUMERIC, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.VENT_DIA}' NUMERIC, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.STORM_DIA}' NUMERIC, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.WSFU}' NUMERIC, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.CWSFU}' NUMERIC, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.HWSFU}' NUMERIC, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.DFU}' NUMERIC, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.WASTE_DIA}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.VENT_DIA}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.STORM_DIA}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.WSFU}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.CWSFU}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.HWSFU}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.DFU}' REAL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.DESCRIPTION}' TEXT, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.FILE_ID}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.TRANSFORM_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE, "));

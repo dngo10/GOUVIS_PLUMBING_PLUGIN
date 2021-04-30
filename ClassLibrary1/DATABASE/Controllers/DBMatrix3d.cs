@@ -77,6 +77,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 					double[] arr = new double[] { R00, R01, R02, R03, R10, R11, R12, R13, R20, R21, R22, R23, R30, R31, R32, R33 };
 					model = new Matrix3dModel(arr, ID);
 				}
+				reader.Close();
             }
 			return model;
 		}
@@ -244,23 +245,23 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
 			StringBuilder builder = new StringBuilder();
 			builder.Append(string.Format("CREATE TABLE IF NOT EXISTS '{0}' ( ", DBMatrixName.name));
-			builder.Append(string.Format("'{0}'	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ", DBMatrixName.ID));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R00));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R01));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R02));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R03));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R10));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R11));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R12));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R13));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R20));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R21));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R22));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R23));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R30));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R31));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL,", DBMatrixName.R32));
-			builder.Append(string.Format("'{0}'	REAL NOT NULL", DBMatrixName.R33));
+			builder.Append(string.Format("'{0}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ", DBMatrixName.ID));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R00));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R01));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R02));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R03));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R10));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R11));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R12));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R13));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R20));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R21));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R22));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R23));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R30));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R31));
+			builder.Append(string.Format("'{0}' REAL NOT NULL,", DBMatrixName.R32));
+			builder.Append(string.Format("'{0}' REAL NOT NULL", DBMatrixName.R33));
 			builder.Append(string.Format(");"));
 
 			command.CommandText = builder.ToString();

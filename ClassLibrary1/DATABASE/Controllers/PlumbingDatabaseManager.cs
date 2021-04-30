@@ -44,12 +44,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBFixtureBeingUsedArea.CreateTable(sqliteConn);
                 DBDwgFile.CreateTable(sqliteConn);
 
-                if(projectElement.P_NOTE != null) DBDwgFile.InsertRow(sqliteConn, projectElement.P_NOTE);
+                if (projectElement.P_NOTE != null) projectElement.P_NOTE.WriteToDatabase(sqliteConn);
 
                 if(projectElement.Dwgs != null)
                 foreach(DwgFileModel model in projectElement.Dwgs)
                 {
-                    DBDwgFile.InsertRow(sqliteConn, model);
+                        model.WriteToDatabase(sqliteConn);
                 }
 
                 sqliteTrans.Commit();
@@ -122,12 +122,19 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public static void ReadDataAtBeginning(string dbPath)
         {
             SQLiteConnection sqlConn = OpenSqliteConnection(dbPath);
-            projectElement = ReadFileTableDataBase(sqlConn);
+            sqlConn.Open();
+            using(SQLiteTransaction sqlTr = sqlConn.BeginTransaction())
+            {
+                projectElement = ReadFileTableDataBase(sqlConn);
+                sqlConn.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            
         }
 
         public static ProjectElement ReadFileTableDataBase(SQLiteConnection sqlConn)
         {
-            sqlConn.Open();
             //Do Directory.GetParent 2 times, and we get the projectPath;
 
             SQLiteTransaction tr = sqlConn.BeginTransaction();
@@ -135,11 +142,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             HashSet<DwgFileModel> feDwgs = GetDwgsPath(sqlConn);
             projectElement = new ProjectElement(notePathFe, feDwgs);
 
-            tr.Commit();
-            tr.Dispose();
-            sqlConn.Close();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
             return projectElement;
         }
 
@@ -162,6 +164,17 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             DwgFileModel model = DBDwgFile.GetPNote(sqlConn);
             return model;
+        }
+
+        public static bool CheckModified(string dwgFullPath, SQLiteConnection connection)
+        {
+            string relPath = GoodiesPath.MakeRelativePath(dwgFullPath);
+            if (!string.IsNullOrEmpty(relPath) && DBDwgFile.HasRowPath(connection, relPath))
+            {
+                DwgFileModel model = DBDwgFile.SelectRow(connection, relPath);
+                return model.modifieddate != File.GetLastWriteTimeUtc(dwgFullPath).Ticks;
+            }
+            return true;
         }
 
         [ConditionalAttribute("DEBUG")]

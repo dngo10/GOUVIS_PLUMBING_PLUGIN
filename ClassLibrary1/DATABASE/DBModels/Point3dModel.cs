@@ -44,5 +44,17 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
                 DBPoint3D.UpdateRow(this, connection);
             }
         }
+
+        public void ReadFromDatabase(SQLiteConnection connection, long ID)
+        {
+            Point3dModel point3dM = DBPoint3D.SelectRow(connection, ID);
+            if(point3dM != null)
+            {
+                X = point3dM.X;
+                Y = point3dM.Y;
+                Z = point3dM.Z;
+                this.ID = point3dM.ID;
+            }
+        }
     }
 }

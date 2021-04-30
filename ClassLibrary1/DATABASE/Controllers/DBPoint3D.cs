@@ -38,15 +38,18 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             Point3dModel point = null;
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBPoint3DCommands.SelectCount(command, ID);
+                DBPoint3DCommands.SelectRow(command, ID);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
+                    long ID1 = (long)reader[DBPoint3DName.ID];
                     double X = (double)reader[DBPoint3DName.X];
                     double Y = (double)reader[DBPoint3DName.Y];
                     double Z = (double)reader[DBPoint3DName.Z];
-                    point = new Point3dModel(X, Y, Z, ID);
+                    
+                    point = new Point3dModel(X, Y, Z, ID1);
                 }
+                reader.Close();
             }
             return point;
         }

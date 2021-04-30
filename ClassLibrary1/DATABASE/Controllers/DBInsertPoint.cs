@@ -24,6 +24,32 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
      */
     class DBInsertPoint
     {
+        public static List<InsertPointModel> SelectRows(SQLiteConnection connection, long fileID)
+        {
+            List<InsertPointModel> insertPoints = new List<InsertPointModel>();
+            using(SQLiteCommand command = connection.CreateCommand())
+            {
+                DBInsertPointCommands.SelectRows(command, fileID);
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    string alias = (string)reader[DBInsertPointName.ALIAS];
+                    string name = (string)reader[DBInsertPointName.NAME];
+                    long ID = (long)reader[DBInsertPointName.ID];
+                    string handle = (string)reader[DBInsertPointName.HANDLE];
+                    Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
+
+                    DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
+                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.TRANSFORM_ID]);
+
+                    InsertPointModel model = new InsertPointModel(alias, name, ID, file, handle, pos, matrix);
+                    insertPoints.Add(model);
+                }
+                reader.Close();
+            }
+
+            return insertPoints;
+        }
         public static bool HasRow(SQLiteConnection connection, long ID)
         {
             long count = 0;
@@ -48,12 +74,13 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     string name = (string)reader[DBInsertPointName.NAME];
                     long ID = (long)reader[DBInsertPointName.ID];
                     Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
-
+                    string handle1 = (string)reader[DBInsertPointName.HANDLE];
                     DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
                     Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.TRANSFORM_ID]);
 
-                    model = new InsertPointModel(alias, name, ID, file, handle, pos, matrix);
+                    model = new InsertPointModel(alias, name, ID, file, handle1, pos, matrix);
                 }
+                reader.Close();
             }
             return model;
         }
@@ -70,12 +97,13 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     string name = (string)reader[DBInsertPointName.NAME];
                     string handle = (string)reader[DBInsertPointName.HANDLE];
                     Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
-                    
+                    long ID1 = (long)reader[DBInsertPointName.ID];
                     DwgFileModel file = DBDwgFile.SelectRow(connection,(long)reader[DBInsertPointName.FILE_ID]);
                     Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.TRANSFORM_ID]);
 
-                    model = new InsertPointModel(alias, name, ID, file, handle, pos, matrix);
+                    model = new InsertPointModel(alias, name, ID1, file, handle, pos, matrix);
                 }
+                reader.Close();
             }
             return model;
         }
@@ -161,6 +189,13 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             string commandStr = $"SELECT COUNT(*) FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
             command.CommandText = commandStr;
             command.Parameters.Add(new SQLiteParameter("@id", ID));
+        }
+
+        public static void SelectRows(SQLiteCommand command, long fileID)
+        {
+            string commandStr = $"SELECT * FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.FILE_ID} = @fileID;";
+            command.CommandText = commandStr;
+            command.Parameters.Add(new SQLiteParameter("@fileID", fileID));
         }
 
         public static void SelectRow(SQLiteCommand command, string handle)

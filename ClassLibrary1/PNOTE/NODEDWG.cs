@@ -9,22 +9,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GouvisPlumbingNew.PNOTE
 {
     class NODEDWG
     {
-        public DwgFileModel model;
-        public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>();
+        public DwgFileModel file = null;
+        public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>(Comparer<FixtureBeingUsedArea>.Create((a, b) => a.model.ID.CompareTo(b.model.ID)));
         public SortedSet<FixtureDetails> FixtureDetailSet = new SortedSet<FixtureDetails>(Comparer<FixtureDetails>.Create((a, b) => a.model.INDEX.CompareTo(b.model.INDEX)));
-        public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>();
+        public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>(Comparer<InsertPoint>.Create((a, b) => a.model.ID.CompareTo(b.model.ID)));
 
         public NODEDWG()
         {
-            model = new DwgFileModel();
-            FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>();
-            FixtureDetailSet = new SortedSet<FixtureDetails>();
-            InsertPointSet = new SortedSet<InsertPoint>();
+            file = new DwgFileModel();
         }
 
         /// <summary>
@@ -36,7 +34,7 @@ namespace GouvisPlumbingNew.PNOTE
         /// <returns></returns>
         public void WriteToDataBase(SQLiteConnection connection)
         {
-            model.WriteToDatabase(connection);
+            file.WriteToDatabase(connection);
             foreach(FixtureBeingUsedArea fixture in FixtureBoxSet)
             {
                 fixture.model.WriteToDataBase(connection);
@@ -49,7 +47,47 @@ namespace GouvisPlumbingNew.PNOTE
 
             foreach(HELPERS.InsertPoint ip in InsertPointSet)
             {
-                ip.m
+                ip.model.WriteToDataBase(connection);
+            }
+        }
+
+        /// <summary>
+        /// Read Node File From Database, Fill Out The NODEDWG
+        /// Path must be FULL PATH of a DWG from the database
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="path">Note PATH</param>
+        public void ReadFromDatabase(SQLiteConnection connection, string pathDwg)
+        {
+            FixtureBoxSet.Clear();
+            InsertPointSet.Clear();
+            FixtureDetailSet.Clear();
+
+            string relPath = GoodiesPath.MakeRelativePath(pathDwg);
+            file = DBDwgFile.SelectRow(connection, relPath);
+            if(file == null || file.ID == ConstantName.invalidNum)
+            {
+                MessageBox.Show("NODEDWG -> ReadFromDatabase -> File Not Found");
+                return;
+            }
+            foreach(FixtureBeingUsedAreaModel fixtureBox in DBFixtureBeingUsedArea.SelectRows(connection, file.ID))
+            {
+                FixtureBeingUsedArea fixtureArea = new FixtureBeingUsedArea(fixtureBox);
+                //this line is very important. You have to make sure they have file model in each fixtureArea;
+                //this won't complicate the program as we pass the pointer.
+                FixtureBoxSet.Add(fixtureArea);
+            }
+            
+            foreach(FixtureDetailsModel detailModel in DBFixtureDetails.SelectRows(connection, file.ID))
+            {
+                FixtureDetails fd = new FixtureDetails(detailModel);
+                FixtureDetailSet.Add(fd);
+            }
+
+            foreach(InsertPointModel insertPointModel in DBInsertPoint.SelectRows(connection, file.ID))
+            {
+                InsertPoint ip = new InsertPoint(insertPointModel);
+                InsertPointSet.Add(ip);
             }
         }
     }

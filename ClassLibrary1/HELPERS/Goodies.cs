@@ -45,6 +45,13 @@ namespace GouvisPlumbingNew.HELPERS
             return isVisible && !isCanceling && !isErased && !isDisposed;
         }
 
+        public static void InsertTable(Table table, Transaction tr, BlockTableRecord btr)
+        {
+            btr.AppendEntity(table);
+            tr.AddNewlyCreatedDBObject(table, true);
+            
+        }
+
         /// <summary>
         /// COPY A BLOCK (WITH BLOCK NAME) from ONE FILE TO ANOTHER.
         /// </summary>
@@ -233,11 +240,6 @@ namespace GouvisPlumbingNew.HELPERS
             }
         }
 
-        public static void AddLineType(string LineTypeName, Database db, string linePattern)
-        {
-
-        }
-
         //THIS IS FROM AUTOCAD DEVELOPER -- Check if file is locked/readonly.
         //https://spiderinnet1.typepad.com/blog/2015/02/autocad-net-reliably-check-file-lockreadonly.html
 
@@ -278,6 +280,7 @@ namespace GouvisPlumbingNew.HELPERS
         /// Whether or you can write to dwg WHILE RUNNING AutoCAD,
         /// This is NOT intended for dotnet core console.
         /// </summary>
+        /// <param name="path">Full DWG PATH</param>
         /// <returns></returns>
         public static Document CanOpenToWrite(string path)
         {
@@ -298,6 +301,7 @@ namespace GouvisPlumbingNew.HELPERS
                 {
                     if(doc.Name == path)
                     {
+                        Application.DocumentManager.MdiActiveDocument = doc;
                         return doc;
                     }
                 }
@@ -305,7 +309,8 @@ namespace GouvisPlumbingNew.HELPERS
 
             if (!GoodiesPath.IsFileLocked(path))
             {
-                Document doc = Application.DocumentManager.Open(path);
+                Document doc = Application.DocumentManager.Open(path, false, "");
+                Application.DocumentManager.MdiActiveDocument = doc;
                 return doc;
             }
 
