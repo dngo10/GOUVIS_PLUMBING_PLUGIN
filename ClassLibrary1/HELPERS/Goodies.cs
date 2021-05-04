@@ -389,5 +389,27 @@ namespace GouvisPlumbingNew.HELPERS
         {
             return new Matrix3d(array.ToArray());
         }
+
+        public static Document GetDocumentFromDwgpath(string dwgPath)
+        {
+            if (!File.Exists(dwgPath))
+            {
+                return null;
+            }
+
+            if(Application.DocumentManager.MdiActiveDocument.Name == dwgPath)
+            {
+                return Application.DocumentManager.MdiActiveDocument;
+            }
+
+            foreach(Document doc in Application.DocumentManager)
+            {
+                if(doc.Name == dwgPath)
+                {
+                    return doc;
+                }
+            }
+            return Application.DocumentManager.Add(dwgPath);
+        }
     }
 }

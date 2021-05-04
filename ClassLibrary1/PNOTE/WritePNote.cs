@@ -28,7 +28,7 @@ namespace ClassLibrary1.PNOTE
 
             FileStatus fileStatus =  Goodies.CanOpenToWrite(notePathFull);
             //Document doc = Goodies.CanOpenToWrite1(notePathFull);
-            if (fileStatus == null) return;
+            if (fileStatus == null || fileStatus.db == null) return;
             //if (doc == null) return;
 
             DwgFileModel model = PlumbingDatabaseManager.GetNotePath(connection);
@@ -39,23 +39,26 @@ namespace ClassLibrary1.PNOTE
                     NODEDWG note = ReadPNote.ReadFromDatabase(connection);
                     InsertPoint ip = note.InsertPointSet.Where(insertpoint => insertpoint.model.alias == "FS").FirstOrDefault();
                     Table table = TableSchedule.CreateTable(note.FixtureDetailSet, ip);
-                    //using (Application.DocumentManager.MdiActiveDocument.LockDocument())
-                    //{
-                        using (Database db = fileStatus.db)
+                    Document doc = Application.DocumentManager.GetDocument(fileStatus.db);
+                    using (doc.LockDocument())
+                    {
+                        using (fileStatus.db)
                         {
 
-                            using (Transaction tr = db.TransactionManager.StartTransaction())
+                            using (Transaction tr = fileStatus.db.TransactionManager.StartTransaction())
                             {
-                                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                                BlockTable bt = (BlockTable)tr.GetObject(fileStatus.db.BlockTableId, OpenMode.ForRead);
                                 BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
                                 Goodies.InsertTable(table, tr, btr);
                                 //Have to add layer AFTER WRITING IT
                                 table.Layer = ConstantName.TABLE;
                                 tr.Commit();
                             }
-                            db.SaveAs(notePathFull, DwgVersion.Current);
+                            fileStatus.Save();
+                            //Condition
                         }
-                    //}
+                    }
+                    fileStatus.ReturnPreviousDocument();
                 }
             }
         }

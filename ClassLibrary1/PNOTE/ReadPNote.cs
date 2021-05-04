@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using ClassLibrary1.HELPERS;
 using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
@@ -19,17 +20,15 @@ namespace ClassLibrary1.PNOTE
     {
         public static NODEDWG ReadDwgPNoteFile(SQLiteConnection connection)
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-
             NODEDWG note = null;
 
-            string notePath = GoodiesPath.GetNotePathFromADwgPath(doc.Name, connection);
+            string notePath = GoodiesPath.GetNotePathFromADwgPath(Application.DocumentManager.MdiActiveDocument.Name, connection);
             if (!string.IsNullOrEmpty(notePath))
-            {
-                if(doc.Name == notePath)
+            { 
+                if (Goodies.GetListOfDocumentOpening().Contains(notePath))
                 {
-                    //Read this
-                    using(Database db = doc.Database)
+                    Document doc = Goodies.GetDocumentFromDwgpath(notePath);
+                    using (Database db = doc.Database)
                     {
                         note = GetData(db, connection);
                     }
@@ -120,6 +119,8 @@ namespace ClassLibrary1.PNOTE
             {
                 ip.model.file = note.file;
             }
+
+            DBDwgFile.DeleteRow(connection, note.file);
 
             note.WriteToDataBase(connection);
 

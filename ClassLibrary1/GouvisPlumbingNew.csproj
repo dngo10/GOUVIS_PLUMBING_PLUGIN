@@ -112,6 +112,7 @@
     <Compile Include="DATABASE\DBModels\FixtureDetailsModel.cs" />
     <Compile Include="DATABASE\DBModels\Matrix3dModel.cs" />
     <Compile Include="DATABASE\DBModels\Point3dModel.cs" />
+    <Compile Include="DATABASE\DBModels\TableModel.cs" />
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />

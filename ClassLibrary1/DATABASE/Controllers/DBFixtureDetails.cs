@@ -126,6 +126,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			double HWSFU = (double)reader[DBFixtureDetailsNames.HWSFU];
 			double DFU = (double)reader[DBFixtureDetailsNames.DFU];
 			string DESCRIPTION = (string)reader[DBFixtureDetailsNames.DESCRIPTION];
+			long ID = (long)reader[DBFixtureDetailsNames.ID];
 
 			Matrix3dModel matrix = DBMatrix3d.SelectRow(command.Connection, TRANSFORM_ID);
 			Point3dModel position = DBPoint3D.SelectRow(command.Connection, POSITION_ID);
@@ -148,6 +149,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			model.HWSFU = HWSFU;
 			model.DFU = DFU;
 			model.DESCRIPTION = DESCRIPTION;
+			model.ID = ID;
 
 			return model;
 		}

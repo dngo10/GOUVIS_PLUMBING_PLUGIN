@@ -36,13 +36,12 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
             if(!DBFixtureBeingUsedArea.SelectCount(connection, ID))
             {
                 var temp = this;
-                ID = DBFixtureBeingUsedArea.HasRow(connection, ref temp);
+                ID = DBFixtureBeingUsedArea.InsertRow(connection, ref temp);
             }
             else
             {
                 DBFixtureBeingUsedArea.UpdateRow(connection, this);
             }
-
         }
 
         public void UpdateToDataBase(SQLiteConnection connection)

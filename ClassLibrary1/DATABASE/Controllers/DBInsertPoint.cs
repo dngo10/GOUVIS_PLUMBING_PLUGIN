@@ -56,7 +56,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 DBInsertPointCommands.SelectCount(command, ID);
-                 count = Convert.ToInt64(command.ExecuteScalar());
+                count = Convert.ToInt64(command.ExecuteScalar());
 
             }
             return count == 1;

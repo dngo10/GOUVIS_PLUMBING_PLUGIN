@@ -94,9 +94,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             FixtureBeingUsedAreaModel model = new FixtureBeingUsedAreaModel();
             model.ID = (long)reader[DBFixtureBeingUsedAreaName.ID];
             model.handle = (string)reader[DBFixtureBeingUsedAreaName.HANDLE];
+
             model.position = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
             model.pointTop = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_TOP_ID]);
             model.pointBottom = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
+            model.origin = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
+
             model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.TRANSFORM_ID]);
             model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
             model.Y = (double)reader[DBFixtureBeingUsedAreaName.Y];
@@ -142,7 +145,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
         }
         
-        public static long HasRow(SQLiteConnection connection, ref FixtureBeingUsedAreaModel model)
+        public static long InsertRow(SQLiteConnection connection, ref FixtureBeingUsedAreaModel model)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {

@@ -153,11 +153,16 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 {
                     long fixtureDetailsID = (long)reader[DBFixtureDetailsNames.ID];
                     FixtureDetailsModel fDetails = DBFixtureDetails.SelectRow(connection, fixtureDetailsID);
-                    if(fDetails != null) DBFixtureDetails.DeleteRow(connection, fDetails);
+                    if (fDetails != null) DBFixtureDetails.DeleteRow(connection, fDetails);
                 }
                 reader.Close();
+            }
+
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+
                 DBDwgFileCommands.GetAllFixtureBeingUsedAreaID(command, model);
-                reader = command.ExecuteReader();
+                SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     long fixtureBeingUsedAreaID = (long)reader[DBFixtureBeingUsedAreaName.ID];
@@ -165,7 +170,10 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     if(fDArea != null) DBFixtureBeingUsedArea.DeleteRow(connection, fDArea);
                 }
                 reader.Close();
+            }
 
+            using(SQLiteCommand command = connection.CreateCommand())
+            {
                 DBDwgFileCommands.DeleteRow(command, model.ID);
                 long check = command.ExecuteNonQuery();
             }
@@ -260,7 +268,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public static void GetAllFixtureBeingUsedAreaID(SQLiteCommand command, DwgFileModel model)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append($"SELECT '{DBFixtureBeingUsedAreaName.ID}' FROM '{DBFixtureBeingUsedAreaName.name}' WHERE {DBFixtureBeingUsedAreaName.FILE_ID} = @id;");
+            builder.Append($"SELECT * FROM '{DBFixtureBeingUsedAreaName.name}' WHERE {DBFixtureBeingUsedAreaName.FILE_ID} = @id;");
 
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@id", model.ID));
