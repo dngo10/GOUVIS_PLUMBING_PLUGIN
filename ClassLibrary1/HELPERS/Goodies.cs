@@ -4,6 +4,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using ClassLibrary1.HELPERS;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -169,17 +170,16 @@ namespace GouvisPlumbingNew.HELPERS
 
 
         //INSERT BLOCK INTO TABLE CELL;
-        public static Dictionary<ObjectId,ObjectId> InsertDynamicBlockToTableCell(Cell tCell, Database db, string BlockName)
+        public static void InsertDynamicBlockToTableCell(Cell tCell, Database db, string BlockName, FixtureDetails df)
         {
-            Dictionary<ObjectId, ObjectId> atts = new System.Collections.Generic.Dictionary<ObjectId, ObjectId>();
             using(Transaction tr = db.TransactionManager.StartTransaction())
             {
-                tCell.DeleteContent();
-                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                
+                //tCell.DeleteContent();
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
                 if (bt.Has(BlockName))
                 {
                     tCell.BlockTableRecordId = bt[BlockName];
-                    BlockReference bref = (BlockReference)tCell.Contents[0].Value;
                     BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockName], OpenMode.ForRead);
                     if (btr.HasAttributeDefinitions)
                     {
@@ -189,19 +189,19 @@ namespace GouvisPlumbingNew.HELPERS
                             if (dbObj is AttributeDefinition)
                             {
                                 AttributeDefinition attDef = (AttributeDefinition)dbObj;
-                                AttributeReference attRef = new AttributeReference();
-                                attRef.SetAttributeFromBlock(attDef, bref.BlockTransform);
-                                attRef.AdjustAlignment(bref.Database);
-                                bref.AttributeCollection.AppendAttribute(attRef);
-                                tr.AddNewlyCreatedDBObject(attRef, true);
-                                atts.Add(attRef.ObjectId, id);
+                                if(attDef.Tag == HexNoteName.ID)
+                                {
+                                    tCell.SetBlockAttributeValue(id, df.model.TAG);
+                                }else if(attDef.Tag == HexNoteName.NUM)
+                                {
+                                    tCell.SetBlockAttributeValue(id, df.model.NUMBER);
+                                }
                             }
                         }
                     }
                 }
                 tr.Commit();
             }
-            return atts;
         }
 
         public static DBObject GetDBObjFromHandle(Handle handle, Database db)

@@ -1,6 +1,8 @@
 
 
-FATAL ERROR:  Unhandled Access Violation Reading 0x0008 Exception at D701BE1Ch
+INTERNAL ERROR:  !dbobji.cpp@8501: eNotOpenForWrite
 
-04/29/2021 at 16:41:06.000  Drawing: C:\Users\dngo\Documents\TESTING111\PLBG\TEMPLATE_FILE_V1_p_notes.dwg
+05/04/2021 at 15:18:07.000  Drawing: C:\Users\dngo\Documents\TESTING111\PLBG\TEMPLATE_FILE_V1_p_notes.dwg
+-------------
+_notes.dwg
 -------------

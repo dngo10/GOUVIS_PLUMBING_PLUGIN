@@ -104,6 +104,7 @@
     <Compile Include="DATABASE\Controllers\DBInsertPoint.cs" />
     <Compile Include="DATABASE\Controllers\DBMatrix3d.cs" />
     <Compile Include="DATABASE\Controllers\DBPoint3D.cs" />
+    <Compile Include="DATABASE\Controllers\DBTable.cs" />
     <Compile Include="DATABASE\DBModels\InsertPointModel.cs" />
     <Compile Include="DATABASE\Controllers\PlumbingDatabaseManager.cs" />
     <Compile Include="DATABASE\Controllers\DBCommand.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="HELPERS\GoodiesPath.cs" />
     <Compile Include="HELPERS\InsertPoint.cs" />
     <Compile Include="HELPERS\JigBlock.cs" />
+    <Compile Include="HELPERS\XDataHelper.cs" />
     <Compile Include="LAYOUT\LayoutInfo.cs" />
     <Compile Include="LAYOUT\LayoutEdit.cs" />
     <Compile Include="HELPERS\NumberConverter.cs" />

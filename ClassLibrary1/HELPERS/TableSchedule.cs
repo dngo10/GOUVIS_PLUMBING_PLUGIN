@@ -14,12 +14,6 @@ namespace GouvisPlumbingNew.HELPERS
     //It is not tasked to delete one.
     class TableSchedule
     {
-        public FixtureBeingUsedArea FBUA;
-        public TableSchedule(FixtureBeingUsedArea FBUA)
-        {
-            this.FBUA = FBUA;
-        }
-
         public static Table CreateTable(ICollection<FixtureDetails> FixtureDetails, InsertPoint insertPoint)
         {
             Table t = new Table();
@@ -121,24 +115,14 @@ namespace GouvisPlumbingNew.HELPERS
         }
 
         //TABLE MUST BE ADDED TO DRAWING BEFORE THIS PROCESS CAN HAPPEND
-        public static void AddBlockToTable(Table table, Database db, SortedSet<FixtureDetailsModel> fixtureDetails)
+        public static void AddBlockToTable(Table table, Database db, SortedSet<FixtureDetails> fixtureDetails)
         {
             using(Transaction tr = db.TransactionManager.StartTransaction())
             {
-                for (int i = 2; i < table.Rows.Count; i++)
+                Table t = (Table)tr.GetObject(table.ObjectId, OpenMode.ForWrite);
+                for (int i = 2; i < t.Rows.Count; i++)
                 {
-                    Dictionary<ObjectId, ObjectId> refID = Goodies.InsertDynamicBlockToTableCell(table.Cells[i, 0], db, ConstantName.HexNote);
-                    foreach(ObjectId id in refID.Keys)
-                    {
-                        AttributeReference attRef = (AttributeReference)tr.GetObject(id, OpenMode.ForWrite);
-                        if(attRef.Tag == HexNoteName.ID)
-                        {
-                            attRef.TextString = fixtureDetails.ElementAt(i - 2).TAG;
-                        }else if(attRef.Tag == HexNoteName.NUM)
-                        {
-                            attRef.TextString = fixtureDetails.ElementAt(i - 2).NUMBER;
-                        }
-                    }
+                    Goodies.InsertDynamicBlockToTableCell(t.Cells[i, 0], db, ConstantName.HexNote, fixtureDetails.ElementAt(i - 2));
                 }
                 tr.Commit();
             }

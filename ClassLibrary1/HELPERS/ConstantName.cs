@@ -19,6 +19,9 @@ namespace GouvisPlumbingNew.HELPERS
         //INVALID_NUMBER
         //RETURN THIS EVERYTIME VALUE BECOME INVALID;
 
+        //TABLE XDATA NAME
+        public const string tableAlias = "ALIAS";
+
 
         //PATTERN FOR
         /// <summary>

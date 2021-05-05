@@ -1,5 +1,6 @@
 ﻿using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -157,22 +158,26 @@ CREATE TABLE "FIXTURE_DETAILS" (
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				DBFixtureDetailsCommands.DeleteRow(command, fixture.ID);
-				long check = command.ExecuteNonQuery();
-				if(check == 1)
+				if(HasRow(connection, fixture.ID))
                 {
-					DBPoint3D.DeleteRow(fixture.position.ID, command.Connection);
-					DBMatrix3d.DeleteRow(command.Connection, fixture.matrixTransform.ID);
-					return connection.LastInsertRowId;
-                }else if(check == 0)
-                {
-					//throw new Exception()
-					return 0;
-                }
-                else
-                {
-					return -1;
-                }
+					DBFixtureDetailsCommands.DeleteRow(command, fixture.ID);
+					long check = command.ExecuteNonQuery();
+					if (fixture.position != null) DBPoint3D.DeleteRow(fixture.position.ID, command.Connection);
+					if (fixture.matrixTransform != null) DBMatrix3d.DeleteRow(command.Connection, fixture.matrixTransform.ID);
+					if (check == 1)
+					{
+						return connection.LastInsertRowId;
+					}
+					else if (check == 0)
+					{
+						throw new Exception("DBFixtureDetails -> DeleteRow -> No Row is Deleted");
+					}
+					else
+					{
+						throw new Exception("DBFixtureDetails -> DeleteRow -> Deletion failed");
+					}
+				}
+				return ConstantName.invalidNum;
             }
         }
 		public static long UpdateRow(SQLiteConnection connection, FixtureDetailsModel model)

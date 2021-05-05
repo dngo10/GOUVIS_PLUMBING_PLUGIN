@@ -53,7 +53,10 @@ namespace ClassLibrary1.PNOTE
                                 //Have to add layer AFTER WRITING IT
                                 table.Layer = ConstantName.TABLE;
                                 tr.Commit();
+                                tr.Dispose();
                             }
+                            TableSchedule.AddBlockToTable(table, fileStatus.db, note.FixtureDetailSet);
+
                             fileStatus.Save();
                             //Condition
                         }

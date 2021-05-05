@@ -1,4 +1,5 @@
 ﻿using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -85,17 +86,21 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
 			using (SQLiteCommand command = connection.CreateCommand())
             {
-				DBMatrix3dCommands.DeleteRow(command, ID);
-				long check = command.ExecuteNonQuery();
-				if (check == 1)
-				{
-					return connection.LastInsertRowId;
+				if(DBMatrix3d.HasRow(connection, ID))
+                {
+					DBMatrix3dCommands.DeleteRow(command, ID);
+					long check = command.ExecuteNonQuery();
+					if (check == 1)
+					{
+						return connection.LastInsertRowId;
+					}
+					else if (check == 0)
+					{
+						throw new Exception("DBMatrix3d -> DeleteRow -> No Row is Deleted");
+					}
+					throw new Exception("DBMatrix3d -> DeleteRow -> Delete Row not successful");
 				}
-				else if (check == 0)
-				{
-					throw new Exception("DBMatrix3d -> DeleteRow -> No Row is Deleted");
-				}
-				throw new Exception("DBMatrix3d -> DeleteRow -> Delete Row not successful");
+				return ConstantName.invalidNum;
 			}
         }
 		public static long Update(SQLiteConnection connection, Matrix3dModel model)

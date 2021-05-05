@@ -44,8 +44,6 @@ namespace GouvisPlumbingNew
                 connection.Close();
             }
             GC.Collect();
-           
-            
             GC.WaitForPendingFinalizers();
         }
 

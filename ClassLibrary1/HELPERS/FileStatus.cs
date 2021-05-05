@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace ClassLibrary1.HELPERS
 {
@@ -25,7 +27,14 @@ namespace ClassLibrary1.HELPERS
         {
             if(status == 2)
             {
-                db.SaveAs(dwgPath, DwgVersion.Current);
+                try
+                {
+                    db.SaveAs(dwgPath, DwgVersion.Current);
+                }catch(Exception e)
+                {
+                    MessageBox.Show($"Can't save the document! {dwgPath}, {e.Message}.");
+                }
+                
             }
         }
 

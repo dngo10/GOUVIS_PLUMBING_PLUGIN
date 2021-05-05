@@ -147,33 +147,25 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 //MUST DELETE CHILD FIRST.
-                DBDwgFileCommands.GetAllFixtureDetailsID(command, model);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                List<FixtureDetailsModel> fixtures = DBFixtureDetails.SelectRows(connection, model.ID);
+                List<FixtureBeingUsedAreaModel> areas = DBFixtureBeingUsedArea.SelectRows(connection, model.ID);
+                List<InsertPointModel> insertPoints = DBInsertPoint.SelectRows(connection, model.ID);
+
+                foreach (FixtureDetailsModel fixture in fixtures)
                 {
-                    long fixtureDetailsID = (long)reader[DBFixtureDetailsNames.ID];
-                    FixtureDetailsModel fDetails = DBFixtureDetails.SelectRow(connection, fixtureDetailsID);
-                    if (fDetails != null) DBFixtureDetails.DeleteRow(connection, fDetails);
+                    DBFixtureDetails.DeleteRow(connection, fixture);
                 }
-                reader.Close();
-            }
 
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-
-                DBDwgFileCommands.GetAllFixtureBeingUsedAreaID(command, model);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                foreach (FixtureBeingUsedAreaModel area in areas)
                 {
-                    long fixtureBeingUsedAreaID = (long)reader[DBFixtureBeingUsedAreaName.ID];
-                    FixtureBeingUsedAreaModel fDArea = DBFixtureBeingUsedArea.SelectRow(connection, fixtureBeingUsedAreaID);
-                    if(fDArea != null) DBFixtureBeingUsedArea.DeleteRow(connection, fDArea);
+                    DBFixtureBeingUsedArea.DeleteRow(connection, area);
                 }
-                reader.Close();
-            }
 
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
+                foreach (InsertPointModel insertPoint in insertPoints)
+                {
+                    DBInsertPoint.DeleteRow(insertPoint, connection);
+                }
+
                 DBDwgFileCommands.DeleteRow(command, model.ID);
                 long check = command.ExecuteNonQuery();
             }
@@ -264,6 +256,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             command.CommandText = builder.ToString();
             command.Parameters.Add(new SQLiteParameter("@id", ID));
         }
+
+
 
         public static void GetAllFixtureBeingUsedAreaID(SQLiteCommand command, DwgFileModel model)
         {

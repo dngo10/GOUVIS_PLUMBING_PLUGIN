@@ -78,6 +78,10 @@ namespace GouvisPlumbingNew.HELPERS
                     {
                         model.DFU = number;
                     }
+                    else if (aRef.Tag == FixtureDetailsName.number)
+                    {
+                        model.NUMBER = textString;
+                    }
                 }
                 else if (aRef.Tag == FixtureDetailsName.number)
                 {

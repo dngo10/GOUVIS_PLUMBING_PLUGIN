@@ -28,7 +28,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBPoint3DCommands.SelectRow(command, ID);
+                DBPoint3DCommands.SelectCount(command, ID);
                 count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
@@ -125,17 +125,21 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBPoint3DCommands.DeleteRow(command, ID);
-                long check = command.ExecuteNonQuery();
-                if (check == 1)
+                if(DBPoint3D.HasRow(connection, ID))
                 {
-                    return connection.LastInsertRowId;
+                    DBPoint3DCommands.DeleteRow(command, ID);
+                    long check = command.ExecuteNonQuery();
+                    if (check == 1)
+                    {
+                        return connection.LastInsertRowId;
+                    }
+                    else if (check == 0)
+                    {
+                        throw new Exception("DBPoint3D -> DeleteRow -> No Row is Deleted");
+                    }
+                    throw new Exception("DBPoint3d -> DeleteRow -> Delete Row not successful");
                 }
-                else if (check == 0)
-                {
-                    throw new Exception("DBPoint3D -> DeleteRow -> No Row is Deleted");
-                }
-                throw new Exception("DBPoint3d -> DeleteRow -> Delete Row not successful");
+                return ConstantName.invalidNum;
             }
         }
     }
@@ -200,7 +204,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         //UPDATE POINT3D SET 'X' =1, 'Y' = 2, 'Z' = 3 WHERE ID = 3;
         public static void Update(SQLiteCommand command, Point3dModel model)
         {
-            string commandStr = string.Format("UPDATE {0} SET '{1}' = @X, '{2}' = @Y, '{3}' = @Z WHERE {4} = @ID;",
+            string commandStr = string.Format("UPDATE {0} SET {1} = @X, {2} = @Y, {3} = @Z WHERE {4} = @ID;",
                 DBPoint3DName.tableName,
                 DBPoint3DName.X,
                 DBPoint3DName.Y,

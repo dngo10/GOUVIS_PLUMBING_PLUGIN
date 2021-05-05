@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 
 namespace GouvisPlumbingNew.DATABASE.Controllers
 {
@@ -57,7 +58,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             {
                 DBInsertPointCommands.SelectCount(command, ID);
                 count = Convert.ToInt64(command.ExecuteScalar());
-
             }
             return count == 1;
         }
@@ -163,21 +163,28 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         }
 
-        public static long DeleteRow(long ID, SQLiteConnection connection)
+        public static long DeleteRow(InsertPointModel model, SQLiteConnection connection)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBInsertPointCommands.DeleteRow(command, ID);
-                long check = command.ExecuteNonQuery();
-                if (check == 1)
+                if(DBInsertPoint.HasRow(connection, model.ID))
                 {
-                    return connection.LastInsertRowId;
+                    DBInsertPointCommands.DeleteRow(command, model.ID);
+                    long check = command.ExecuteNonQuery();
+                    if (model.position != null) DBPoint3D.DeleteRow(model.position.ID, command.Connection);
+                    if (model.matrixTransform != null) DBMatrix3d.DeleteRow(command.Connection, model.matrixTransform.ID);
+                    if (check == 1)
+                    {
+                        return connection.LastInsertRowId;
+                    }
+                    else if (check == 0)
+                    {
+                        throw new Exception("DBInsertPoint -> DeleteRow -> No Row is Deleted");
+                    }
+                    throw new Exception("DBInsertPoint -> DeleteRow -> Delete Row not successful");
                 }
-                else if (check == 0)
-                {
-                    throw new Exception("DBInsertPoint -> DeleteRow -> No Row is Deleted");
-                }
-                throw new Exception("DBInsertPoint -> DeleteRow -> Delete Row not successful");
+                Console.WriteLine("No Round is Inserted");
+                return ConstantName.invalidNum;
             }
         }
     }

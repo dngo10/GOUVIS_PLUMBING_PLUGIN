@@ -47,7 +47,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             return fixtureBoxs;
         }
-        public static bool SelectCount(SQLiteConnection connection, long ID)
+        public static bool HasRow(SQLiteConnection connection, long ID)
         {
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
@@ -98,7 +98,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             model.position = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
             model.pointTop = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_TOP_ID]);
             model.pointBottom = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
-            model.origin = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
+            model.origin = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.ORIGIN_ID]);
 
             model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.TRANSFORM_ID]);
             model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
@@ -136,12 +136,16 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBFixtureBeingUsedAreaCommands.DeleteRow(command, model.ID);
-                DBPoint3D.DeleteRow(model.position.ID, connection);
-                DBPoint3D.DeleteRow(model.origin.ID, connection);
-                DBPoint3D.DeleteRow(model.pointTop.ID, connection);
-                DBPoint3D.DeleteRow(model.pointBottom.ID, connection);
-                DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
+                if(DBFixtureBeingUsedArea.HasRow(connection, model.ID))
+                {
+                    DBFixtureBeingUsedAreaCommands.DeleteRow(command, model.ID);
+                    long check = command.ExecuteNonQuery();
+                    if (model.position != null) DBPoint3D.DeleteRow(model.position.ID, connection);
+                    if (model.origin != null) DBPoint3D.DeleteRow(model.origin.ID, connection);
+                    if (model.pointTop != null) DBPoint3D.DeleteRow(model.pointTop.ID, connection);
+                    if (model.pointBottom != null) DBPoint3D.DeleteRow(model.pointBottom.ID, connection);
+                    if (model.matrixTransform != null) DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
+                }
             }
         }
         

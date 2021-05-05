@@ -9,6 +9,12 @@ namespace ClassLibrary1.DATABASE.DBModels
 {
     class TableModel
     {
-
+        public long ID;
+        public string ALIAS;
+        public string A_VALUE;
+        public Point3dModel position;
+        public Matrix3dModel matrixTransform;
+        public DwgFileModel file;
+        public string HANDLE;
     }
 }

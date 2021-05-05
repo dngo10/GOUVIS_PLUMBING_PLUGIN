@@ -33,7 +33,7 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
 
             //File must be inserted to Database first (meaning it must have ID).
 
-            if(!DBFixtureBeingUsedArea.SelectCount(connection, ID))
+            if(!DBFixtureBeingUsedArea.HasRow(connection, ID))
             {
                 var temp = this;
                 ID = DBFixtureBeingUsedArea.InsertRow(connection, ref temp);
