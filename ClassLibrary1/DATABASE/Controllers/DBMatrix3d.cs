@@ -160,91 +160,91 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
 		public static void SelectCount(SQLiteCommand command, long ID)
 		{
-			command.CommandText = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);
-			command.Parameters.Add(new SQLiteParameter("@id", ID));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBMatrixName.ID, DBMatrixName_AT.id } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBMatrixName_AT.id, ID } };
+			DBCommand.SelectCount(DBMatrixName.name, conDict, paraDict, command);
 		}
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);
-			command.Parameters.Add(new SQLiteParameter("@id", ID));
-        }
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBMatrixName.ID, DBMatrixName_AT.id } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBMatrixName_AT.id, ID } };
+			DBCommand.SelectRow(DBMatrixName.name, conDict, paraDict, command);
+		}
 
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			command.CommandText = string.Format("DELETE FROM {0} WHERE {1} = @id;", DBMatrixName.name, DBMatrixName.ID);
-			command.Parameters.Add(new SQLiteParameter("@id", ID));
-
+			Dictionary<string, string> conDict = new Dictionary<string, string> { {DBMatrixName.ID, DBMatrixName_AT.id} };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBMatrixName_AT.id, ID } };
+			DBCommand.DeleteRow(DBMatrixName.name, conDict, paraDict, command);
         }
 		public static void Update(SQLiteCommand command, Matrix3dModel model)
         {
-			StringBuilder builder = new StringBuilder();
-			builder.Append(string.Format("UPDATE {0} SET ", DBMatrixName.name));
-			builder.Append(string.Format("'{0}' = @R00, ", DBMatrixName.R00));
-			builder.Append(string.Format("'{0}' = @R01, ", DBMatrixName.R01));
-			builder.Append(string.Format("'{0}' = @R02, ", DBMatrixName.R02));
-			builder.Append(string.Format("'{0}' = @R03, ", DBMatrixName.R03));
-			builder.Append(string.Format("'{0}' = @R10, ", DBMatrixName.R10));
-			builder.Append(string.Format("'{0}' = @R11, ", DBMatrixName.R11));
-			builder.Append(string.Format("'{0}' = @R12, ", DBMatrixName.R12));
-			builder.Append(string.Format("'{0}' = @R13, ", DBMatrixName.R13));
-			builder.Append(string.Format("'{0}' = @R20, ", DBMatrixName.R20));
-			builder.Append(string.Format("'{0}' = @R21, ", DBMatrixName.R21));
-			builder.Append(string.Format("'{0}' = @R22, ", DBMatrixName.R22));
-			builder.Append(string.Format("'{0}' = @R23, ", DBMatrixName.R23));
-			builder.Append(string.Format("'{0}' = @R30, ", DBMatrixName.R30));
-			builder.Append(string.Format("'{0}' = @R31, ", DBMatrixName.R31));
-			builder.Append(string.Format("'{0}' = @R32, ", DBMatrixName.R32));
-			builder.Append(string.Format("'{0}' = @R33, ", DBMatrixName.R33));
-			builder.Append(string.Format("WHERE '{0}' = @id;", DBMatrixName.ID));
+			List<List<object>> items = new List<List<object>>
+			{
+				new List<object>{DBMatrixName.R00, DBMatrixName_AT.r00, model.index[0] },
+				new List<object>{DBMatrixName.R01, DBMatrixName_AT.r01, model.index[1] },
+				new List<object>{DBMatrixName.R02, DBMatrixName_AT.r02, model.index[2] },
+				new List<object>{DBMatrixName.R03, DBMatrixName_AT.r03, model.index[3] },
+				new List<object>{DBMatrixName.R10, DBMatrixName_AT.r10, model.index[4] },
+				new List<object>{DBMatrixName.R11, DBMatrixName_AT.r11, model.index[5] },
+				new List<object>{DBMatrixName.R12, DBMatrixName_AT.r12, model.index[6] },
+				new List<object>{DBMatrixName.R13, DBMatrixName_AT.r13, model.index[7] },
+				new List<object>{DBMatrixName.R20, DBMatrixName_AT.r20, model.index[8] },
+				new List<object>{DBMatrixName.R21, DBMatrixName_AT.r21, model.index[9] },
+				new List<object>{DBMatrixName.R22, DBMatrixName_AT.r22, model.index[10] },
+				new List<object>{DBMatrixName.R23, DBMatrixName_AT.r23, model.index[11] },
+				new List<object>{DBMatrixName.R30, DBMatrixName_AT.r30, model.index[12] },
+				new List<object>{DBMatrixName.R31, DBMatrixName_AT.r31, model.index[13] },
+				new List<object>{DBMatrixName.R32, DBMatrixName_AT.r32, model.index[14] },
+				new List<object>{DBMatrixName.R33, DBMatrixName_AT.r33, model.index[15] }
+			};
 
-			command.CommandText = builder.ToString();
-			command.Parameters.Add(new SQLiteParameter("@R00", model.index[0]));
-			command.Parameters.Add(new SQLiteParameter("@R01", model.index[1]));
-			command.Parameters.Add(new SQLiteParameter("@R02", model.index[2]));
-			command.Parameters.Add(new SQLiteParameter("@R03", model.index[3]));
-			command.Parameters.Add(new SQLiteParameter("@R10", model.index[4]));
-			command.Parameters.Add(new SQLiteParameter("@R11", model.index[5]));
-			command.Parameters.Add(new SQLiteParameter("@R12", model.index[6]));
-			command.Parameters.Add(new SQLiteParameter("@R13", model.index[7]));
-			command.Parameters.Add(new SQLiteParameter("@R20", model.index[8]));
-			command.Parameters.Add(new SQLiteParameter("@R21", model.index[9]));
-			command.Parameters.Add(new SQLiteParameter("@R22", model.index[10]));
-			command.Parameters.Add(new SQLiteParameter("@R23", model.index[11]));
-			command.Parameters.Add(new SQLiteParameter("@R30", model.index[12]));
-			command.Parameters.Add(new SQLiteParameter("@R31", model.index[13]));
-			command.Parameters.Add(new SQLiteParameter("@R32", model.index[14]));
-			command.Parameters.Add(new SQLiteParameter("@R33", model.index[15]));
-			command.Parameters.Add(new SQLiteParameter("@id", model.ID));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBMatrixName.ID, DBMatrixName_AT.id } };
+			Dictionary<string, string> variables = new Dictionary<string, string>();
+			Dictionary<string, object> paraDict = new Dictionary<string, object>();
 
+			foreach (List<object> item in items)
+			{
+				variables.Add((string)item[0], (string)item[1]);
+				paraDict.Add((string)item[1], item[2]);
+			}
 
+			paraDict.Add(DBMatrixName_AT.id, model.ID);
+
+			DBCommand.UpdateRow(DBMatrixName.name, variables, conDict, paraDict, command);
 		}
 		public static void Insert(SQLiteCommand command, Matrix3dModel model)
         {
-			string commandStr = string.Format("INSERT INTO {0} ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}') VALUES (@R00, @R01, @R02, @R03, @R10, @R11, @R12, @R13, @R20, @R21, @R22, @R23, @R30, @R31, @R32, @R33);",
-					DBMatrixName.name,
-					DBMatrixName.R00, DBMatrixName.R01, DBMatrixName.R02, DBMatrixName.R03,
-					DBMatrixName.R10, DBMatrixName.R11, DBMatrixName.R12, DBMatrixName.R13,
-					DBMatrixName.R20, DBMatrixName.R21, DBMatrixName.R22, DBMatrixName.R23,
-					DBMatrixName.R30, DBMatrixName.R31, DBMatrixName.R32, DBMatrixName.R33
-				);
+			List<List<object>> items = new List<List<object>>
+			{
+				new List<object>{DBMatrixName.R00, DBMatrixName_AT.r00, model.index[0] },
+				new List<object>{DBMatrixName.R01, DBMatrixName_AT.r01, model.index[1] },
+				new List<object>{DBMatrixName.R02, DBMatrixName_AT.r02, model.index[2] },
+				new List<object>{DBMatrixName.R03, DBMatrixName_AT.r03, model.index[3] },
+				new List<object>{DBMatrixName.R10, DBMatrixName_AT.r10, model.index[4] },
+				new List<object>{DBMatrixName.R11, DBMatrixName_AT.r11, model.index[5] },
+				new List<object>{DBMatrixName.R12, DBMatrixName_AT.r12, model.index[6] },
+				new List<object>{DBMatrixName.R13, DBMatrixName_AT.r13, model.index[7] },
+				new List<object>{DBMatrixName.R20, DBMatrixName_AT.r20, model.index[8] },
+				new List<object>{DBMatrixName.R21, DBMatrixName_AT.r21, model.index[9] },
+				new List<object>{DBMatrixName.R22, DBMatrixName_AT.r22, model.index[10] },
+				new List<object>{DBMatrixName.R23, DBMatrixName_AT.r23, model.index[11] },
+				new List<object>{DBMatrixName.R30, DBMatrixName_AT.r30, model.index[12] },
+				new List<object>{DBMatrixName.R31, DBMatrixName_AT.r31, model.index[13] },
+				new List<object>{DBMatrixName.R32, DBMatrixName_AT.r32, model.index[14] },
+				new List<object>{DBMatrixName.R33, DBMatrixName_AT.r33, model.index[15] }
+			};
 
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@R00", model.index[0]));
-			command.Parameters.Add(new SQLiteParameter("@R01", model.index[1]));
-			command.Parameters.Add(new SQLiteParameter("@R02", model.index[2]));
-			command.Parameters.Add(new SQLiteParameter("@R03", model.index[3]));
-			command.Parameters.Add(new SQLiteParameter("@R10", model.index[4]));
-			command.Parameters.Add(new SQLiteParameter("@R11", model.index[5]));
-			command.Parameters.Add(new SQLiteParameter("@R12", model.index[6]));
-			command.Parameters.Add(new SQLiteParameter("@R13", model.index[7]));
-			command.Parameters.Add(new SQLiteParameter("@R20", model.index[8]));
-			command.Parameters.Add(new SQLiteParameter("@R21", model.index[9]));
-			command.Parameters.Add(new SQLiteParameter("@R22", model.index[10]));
-			command.Parameters.Add(new SQLiteParameter("@R23", model.index[11]));
-			command.Parameters.Add(new SQLiteParameter("@R30", model.index[12]));
-			command.Parameters.Add(new SQLiteParameter("@R31", model.index[13]));
-			command.Parameters.Add(new SQLiteParameter("@R32", model.index[14]));
-			command.Parameters.Add(new SQLiteParameter("@R33", model.index[15]));
+			List<string> variables = new List<string>();
+			Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+			foreach(List<object> item in items)
+            {
+				variables.Add((string)item[0]);
+				paraDict.Add((string)item[1], item[2]);
+            }
+
+			DBCommand.InsertCommand(DBMatrixName.name, variables, paraDict, command);
 		}
 		public static void CreateTable(SQLiteCommand command)
         {
@@ -274,7 +274,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
 		public static void DeleteTable(SQLiteCommand command)
         {
-			command.CommandText = string.Format("DROP TABLE IF EXISTS {0};", DBMatrixName.name);
+			DBCommand.DeleteTable(DBMatrixName.name, command);
 		}
     }
 
@@ -298,5 +298,27 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 		public static string R31 = "R31";
 		public static string R32 = "R32";
 		public static string R33 = "R33";
+	}
+
+	class DBMatrixName_AT
+	{
+		public static string name = "@name";
+		public static string id = "@id";
+		public static string r00 = "@r00";
+		public static string r01 = "@r01";
+		public static string r02 = "@r02";
+		public static string r03 = "@r03";
+		public static string r10 = "@r10";
+		public static string r11 = "@r11";
+		public static string r12 = "@r12";
+		public static string r13 = "@r13";
+		public static string r20 = "@r20";
+		public static string r21 = "@r21";
+		public static string r22 = "@r22";
+		public static string r23 = "@r23";
+		public static string r30 = "@r30";
+		public static string r31 = "@r31";
+		public static string r32 = "@r32";
+		public static string r33 = "@r33";
 	}
 }

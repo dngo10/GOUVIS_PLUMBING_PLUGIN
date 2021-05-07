@@ -148,21 +148,20 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
         public static void SelectCount(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@ID", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBPoint3DName.ID, DBPoint3D_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBPoint3D_AT.id, ID } };
+            DBCommand.SelectCount(DBPoint3DName.tableName, conDict, paraDict, command);
         }
 
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@ID", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBPoint3DName.ID, DBPoint3D_AT.id} };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBPoint3D_AT.id, ID} };
+            DBCommand.SelectRow(DBPoint3DName.tableName, conDict, paraDict, command);
         }
         public static void DeleteTable(SQLiteCommand command)
         {
-            string commandStr = string.Format("DROP TABLE IF EXISTS {0};", DBPoint3DName.tableName);
-            command.CommandText = commandStr;
+            DBCommand.DeleteTable(DBPoint3DName.tableName, command);
         }
 
         public static void DeleteRow(SQLiteCommand command, long ID)
@@ -188,13 +187,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             //"INSERT INTO POINT3D ('X', 'Y', 'Z') VALUES (034.34, 233, 0);"
             List<string> variables = new List<string> { DBPoint3DName.X, DBPoint3DName.Y, DBPoint3DName.Z };
-            List<string> values = new List<string> { DBPoint3D_AT.x, DBPoint3D_AT.y, DBPoint3D_AT.y };
             Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBPoint3D_AT.x, model.X },
                                                                                   {DBPoint3D_AT.y, model.Y },
                                                                                   {DBPoint3D_AT.z, model.Z}
                                                                                 };
 
-            DBCommand.InsertCommand(DBPoint3DName.tableName, variables, values, paraDict, command);
+            DBCommand.InsertCommand(DBPoint3DName.tableName, variables, paraDict, command);
         }
 
 

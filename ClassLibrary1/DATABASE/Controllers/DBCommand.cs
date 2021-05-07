@@ -48,13 +48,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void InsertCommand(string tableName,
                    List<string> variables,
-                   List<string> atIndicators,
                    Dictionary<string, object> paraDict,
                    SQLiteCommand command
                    )
         {
             string vari = string.Join(" , ", variables);
-            string atIndi = string.Join(" , ", atIndicators);
+            string atIndi = string.Join(" , ", paraDict.Keys.ToList());
 
             command.CommandText = $"INSERT INTO '{tableName}' ({vari}) VALUES ({atIndi}) ;";
             SetCommandParameter(command, paraDict);

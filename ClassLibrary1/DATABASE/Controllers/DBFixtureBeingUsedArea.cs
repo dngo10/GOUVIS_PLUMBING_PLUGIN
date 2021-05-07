@@ -298,7 +298,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void DeleteTable(SQLiteCommand command)
         {
-            command.CommandText = string.Format("DROP TABLE IF EXISTS '{0}';", DBFixtureBeingUsedAreaName.name);
+            DBCommand.DeleteTable(DBFixtureBeingUsedAreaName.name, command);
         }
     }
 
@@ -315,5 +315,16 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         //USED ONLY FOR BLOCKREF
         public const string basePoint = "Origin";
+    }
+
+    class DBFixtureBeingUsedAreaName_AT: DBMatrixName_AT
+    {
+        public const string origin = "@origin";
+        public const string bottom = "@bottom";
+        public const string top = "@top";
+        public const string x = "@x";
+        public const string y = "@y";
+        //USED ONLY FOR BLOCKREF
+        public const string basePoint = "@origin";
     }
 }

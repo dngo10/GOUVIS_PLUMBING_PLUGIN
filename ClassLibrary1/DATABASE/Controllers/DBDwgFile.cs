@@ -66,7 +66,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBDwgFileCommands.SelectRowPath(command, path);
+                DBDwgFileCommands.SelectCount(command, path);
                 count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
@@ -77,7 +77,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBDwgFileCommands.SelectCountID(command, ID);
+                DBDwgFileCommands.SelectCount(command, ID);
                 count = Convert.ToInt64(command.ExecuteReader());
             }
             return count == 1;
@@ -209,58 +209,60 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
         public static void GetDwgFiles(SQLiteCommand command)
         {
-            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ispNote;", DBDwgFileName.name, DBDwgFileName.ISP_NOTES);
-            command.CommandText = commandStr;
-            int temp = 0;
-            command.Parameters.Add(new SQLiteParameter("@ispNote", temp));
+            int isNote = 0;
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.ISP_NOTES, DBDwgFileName_AT.iNote } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.iNote, isNote } };
+
+            DBCommand.SelectRow(DBDwgFileName.name, conDict, paraDict, command);
         }
         public static void GetPNoteFile(SQLiteCommand command)
         {
-            //SELECT RELATIVE_PATH , MODIFIEDDATE FROM FILE WHERE ISP_NOTES = 1;
-            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @ispNote;", DBDwgFileName.name, DBDwgFileName.ISP_NOTES);
-            command.CommandText = commandStr;
-            int temp = 1;
-            command.Parameters.Add(new SQLiteParameter("@ispNote", temp));
+            int isNote = 1;
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.ISP_NOTES, DBDwgFileName_AT.iNote } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.iNote, isNote} };
+
+            DBCommand.SelectRow(DBDwgFileName.name, conDict, paraDict, command);
         }
 
-        public static void SelectRowPath(SQLiteCommand command, string relPath)
+        public static void SelectCount(SQLiteCommand command, string relPath)
         {
-            string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @relPath;", DBDwgFileName.name, DBDwgFileName.RELATIVE_PATH);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@relPath", relPath));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.relPath, relPath } };
+            DBCommand.SelectCount(DBDwgFileName.name, conDict, paraDict, command);
         }
 
-        public static void SelectCountID(SQLiteCommand command, long ID)
+        public static void SelectCount(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.ID, DBDwgFileName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.id, ID } };
+            DBCommand.SelectCount(DBDwgFileName.name, conDict, paraDict, command);
         }
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.ID, DBDwgFileName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.id, ID } };
+            DBCommand.SelectRow(DBDwgFileName.name, conDict, paraDict, command);
         }
 
         public static void SelectRow(SQLiteCommand command, string relPath)
         {
-            string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @relPath;", DBDwgFileName.name, DBDwgFileName.RELATIVE_PATH);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@relPath", relPath));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath} };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBDwgFileName_AT.relPath, relPath} };
+
+            DBCommand.SelectRow(DBDwgFileName.name, conDict, paraDict, command);
         }
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(string.Format("DELETE FROM {0} WHERE {1} = @id;", DBDwgFileName.name, DBDwgFileName.ID));
-            command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBDwgFileName.ID, DBDwgFileName_AT.id} };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBDwgFileName_AT.id, ID} };
+            DBCommand.DeleteRow(DBDwgFileName.name, conDict, paraDict, command);
         }
 
 
-
+        //FIX LATER
         public static void GetAllFixtureBeingUsedAreaID(SQLiteCommand command, DwgFileModel model)
         {
+
             StringBuilder builder = new StringBuilder();
             builder.Append($"SELECT * FROM '{DBFixtureBeingUsedAreaName.name}' WHERE {DBFixtureBeingUsedAreaName.FILE_ID} = @id;");
 
@@ -280,39 +282,51 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void UpdateRow(SQLiteCommand command, DwgFileModel model)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append($"UPDATE '{DBDwgFileName.name}' SET ");
-            builder.Append($" {DBDwgFileName.RELATIVE_PATH} = @path ,");
-            builder.Append($" {DBDwgFileName.MODIFIEDDATE} = @date ,");
-            builder.Append($" {DBDwgFileName.ISP_NOTES} = @note WHERE ");
-            builder.Append($" {DBDwgFileName.ID} = @id;");
+            List<List<object>> items = new List<List<object>>()
+            {
+                new List<object>{ DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath, model.relativePath },
+                new List<object>{ DBDwgFileName.MODIFIEDDATE, DBDwgFileName_AT.modDate, model.modifieddate },
+                new List<object>{ DBDwgFileName.ISP_NOTES, DBDwgFileName_AT.iNote, model.isP_Notes},
+            };
 
-            command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@path", model.relativePath));
-            command.Parameters.Add(new SQLiteParameter("@date", model.modifieddate));
-            command.Parameters.Add(new SQLiteParameter("@note", model.isP_Notes));
-            command.Parameters.Add(new SQLiteParameter("@id", model.ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBDwgFileName.ID, DBDwgFileName_AT.id} };
+
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            Dictionary<string, object> paradict = new Dictionary<string, object>();
+
+            foreach(List<object> item in items)
+            {
+                variables.Add((string)item[0], (string)item[1]);
+                paradict.Add((string)item[1], item[2]);
+            }
+
+            paradict.Add(DBDwgFileName.ID, model.ID);
+
+            DBCommand.UpdateRow(DBDwgFileName.name, variables, conDict, paradict, command);
         }
         public static void InsertRow(SQLiteCommand command, DwgFileModel model)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}') VALUES ",
-                DBDwgFileName.name, 
-                DBDwgFileName.RELATIVE_PATH,
-                DBDwgFileName.MODIFIEDDATE,
-                DBDwgFileName.ISP_NOTES));
+            List<List<object>> items = new List<List<object>>
+            {
+                new List<object>{DBDwgFileName.ISP_NOTES, DBDwgFileName_AT.iNote, model.isP_Notes},
+                new List<object>{DBDwgFileName.MODIFIEDDATE, DBDwgFileName_AT.modDate, model.modifieddate},
+                new List<object>{DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath, model.relativePath}
+            };
 
-            builder.Append(string.Format("(@path, @date, @note);"));
-            command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@path", model.relativePath));
-            command.Parameters.Add(new SQLiteParameter("@date", model.modifieddate));
-            command.Parameters.Add(new SQLiteParameter("@note", model.isP_Notes));
+            List<string> variables = new List<string>();
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
+            foreach (List<object> item in items)
+            {
+                variables.Add((string)item[0]);
+                paraDict.Add((string)item[1], item[2]);
+            }
 
+            DBCommand.InsertCommand(DBDwgFileName.name, variables, paraDict, command);
         }
+
         public static void DeleteTable(SQLiteCommand command)
         {
-            string commandStr = string.Format($"DROP TABLE IF EXISTS {DBDwgFileName.name};");
-            command.CommandText = commandStr;
+            DBCommand.DeleteTable(DBDwgFileName.name, command);
         }
         public static void CreateTable(SQLiteCommand command)
         {
@@ -336,5 +350,14 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public static string RELATIVE_PATH = "RELATIVE_PATH";
         public static string MODIFIEDDATE = "MODIFIEDDATE";
         public static string ISP_NOTES = "ISP_NOTES";
+    }
+
+    class DBDwgFileName_AT
+    {
+        public static string name = "@name";
+        public static string id = "@id";
+        public static string relPath = "@relPath";
+        public static string modDate = "@modDate";
+        public static string iNote = "@iNote";
     }
 }

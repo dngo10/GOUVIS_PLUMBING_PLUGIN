@@ -31,7 +31,10 @@ namespace ClassLibrary1.DATABASE.Controllers
     {
 		public static List<TableModel> SelectRows(SQLiteConnection connection, long FILE_ID)
         {
-			//CONTINUE HERE TOMORROW
+			using(SQLiteCommand command = connection.CreateCommand())
+            {
+				DBTableCommands.SelectRow(command, )
+            }
 			return null;
         }
 		public static TableModel SelectRow(SQLiteConnection connection, long ID)
@@ -41,9 +44,10 @@ namespace ClassLibrary1.DATABASE.Controllers
 				DBTableCommands.SelectRow(command, ID);
 				SQLiteDataReader reader = command.ExecuteReader();
 
-				TableModel model = new TableModel();
+				TableModel model = null;
                 while (reader.Read())
                 {
+					model = new TableModel();
 					model.ID = Convert.ToInt64(reader[DBTableName.ID]);
 					model.handle = Convert.ToString(reader[DBTableName.HANDLE]);
 					model.matrixTransform = DBMatrix3d.SelectRow(connection, Convert.ToInt64(reader[DBTableName.MATRIX_ID]));
@@ -127,6 +131,14 @@ namespace ClassLibrary1.DATABASE.Controllers
 
 			DBCommand.SelectCount(DBTableName.name, conDict, paraDict, command);
         }
+
+		//FIX THIS
+		public static void SelectRows(SQLiteCommand command, long File_ID)
+		{
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id, ID } };
+			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
+		}
 
 		public static void SelectRow(SQLiteCommand command, string handle, long file_ID)
         {
