@@ -167,9 +167,9 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            string commandStr = string.Format("DELETE FROM {0} WHERE {1} = @ID;", DBPoint3DName.tableName, DBPoint3DName.ID);
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@ID", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBPoint3DName.ID, DBPoint3D_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBPoint3D_AT.id, ID } };
+            DBCommand.DeleteRow(DBPoint3DName.tableName, conDict, paraDict, command);
         }
         public static void CreateTable(SQLiteCommand command)
         {
@@ -187,16 +187,14 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public static void Insert(SQLiteCommand command, Point3dModel model)
         {
             //"INSERT INTO POINT3D ('X', 'Y', 'Z') VALUES (034.34, 233, 0);"
-            string commandStr = string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}') VALUES (@X, @Y, @Z);",
-                                    DBPoint3DName.tableName,
-                                    DBPoint3DName.X,
-                                    DBPoint3DName.Y,
-                                    DBPoint3DName.Z
-                                    );
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@X", model.X));
-            command.Parameters.Add(new SQLiteParameter("@Y", model.Y));
-            command.Parameters.Add(new SQLiteParameter("@Z", model.Z));
+            List<string> variables = new List<string> { DBPoint3DName.X, DBPoint3DName.Y, DBPoint3DName.Z };
+            List<string> values = new List<string> { DBPoint3D_AT.x, DBPoint3D_AT.y, DBPoint3D_AT.y };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBPoint3D_AT.x, model.X },
+                                                                                  {DBPoint3D_AT.y, model.Y },
+                                                                                  {DBPoint3D_AT.z, model.Z}
+                                                                                };
+
+            DBCommand.InsertCommand(DBPoint3DName.tableName, variables, values, paraDict, command);
         }
 
 
@@ -204,19 +202,25 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         //UPDATE POINT3D SET 'X' =1, 'Y' = 2, 'Z' = 3 WHERE ID = 3;
         public static void Update(SQLiteCommand command, Point3dModel model)
         {
-            string commandStr = string.Format("UPDATE {0} SET {1} = @X, {2} = @Y, {3} = @Z WHERE {4} = @ID;",
-                DBPoint3DName.tableName,
-                DBPoint3DName.X,
-                DBPoint3DName.Y,
-                DBPoint3DName.Z,
-                DBPoint3DName.ID
-                );
+            List<List<object>> itemList = new List<List<object>>
+            {
+                new List<object>{DBPoint3DName.X, DBPoint3D_AT.x, model.X},
+                new List<object>{DBPoint3DName.Y, DBPoint3D_AT.y, model.Y},
+                new List<object>{DBPoint3DName.Z, DBPoint3D_AT.z, model.Z}
+            };
 
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@X", model.X));
-            command.Parameters.Add(new SQLiteParameter("@Y", model.Y));
-            command.Parameters.Add(new SQLiteParameter("@Z", model.Z));
-            command.Parameters.Add(new SQLiteParameter("@ID", model.ID));
+            Dictionary<string, string> variable = new Dictionary<string, string>();
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBPoint3DName.ID, DBPoint3D_AT.id} };
+
+            foreach(List<object> item in itemList)
+            {
+                variable.Add((string)item[0], (string)item[1]);
+                paraDict.Add((string)item[1], item[2]);
+            };
+
+            paraDict.Add(DBPoint3D_AT.id, model.ID);
+            DBCommand.UpdateRow(DBPoint3DName.tableName, variable, conDict, paraDict, command);
         }
 
     }
@@ -228,5 +232,14 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public static string X = "X";
         public static string Y = "Y";
         public static string Z = "Z";
+    }
+
+    class DBPoint3D_AT
+    {
+        public static string name = "@name";
+        public static string id = "@id";
+        public static string x = "@x";
+        public static string y = "@y";
+        public static string z = "@z";
     }
 }

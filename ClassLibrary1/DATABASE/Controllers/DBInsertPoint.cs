@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
+using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
 
 namespace GouvisPlumbingNew.DATABASE.Controllers
 {
@@ -41,7 +42,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
 
                     DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
-                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.TRANSFORM_ID]);
+                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
 
                     InsertPointModel model = new InsertPointModel(alias, name, ID, file, handle, pos, matrix);
                     insertPoints.Add(model);
@@ -76,7 +77,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
                     string handle1 = (string)reader[DBInsertPointName.HANDLE];
                     DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
-                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.TRANSFORM_ID]);
+                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
 
                     model = new InsertPointModel(alias, name, ID, file, handle1, pos, matrix);
                 }
@@ -99,7 +100,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
                     long ID1 = (long)reader[DBInsertPointName.ID];
                     DwgFileModel file = DBDwgFile.SelectRow(connection,(long)reader[DBInsertPointName.FILE_ID]);
-                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.TRANSFORM_ID]);
+                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
 
                     model = new InsertPointModel(alias, name, ID1, file, handle, pos, matrix);
                 }
@@ -234,7 +235,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             builder.Append($"'{DBInsertPointName.NAME}' = @name , ");
             builder.Append($"'{DBInsertPointName.POSITION_ID}' = @pos , ");
             builder.Append($"'{DBInsertPointName.HANDLE}' = @handle , ");
-            builder.Append($"'{DBInsertPointName.TRANSFORM_ID}' = @transform , ");
+            builder.Append($"'{DBInsertPointName.MATRIX_ID}' = @transform , ");
             builder.Append($"'{DBInsertPointName.FILE_ID}' = @file WHERE ");
             builder.Append($"'{DBInsertPointName.ID}' = @id;");
 
@@ -257,7 +258,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBInsertPointName.NAME,
                 DBInsertPointName.HANDLE,
                 DBInsertPointName.POSITION_ID,
-                DBInsertPointName.TRANSFORM_ID,
+                DBInsertPointName.MATRIX_ID,
                 DBInsertPointName.FILE_ID
                 ));
             command.CommandText = builder.ToString();
@@ -282,25 +283,21 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             builder.Append($"'{DBInsertPointName.NAME}'  TEXT, ");
             builder.Append($"'{DBInsertPointName.HANDLE}'    TEXT NOT NULL,");
             builder.Append($"'{DBInsertPointName.POSITION_ID}'   INTEGER NOT NULL, ");
-            builder.Append($"'{DBInsertPointName.TRANSFORM_ID}'  INTEGER NOT NULL, ");
+            builder.Append($"'{DBInsertPointName.MATRIX_ID}'  INTEGER NOT NULL, ");
             builder.Append($"'{DBInsertPointName.FILE_ID}'   INTEGER NOT NULL, ");
             builder.Append($"FOREIGN KEY('{DBInsertPointName.POSITION_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, ");
             builder.Append($"FOREIGN KEY('{DBInsertPointName.FILE_ID}') REFERENCES '{DBDwgFileName.name}'('{DBDwgFileName.ID}') ON DELETE CASCADE, ");
-            builder.Append($"FOREIGN KEY('{DBInsertPointName.TRANSFORM_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE ");
+            builder.Append($"FOREIGN KEY('{DBInsertPointName.MATRIX_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE ");
             builder.Append(");");
 
             command.CommandText = builder.ToString();
         }
     }
 
-    class DBInsertPointName {
-        public const string ID = "ID";
+    class DBInsertPointName : DBBlockName {
         public const string ALIAS = "ALIAS";
         public const string NAME = "NAME";
-        public const string HANDLE = "HANDLE";
-        public const string POSITION_ID = "POSITION_ID";
-        public const string TRANSFORM_ID = "TRANSFORM_ID";
-        public const string FILE_ID = "FILE_ID";
+
         public const string tableName = "INSERT_POINT";
     }
 }

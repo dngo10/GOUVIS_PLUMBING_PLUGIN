@@ -1,4 +1,6 @@
-﻿using GouvisPlumbingNew.DATABASE.DBModels;
+﻿using ClassLibrary1.DATABASE.DBModels.BaseBlockModel;
+using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +9,9 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.DATABASE.DBModels
 {
-    class TableModel
+    class TableModel : BlockModelBase
     {
-        public long ID;
-        public string ALIAS;
-        public string A_VALUE;
-        public Point3dModel position;
-        public Matrix3dModel matrixTransform;
-        public DwgFileModel file;
-        public string HANDLE;
+        public string ALIAS = ConstantName.invalidStr;
+        public string A_VALUE = ConstantName.invalidStr;
     }
 }

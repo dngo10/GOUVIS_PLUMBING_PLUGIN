@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.Controllers;
+﻿using ClassLibrary1.DATABASE.DBModels.BaseBlockModel;
+using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,8 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class FixtureDetailsModel
+    class FixtureDetailsModel : BlockModelBase
     {
-        public string handle = ConstantName.invalidStr;
-        public Point3dModel position = null;
-        public Matrix3dModel matrixTransform = null;
         public double INDEX = ConstantName.invalidNum;
         public string FIXTURENAME = ConstantName.invalidStr;
         public string TAG = ConstantName.invalidStr;
@@ -28,8 +26,6 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
         public double HWSFU = ConstantName.invalidNum;
         public double DFU = ConstantName.invalidNum;
         public string DESCRIPTION = ConstantName.invalidStr;
-        public DwgFileModel file = null;
-        public long ID = ConstantName.invalidNum;
 
         public void WriteToDatabase(SQLiteConnection connection)
         {

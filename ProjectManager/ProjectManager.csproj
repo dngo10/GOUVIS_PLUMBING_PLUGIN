@@ -115,47 +115,59 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\BlockInterFace\DBBlockRef.cs">
+      <Link>DATABASE\Controllers\BlockInterFace\DBBlockRef.cs</Link>
+    </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBCommand.cs">
-      <Link>DATABASECOPIED\Controllers\DBCommand.cs</Link>
+      <Link>DATABASE\Controllers\DBCommand.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBDwgFile.cs">
-      <Link>DATABASECOPIED\Controllers\DBDwgFile.cs</Link>
+      <Link>DATABASE\Controllers\DBDwgFile.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBFixtureBeingUsedArea.cs">
-      <Link>DATABASECOPIED\Controllers\DBFixtureBeingUsedArea.cs</Link>
+      <Link>DATABASE\Controllers\DBFixtureBeingUsedArea.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBFixtureDetails.cs">
-      <Link>DATABASECOPIED\Controllers\DBFixtureDetails.cs</Link>
+      <Link>DATABASE\Controllers\DBFixtureDetails.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBInsertPoint.cs">
-      <Link>DATABASECOPIED\Controllers\DBInsertPoint.cs</Link>
+      <Link>DATABASE\Controllers\DBInsertPoint.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBMatrix3d.cs">
-      <Link>DATABASECOPIED\Controllers\DBMatrix3d.cs</Link>
+      <Link>DATABASE\Controllers\DBMatrix3d.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBPoint3D.cs">
-      <Link>DATABASECOPIED\Controllers\DBPoint3D.cs</Link>
+      <Link>DATABASE\Controllers\DBPoint3D.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBTable.cs">
+      <Link>DATABASE\Controllers\DBTable.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\PlumbingDatabaseManager.cs">
-      <Link>DATABASECOPIED\Controllers\PlumbingDatabaseManager.cs</Link>
+      <Link>DATABASE\Controllers\PlumbingDatabaseManager.cs</Link>
     </Compile>
-    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\DwgFileModel.cs">
-      <Link>DATABASECOPIED\DBModels\DwgFileModel.cs</Link>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\BaseBlockModel\BlockModelBase.cs">
+      <Link>DATABASE\DBModels\BaseBlockModel\BlockModelBase.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\BaseBlockModel\DwgFileModel.cs">
+      <Link>DATABASE\DBModels\BaseBlockModel\DwgFileModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\BaseBlockModel\Matrix3dModel.cs">
+      <Link>DATABASE\DBModels\BaseBlockModel\Matrix3dModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\BaseBlockModel\Point3dModel.cs">
+      <Link>DATABASE\DBModels\BaseBlockModel\Point3dModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\FixtureBeingUsedAreaModel.cs">
-      <Link>DATABASECOPIED\DBModels\FixtureBeingUsedAreaModel.cs</Link>
+      <Link>DATABASE\DBModels\FixtureBeingUsedAreaModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\FixtureDetailsModel.cs">
-      <Link>DATABASECOPIED\DBModels\FixtureDetailsModel.cs</Link>
+      <Link>DATABASE\DBModels\FixtureDetailsModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\InsertPointModel.cs">
-      <Link>DATABASECOPIED\DBModels\InsertPointModel.cs</Link>
+      <Link>DATABASE\DBModels\InsertPointModel.cs</Link>
     </Compile>
-    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\Matrix3dModel.cs">
-      <Link>DATABASECOPIED\DBModels\Matrix3dModel.cs</Link>
-    </Compile>
-    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\Point3dModel.cs">
-      <Link>DATABASECOPIED\DBModels\Point3dModel.cs</Link>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\TableModel.cs">
+      <Link>DATABASE\DBModels\TableModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\HELPERS\ConstantName.cs">
       <Link>ConstantName.cs</Link>
@@ -207,6 +219,7 @@
   <ItemGroup>
     <None Include="Resources\folder.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

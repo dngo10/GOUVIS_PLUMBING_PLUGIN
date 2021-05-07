@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.Controllers;
+﻿using ClassLibrary1.DATABASE.DBModels.BaseBlockModel;
+using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -9,18 +10,13 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class FixtureBeingUsedAreaModel
+    class FixtureBeingUsedAreaModel : BlockModelBase
     {
         public double X = ConstantName.invalidNum;
         public double Y = ConstantName.invalidNum;
         public Point3dModel origin = null;
         public Point3dModel pointTop = null;
         public Point3dModel pointBottom = null;
-        public string handle = ConstantName.invalidStr;
-        public long ID = ConstantName.invalidNum;
-        public Point3dModel position = null;
-        public Matrix3dModel matrixTransform = null;
-        public DwgFileModel file = null;
 
         public void WriteToDataBase(SQLiteConnection connection)
         {

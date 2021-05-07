@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.Controllers;
+﻿using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
+using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
@@ -111,7 +112,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			FixtureDetailsModel model;
 
 			long POSITION_ID = (long)reader[DBFixtureDetailsNames.POSITION_ID];
-			long TRANSFORM_ID = (long)reader[DBFixtureDetailsNames.TRANSFORM_ID];
+			long TRANSFORM_ID = (long)reader[DBFixtureDetailsNames.MATRIX_ID];
 			string HANDLE = (string)reader[DBFixtureDetailsNames.HANDLE];
 			double INDEX = (double)reader[DBFixtureDetailsNames.INDEXX];
 			string FIXTURE_NAME = (string)reader[DBFixtureDetailsNames.FIXTURE_NAME];
@@ -273,7 +274,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			StringBuilder sb = new StringBuilder();
 			sb.Append(string.Format("UPDATE {0} SET ", DBFixtureDetailsNames.name));
 			sb.Append(string.Format("{0} = @position ,", DBFixtureDetailsNames.POSITION_ID));
-			sb.Append(string.Format("{0} = @matrix ,", DBFixtureDetailsNames.TRANSFORM_ID));
+			sb.Append(string.Format("{0} = @matrix ,", DBFixtureDetailsNames.MATRIX_ID));
 			sb.Append(string.Format("{0} = @handle ,", DBFixtureDetailsNames.HANDLE));
 			sb.Append(string.Format("{0} = @indexx ,", DBFixtureDetailsNames.INDEXX));
 			sb.Append(string.Format("{0} = @fixture_name ,", DBFixtureDetailsNames.FIXTURE_NAME));
@@ -318,7 +319,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			string commandStr = string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}') VALUES ",
 				DBFixtureDetailsNames.name,
 				DBFixtureDetailsNames.POSITION_ID,
-				DBFixtureDetailsNames.TRANSFORM_ID,
+				DBFixtureDetailsNames.MATRIX_ID,
 				DBFixtureDetailsNames.HANDLE,
 				DBFixtureDetailsNames.INDEXX,
 				DBFixtureDetailsNames.FIXTURE_NAME,
@@ -364,7 +365,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			builder.Append(string.Format($"CREATE TABLE IF NOT EXISTS '{DBFixtureDetailsNames.name}' ("));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.ID}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.POSITION_ID}' INTEGER NOT NULL, "));
-			builder.Append(string.Format($"'{DBFixtureDetailsNames.TRANSFORM_ID}' INTEGER NOT NULL, "));
+			builder.Append(string.Format($"'{DBFixtureDetailsNames.MATRIX_ID}' INTEGER NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.HANDLE}' TEXT NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.INDEXX}' REAL NOT NULL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.FIXTURE_NAME}' TEXT NOT NULL, "));
@@ -381,7 +382,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.DFU}' REAL, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.DESCRIPTION}' TEXT, "));
 			builder.Append(string.Format($"'{DBFixtureDetailsNames.FILE_ID}' INTEGER NOT NULL, "));
-			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.TRANSFORM_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE, "));
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.MATRIX_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.FILE_ID}') REFERENCES '{DBMatrixName.name}'('{DBDwgFileName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureDetailsNames.POSITION_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE"));
 			builder.Append(string.Format(");"));
@@ -395,13 +396,10 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		}
     }
 
-	class DBFixtureDetailsNames
+	class DBFixtureDetailsNames : DBBlockName
     {
 		public static string name = "FIXTURE_DETAILS";
-		public static string ID = "ID";
-		public static string POSITION_ID = "POSITION_ID";
-		public static string TRANSFORM_ID = "TRANSFORM_ID";
-		public static string HANDLE = "HANDLE";
+
 		public static string INDEXX = "INDEXX";
 		public static string FIXTURE_NAME = "FIXTURE_NAME";
 		public static string TAG = "TAG";
@@ -416,6 +414,5 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		public static string HWSFU = "HWSFU";
 		public static string DFU = "DFU";
 		public static string DESCRIPTION = "DESCRIPTION";
-		public static string FILE_ID = "FILE_ID";
 	}
 }

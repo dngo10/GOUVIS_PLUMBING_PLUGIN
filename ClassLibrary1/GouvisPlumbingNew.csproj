@@ -98,6 +98,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DATABASE\Controllers\BlockInterFace\DBBlockRef.cs" />
     <Compile Include="DATABASE\Controllers\DBDwgFile.cs" />
     <Compile Include="DATABASE\Controllers\DBFixtureBeingUsedArea.cs" />
     <Compile Include="DATABASE\Controllers\DBFixtureDetails.cs" />
@@ -105,14 +106,15 @@
     <Compile Include="DATABASE\Controllers\DBMatrix3d.cs" />
     <Compile Include="DATABASE\Controllers\DBPoint3D.cs" />
     <Compile Include="DATABASE\Controllers\DBTable.cs" />
+    <Compile Include="DATABASE\DBModels\BaseBlockModel\BlockModelBase.cs" />
     <Compile Include="DATABASE\DBModels\InsertPointModel.cs" />
     <Compile Include="DATABASE\Controllers\PlumbingDatabaseManager.cs" />
     <Compile Include="DATABASE\Controllers\DBCommand.cs" />
-    <Compile Include="DATABASE\DBModels\DwgFileModel.cs" />
+    <Compile Include="DATABASE\DBModels\BaseBlockModel\DwgFileModel.cs" />
     <Compile Include="DATABASE\DBModels\FixtureBeingUsedAreaModel.cs" />
     <Compile Include="DATABASE\DBModels\FixtureDetailsModel.cs" />
-    <Compile Include="DATABASE\DBModels\Matrix3dModel.cs" />
-    <Compile Include="DATABASE\DBModels\Point3dModel.cs" />
+    <Compile Include="DATABASE\DBModels\BaseBlockModel\Matrix3dModel.cs" />
+    <Compile Include="DATABASE\DBModels\BaseBlockModel\Point3dModel.cs" />
     <Compile Include="DATABASE\DBModels\TableModel.cs" />
     <Compile Include="FIND_FILE_LOCKER\FileFileLocker.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />

@@ -1,4 +1,6 @@
-﻿using GouvisPlumbingNew.DATABASE.Controllers;
+﻿using ClassLibrary1.DATABASE.DBModels.BaseBlockModel;
+using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -8,19 +10,14 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class InsertPointModel
+    class InsertPointModel : BlockModelBase
     {
-        public string alias;
-        public string name;
+        public string alias = ConstantName.invalidStr;
+        public string name = ConstantName.invalidStr;
 
-        public long ID;
-        public DwgFileModel file;
-        public string handle;
-        public Point3dModel position;
-        public Matrix3dModel matrixTransform;
-
-        public InsertPointModel(string alias, string name, long ID, DwgFileModel file, string handle, Point3dModel position, Matrix3dModel matrixTransform)
+        public InsertPointModel(string alias, string name, long ID, DwgFileModel file, string Handle, Point3dModel position, Matrix3dModel matrixTransform)
         {
+            this.handle = Handle;
             this.alias = alias;
             this.name = name;
             this.ID = ID;
@@ -30,9 +27,7 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
         }
 
         public InsertPointModel()
-        {
-
-        }
+        {}
 
         public void WriteToDataBase(SQLiteConnection connection)
         {

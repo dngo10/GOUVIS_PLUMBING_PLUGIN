@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.DBModels;
+﻿using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             model.pointBottom = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
             model.origin = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.ORIGIN_ID]);
 
-            model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.TRANSFORM_ID]);
+            model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.MATRIX_ID]);
             model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
             model.Y = (double)reader[DBFixtureBeingUsedAreaName.Y];
             model.file = DBDwgFile.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.FILE_ID]);
@@ -230,7 +231,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             builder.Append(string.Format(" {0} = @Y ,", DBFixtureBeingUsedAreaName.Y));
             builder.Append(string.Format(" {0} = @origin ,", DBFixtureBeingUsedAreaName.ORIGIN_ID));
             builder.Append(string.Format(" {0} = @pointop ,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
-            builder.Append(string.Format(" {0} = @pointbottom ,", DBFixtureBeingUsedAreaName.TRANSFORM_ID));
+            builder.Append(string.Format(" {0} = @pointbottom ,", DBFixtureBeingUsedAreaName.MATRIX_ID));
             builder.Append(string.Format(" {0} = @file WHERE ", DBFixtureBeingUsedAreaName.FILE_ID));
             builder.Append(string.Format(" {0} = @id;", DBFixtureBeingUsedAreaName.ID));
 
@@ -256,7 +257,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBFixtureBeingUsedAreaName.ORIGIN_ID,
                 DBFixtureBeingUsedAreaName.POINT_TOP_ID,
                 DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID,
-                DBFixtureBeingUsedAreaName.TRANSFORM_ID,
+                DBFixtureBeingUsedAreaName.MATRIX_ID,
                 DBFixtureBeingUsedAreaName.FILE_ID
                 );
 
@@ -283,14 +284,14 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             builder.Append(string.Format("'{0}' INTEGER NOT NULL,", DBFixtureBeingUsedAreaName.ORIGIN_ID));
             builder.Append(string.Format("'{0}' INTEGER NOT NULL,", DBFixtureBeingUsedAreaName.POINT_TOP_ID));
             builder.Append(string.Format("'{0}' INTEGER NOT NULL,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
-            builder.Append(string.Format("'{0}' INTEGER NOT NULL,", DBFixtureBeingUsedAreaName.TRANSFORM_ID));
+            builder.Append(string.Format("'{0}' INTEGER NOT NULL,", DBFixtureBeingUsedAreaName.MATRIX_ID));
             builder.Append(string.Format("'{0}' INTEGER NOT NULL,", DBFixtureBeingUsedAreaName.FILE_ID));
             builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE,", DBFixtureBeingUsedAreaName.POINT_TOP_ID, DBPoint3DName.tableName, DBPoint3DName.ID));
             builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE,", DBFixtureBeingUsedAreaName.ORIGIN_ID, DBPoint3DName.tableName, DBPoint3DName.ID));
             builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID, DBPoint3DName.tableName, DBPoint3DName.ID));
             builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE,", DBFixtureBeingUsedAreaName.POSITION_ID, DBPoint3DName.tableName, DBPoint3DName.ID));
             builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE,", DBFixtureBeingUsedAreaName.FILE_ID, DBDwgFileName.name, DBDwgFileName.ID));
-            builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE ", DBFixtureBeingUsedAreaName.TRANSFORM_ID, DBMatrixName.name, DBMatrixName.ID)); 
+            builder.Append(string.Format("FOREIGN KEY('{0}') REFERENCES '{1}'('{2}') ON DELETE CASCADE ", DBFixtureBeingUsedAreaName.MATRIX_ID, DBMatrixName.name, DBMatrixName.ID)); 
             builder.Append(string.Format(");"));
             command.CommandText = builder.ToString();
         }
@@ -301,20 +302,16 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         }
     }
 
-    class DBFixtureBeingUsedAreaName
+    class DBFixtureBeingUsedAreaName :DBBlockName
     {
         //x and y are width and height of the XY dynamic dimension.
-        public const string ID = "ID";
-        public const string HANDLE = "HANDLE";
-        public const string POSITION_ID = "POSITION_ID";
+
         public const string ORIGIN_ID = "ORIGIN_ID";
         public const string POINT_BOTTOM_ID = "POINT_BOTTOM_ID";
         public const string POINT_TOP_ID = "POINT_TOP_ID";
-        public const string TRANSFORM_ID = "TRANSFORM_ID";
         public const string X = "X";
         public const string Y = "Y";
         public const string name = "FIXTURE_BEING_USED_AREA";
-        public const string FILE_ID = "FILE_ID";
 
         //USED ONLY FOR BLOCKREF
         public const string basePoint = "Origin";
