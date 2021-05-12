@@ -16,6 +16,7 @@ namespace ClassLibrary1.PNOTE
     class WritePNote
     {
         public static void WriteScheduleTableToNote(SQLiteConnection connection) {
+
             string dwgPath = Application.DocumentManager.MdiActiveDocument.Name;
             string notePathFull = GoodiesPath.GetNotePathFromADwgPath(dwgPath, connection);
             string notePath = GoodiesPath.MakeRelativePath(notePathFull);
@@ -27,6 +28,7 @@ namespace ClassLibrary1.PNOTE
             }
 
             FileStatus fileStatus =  Goodies.CanOpenToWrite(notePathFull);
+
             //Document doc = Goodies.CanOpenToWrite1(notePathFull);
             if (fileStatus == null || fileStatus.db == null) return;
             //if (doc == null) return;
@@ -44,7 +46,6 @@ namespace ClassLibrary1.PNOTE
                     {
                         using (fileStatus.db)
                         {
-
                             using (Transaction tr = fileStatus.db.TransactionManager.StartTransaction())
                             {
                                 BlockTable bt = (BlockTable)tr.GetObject(fileStatus.db.BlockTableId, OpenMode.ForRead);
@@ -56,7 +57,6 @@ namespace ClassLibrary1.PNOTE
                                 tr.Dispose();
                             }
                             TableSchedule.AddBlockToTable(table, fileStatus.db, note.FixtureDetailSet);
-
                             fileStatus.Save();
                             //Condition
                         }

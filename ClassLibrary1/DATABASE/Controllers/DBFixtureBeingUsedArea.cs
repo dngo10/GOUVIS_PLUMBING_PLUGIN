@@ -59,11 +59,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return count == 1;
         }
 
-        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, string handle)
+        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, string handle, long fileID)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBFixtureBeingUsedAreaCommands.SelectRow(command, handle);
+                DBFixtureBeingUsedAreaCommands.SelectRow(command, handle, fileID);
                 return GetFixtureBeingUsedAreaModel(command);
             }
         }
@@ -191,87 +191,110 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
         public static void SelectRows(SQLiteCommand command, long FileID)
         {
-            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.FILE_ID);
-            command.Parameters.Add(new SQLiteParameter("@id", FileID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureBeingUsedAreaName_AT.file, FileID } };
+
+            DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
         }
-        public static void SelectRow(SQLiteCommand command, string handle)
+        public static void SelectRow(SQLiteCommand command, string handle, long fileID)
         {
-            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
-            command.Parameters.Add(new SQLiteParameter("@handle", handle));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle},
+                                                                                  {DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file}
+                                                                                };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureBeingUsedAreaName_AT.handle, handle},
+                                                                                   {DBFixtureBeingUsedAreaName_AT.file, fileID}
+                                                                                };
+
+            DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
         }
 
         public static void SelectCount(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("SELECT COUNT (*) FROM {0} WHERE {1} = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureBeingUsedAreaName_AT.id, ID } };
+
+            DBCommand.SelectCount(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
         }
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureBeingUsedAreaName_AT.id, ID } };
+
+            DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
+
         }
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            command.CommandText = string.Format("DELETE FROM {0} WHERE {1} = @id;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.ID);
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id} };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> {{DBFixtureBeingUsedAreaName_AT.id, ID} };
+
+            DBCommand.DeleteRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
         }
 
-        public static void DeleteRow(SQLiteCommand command, string handle)
+        public static void DeleteRow(SQLiteCommand command, string handle, long fileID)
         {
-            command.CommandText = string.Format("DELETE FROM {0} WHERE {1} = @handle;", DBFixtureBeingUsedAreaName.name, DBFixtureBeingUsedAreaName.HANDLE);
-            command.Parameters.Add(new SQLiteParameter("@handle", handle));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle},
+                                                                                  {DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file}
+                                                                                };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureBeingUsedAreaName_AT.handle, handle},
+                                                                                   {DBFixtureBeingUsedAreaName_AT.file, fileID}
+                                                                                };
+
+            DBCommand.DeleteRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
         }
         public static void UpdateRow(SQLiteCommand command, FixtureBeingUsedAreaModel model)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(string.Format("UPDATE {0} SET ", DBFixtureBeingUsedAreaName.name));
-            builder.Append(string.Format(" {0} = @handle ,", DBFixtureBeingUsedAreaName.HANDLE));
-            builder.Append(string.Format(" {0} = @position ,", DBFixtureBeingUsedAreaName.POSITION_ID));
-            builder.Append(string.Format(" {0} = @X ,", DBFixtureBeingUsedAreaName.X));
-            builder.Append(string.Format(" {0} = @Y ,", DBFixtureBeingUsedAreaName.Y));
-            builder.Append(string.Format(" {0} = @origin ,", DBFixtureBeingUsedAreaName.ORIGIN_ID));
-            builder.Append(string.Format(" {0} = @pointop ,", DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID));
-            builder.Append(string.Format(" {0} = @pointbottom ,", DBFixtureBeingUsedAreaName.MATRIX_ID));
-            builder.Append(string.Format(" {0} = @file WHERE ", DBFixtureBeingUsedAreaName.FILE_ID));
-            builder.Append(string.Format(" {0} = @id;", DBFixtureBeingUsedAreaName.ID));
+            List<List<object>> items = new List<List<object>> {
+                new List<object>{DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle, model.handle },
+                new List<object>{DBFixtureBeingUsedAreaName.POSITION_ID, DBFixtureBeingUsedAreaName_AT.position, model.position.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.X, DBFixtureBeingUsedAreaName_AT.x, model.X },
+                new List<object>{DBFixtureBeingUsedAreaName.Y, DBFixtureBeingUsedAreaName_AT.y, model.Y },
+                new List<object>{DBFixtureBeingUsedAreaName.ORIGIN_ID, DBFixtureBeingUsedAreaName_AT.origin, model.origin.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.POINT_TOP_ID, DBFixtureBeingUsedAreaName_AT.top, model.pointTop.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID,DBFixtureBeingUsedAreaName_AT.bottom, model.pointBottom.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.MATRIX_ID, DBFixtureBeingUsedAreaName_AT.matrix, model.matrixTransform.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file, model.file.ID },
+            };
 
-            command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
-            command.Parameters.Add(new SQLiteParameter("@position", model.position.ID));
-            command.Parameters.Add(new SQLiteParameter("@X", model.X));
-            command.Parameters.Add(new SQLiteParameter("@Y", model.Y));
-            command.Parameters.Add(new SQLiteParameter("@origin", model.origin.ID));
-            command.Parameters.Add(new SQLiteParameter("@pointop", model.pointTop.ID));
-            command.Parameters.Add(new SQLiteParameter("@pointbottom", model.pointBottom.ID));
-            command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
-            command.Parameters.Add(new SQLiteParameter("@id", model.ID));
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+            foreach (List<object> item in items)
+            {
+                variables.Add((string)item[0], (string)item[1]);
+                paraDict.Add((string)item[1], item[2]);
+            }
+
+            DBCommand.UpdateRow(DBFixtureBeingUsedAreaName.name, variables, conDict, paraDict, command);
         }
         public static void InsertRow(FixtureBeingUsedAreaModel model, SQLiteCommand command)
         {
-            string commandStr = string.Format("INSERT INTO {0} ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}') VALUES (@handle, @position, @X , @Y, @origin, @pointTop, @pointBottom, @matrix, @file);",
-                DBFixtureBeingUsedAreaName.name,
-                DBFixtureBeingUsedAreaName.HANDLE,
-                DBFixtureBeingUsedAreaName.POSITION_ID,
-                DBFixtureBeingUsedAreaName.X,
-                DBFixtureBeingUsedAreaName.Y,
-                DBFixtureBeingUsedAreaName.ORIGIN_ID,
-                DBFixtureBeingUsedAreaName.POINT_TOP_ID,
-                DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID,
-                DBFixtureBeingUsedAreaName.MATRIX_ID,
-                DBFixtureBeingUsedAreaName.FILE_ID
-                );
+            List<List<object>> items = new List<List<object>> {
+                new List<object>{DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle, model.handle },
+                new List<object>{DBFixtureBeingUsedAreaName.POSITION_ID, DBFixtureBeingUsedAreaName_AT.position, model.position.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.X, DBFixtureBeingUsedAreaName_AT.x, model.X },
+                new List<object>{DBFixtureBeingUsedAreaName.Y, DBFixtureBeingUsedAreaName_AT.y, model.Y },
+                new List<object>{DBFixtureBeingUsedAreaName.ORIGIN_ID, DBFixtureBeingUsedAreaName_AT.origin, model.origin.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.POINT_TOP_ID, DBFixtureBeingUsedAreaName_AT.top, model.pointTop.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID,DBFixtureBeingUsedAreaName_AT.bottom, model.pointBottom.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.MATRIX_ID, DBFixtureBeingUsedAreaName_AT.matrix, model.matrixTransform.ID },
+                new List<object>{DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file, model.file.ID },
+            };
 
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
-            command.Parameters.Add(new SQLiteParameter("@position", model.position.ID));
-            command.Parameters.Add(new SQLiteParameter("@X", model.X));
-            command.Parameters.Add(new SQLiteParameter("@Y", model.Y));
-            command.Parameters.Add(new SQLiteParameter("@origin", model.origin.ID));
-            command.Parameters.Add(new SQLiteParameter("@pointTop", model.pointTop.ID));
-            command.Parameters.Add(new SQLiteParameter("@pointBottom", model.pointBottom.ID));
-            command.Parameters.Add(new SQLiteParameter("@matrix", model.matrixTransform.ID));
-            command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
+            List<string> variables = new List<string>();
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id}};
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+            foreach (List<object> item in items)
+            {
+                variables.Add((string)item[0]);
+                paraDict.Add((string)item[1], item[2]);
+            }
+
+            DBCommand.InsertCommand(DBFixtureBeingUsedAreaName.name, variables, paraDict, command);
         }
+
         public static void CreateTable(SQLiteCommand command)
         {
             StringBuilder builder = new StringBuilder();
@@ -317,7 +340,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public const string basePoint = "Origin";
     }
 
-    class DBFixtureBeingUsedAreaName_AT: DBMatrixName_AT
+    class DBFixtureBeingUsedAreaName_AT: DBBlockName_AT
     {
         public const string origin = "@origin";
         public const string bottom = "@bottom";

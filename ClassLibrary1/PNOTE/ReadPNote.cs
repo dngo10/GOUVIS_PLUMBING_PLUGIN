@@ -85,6 +85,11 @@ namespace ClassLibrary1.PNOTE
                                 InsertPoint IP = new InsertPoint(bref, tr);
                                 note.InsertPointSet.Add(IP);
                             }
+                            else if (bref is Table)
+                            {
+                                TableData tb = new TableData(bref, tr, db);
+                                note.TableDataSet.Add(tb);
+                            }
                         }
                     }
                 }

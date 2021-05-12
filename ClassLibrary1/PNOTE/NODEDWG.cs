@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using ClassLibrary1.HELPERS;
 using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
@@ -19,6 +20,7 @@ namespace GouvisPlumbingNew.PNOTE
         public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>(Comparer<FixtureBeingUsedArea>.Create((a, b) => a.model.ID.CompareTo(b.model.ID)));
         public SortedSet<FixtureDetails> FixtureDetailSet = new SortedSet<FixtureDetails>(Comparer<FixtureDetails>.Create((a, b) => a.model.INDEX.CompareTo(b.model.INDEX)));
         public SortedSet<InsertPoint> InsertPointSet = new SortedSet<InsertPoint>(Comparer<InsertPoint>.Create((a, b) => a.model.ID.CompareTo(b.model.ID)));
+        public SortedSet<TableData> TableDataSet = new SortedSet<TableData>(Comparer<TableData>.Create((a, b) => a.model.ID.CompareTo(b.model.ID)));
 
         public NODEDWG()
         {

@@ -62,12 +62,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
             return count == 1;
         }
-        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle)
+        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle, long fileID)
         {
             InsertPointModel model = null;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBInsertPointCommands.SelectRow(command, handle);
+                DBInsertPointCommands.SelectRow(command, handle, fileID);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -194,86 +194,96 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void SelectCount(SQLiteCommand command, long ID)
         {
-            string commandStr = $"SELECT COUNT(*) FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.ID, DBInsertPointName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.id, ID } };
+            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
         }
 
         public static void SelectRows(SQLiteCommand command, long fileID)
         {
-            string commandStr = $"SELECT * FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.FILE_ID} = @fileID;";
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@fileID", fileID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.FILE_ID, DBInsertPointName_AT.file } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.file, fileID } };
+            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
         }
 
-        public static void SelectRow(SQLiteCommand command, string handle)
+        public static void SelectRow(SQLiteCommand command, string handle, long file_ID)
         {
-            string commandStr = $"SELECT * FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.HANDLE} = @handle;";
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@handle", handle));
+            Dictionary<string, string> conDict = new Dictionary<string, string> {
+                { DBInsertPointName.HANDLE, DBInsertPointName_AT.handle },
+                {DBInsertPointName.FILE_ID, DBInsertPointName_AT.file } };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.handle, handle},
+                                                                                   { DBInsertPointName_AT.file, file_ID} };
+            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
         }
 
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            string commandStr = $"SELECT * FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.ID, DBInsertPointName_AT.id } };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.id, ID } };
+            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
         }
 
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            string commandStr = $"DELETE FROM {DBInsertPointName.tableName} WHERE {DBInsertPointName.ID} = @id;";
-            command.CommandText = commandStr;
-            command.Parameters.Add(new SQLiteParameter("@id", ID));
+            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBInsertPointName.ID, DBInsertPointName_AT.id} };
+            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBInsertPointName_AT.id, ID} };
+            DBCommand.DeleteRow(DBInsertPointName.tableName, conDict, paraDict, command);
         }
 
         public static void UpdateRow(SQLiteCommand command, InsertPointModel model)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append($"UPDATE '{DBInsertPointName.tableName}' SET ");
-            builder.Append($"'{DBInsertPointName.ALIAS}' = @alias , ");
-            builder.Append($"'{DBInsertPointName.NAME}' = @name , ");
-            builder.Append($"'{DBInsertPointName.POSITION_ID}' = @pos , ");
-            builder.Append($"'{DBInsertPointName.HANDLE}' = @handle , ");
-            builder.Append($"'{DBInsertPointName.MATRIX_ID}' = @transform , ");
-            builder.Append($"'{DBInsertPointName.FILE_ID}' = @file WHERE ");
-            builder.Append($"'{DBInsertPointName.ID}' = @id;");
+            List<List<object>> items = new List<List<object>> {
+                new List<object>{DBInsertPointName.ALIAS, DBInsertPointName_AT.alias, model.alias},
+                new List<object>{DBInsertPointName.NAME, DBInsertPointName_AT.value_name, model.name},
+                new List<object>{DBInsertPointName.HANDLE, DBInsertPointName_AT.handle, model.handle},
+                new List<object>{DBInsertPointName.POSITION_ID, DBInsertPointName_AT.position, model.position.ID},
+                new List<object>{DBInsertPointName.MATRIX_ID, DBInsertPointName_AT.matrix, model.matrixTransform.ID},
+                new List<object>{DBInsertPointName.FILE_ID, DBInsertPointName_AT.file, model.file.ID},
+            };
 
-            command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@alias", model.alias));
-            command.Parameters.Add(new SQLiteParameter("@name", model.name));
-            command.Parameters.Add(new SQLiteParameter("@pos", model.position.ID));
-            command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
-            command.Parameters.Add(new SQLiteParameter("@transform", model.matrixTransform.ID));
-            command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            Dictionary<string, string> conditions = new Dictionary<string, string> { {DBInsertPointName.ID, DBInsertPointName_AT.id} };
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
 
+            foreach(List<object> item in items)
+            {
+                variables.Add((string)item[0], (string)item[1]);
+                paraDict.Add((string)item[1], item[2]);
+            }
+
+            paraDict.Add(DBBlockName_AT.id, model.ID);
+
+            DBCommand.UpdateRow(DBInsertPointName.tableName, variables, conditions, paraDict, command);
         }
 
         public static void InsertRow(SQLiteCommand command, InsertPointModel model)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}') VALUES (@alias, @name, @handle, @pos, @transform, @file);",
-                DBInsertPointName.tableName,
-                DBInsertPointName.ALIAS,
-                DBInsertPointName.NAME,
-                DBInsertPointName.HANDLE,
-                DBInsertPointName.POSITION_ID,
-                DBInsertPointName.MATRIX_ID,
-                DBInsertPointName.FILE_ID
-                ));
-            command.CommandText = builder.ToString();
-            command.Parameters.Add(new SQLiteParameter("@alias", model.alias));
-            command.Parameters.Add(new SQLiteParameter("@name", model.name));
-            command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
-            command.Parameters.Add(new SQLiteParameter("@pos", model.position.ID));
-            command.Parameters.Add(new SQLiteParameter("@transform", model.matrixTransform.ID));
-            command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
+            List<List<object>> items = new List<List<object>> {
+                new List<object>{DBInsertPointName.ALIAS, DBInsertPointName_AT.alias, model.alias},
+                new List<object>{DBInsertPointName.NAME, DBInsertPointName_AT.value_name, model.name},
+                new List<object>{DBInsertPointName.HANDLE, DBInsertPointName_AT.handle, model.handle},
+                new List<object>{DBInsertPointName.POSITION_ID, DBInsertPointName_AT.position, model.position.ID},
+                new List<object>{DBInsertPointName.MATRIX_ID, DBInsertPointName_AT.matrix, model.matrixTransform.ID},
+                new List<object>{DBInsertPointName.FILE_ID, DBInsertPointName_AT.file, model.file.ID},
+            };
+
+            List<string> variables = new List<string>();
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+            foreach(List<object> item in items)
+            {
+                variables.Add((string)item[0]);
+                paraDict.Add((string)item[1], item[2]);
+            }
+
+
+            DBCommand.InsertCommand(DBInsertPointName.NAME, variables, paraDict, command);
         }
 
         public static void DeleteTable(SQLiteCommand command)
         {
-            string commandstr = $"DROP TABLE IF EXISTS '{DBInsertPointName.tableName}';";
-            command.CommandText = commandstr;
+            DBCommand.DeleteTable(DBInsertPointName.NAME, command);
         }
         public static void CreateTable(SQLiteCommand command){
             StringBuilder builder = new StringBuilder();
@@ -299,5 +309,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public const string NAME = "NAME";
 
         public const string tableName = "INSERT_POINT";
+    }
+
+    class DBInsertPointName_AT: DBBlockName_AT
+    {
+        //Value_Name: is a parameter attribute in block, NOT the name of Database Table
+        public const string value_name = "@name";
+        public const string alias = "@alias";
     }
 }

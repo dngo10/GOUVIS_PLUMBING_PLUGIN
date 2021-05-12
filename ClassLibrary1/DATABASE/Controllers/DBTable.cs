@@ -29,13 +29,33 @@ namespace ClassLibrary1.DATABASE.Controllers
      */
     class DBTable
     {
-		public static List<TableModel> SelectRows(SQLiteConnection connection, long FILE_ID)
+		public static bool HasRow(SQLiteConnection connection, long ID)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				DBTableCommands.SelectRow(command, )
+				DBTableCommands.SelectCount(command, ID);
+				long check = Convert.ToInt64(command.ExecuteScalar());
+				if(check == 1)
+                {
+					return true;
+                }
             }
-			return null;
+			return false;
+        }
+
+		public static List<TableModel> SelectRows(SQLiteConnection connection, long FILE_ID)
+        {
+			List<TableModel> models = new List<TableModel>();
+			using(SQLiteCommand command = connection.CreateCommand())
+            {
+				DBTableCommands.SelectRows(command, FILE_ID);
+				SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+					models.Add(CreateModel(reader, connection));
+                }
+            }
+			return models;
         }
 		public static TableModel SelectRow(SQLiteConnection connection, long ID)
         {
@@ -47,17 +67,25 @@ namespace ClassLibrary1.DATABASE.Controllers
 				TableModel model = null;
                 while (reader.Read())
                 {
-					model = new TableModel();
-					model.ID = Convert.ToInt64(reader[DBTableName.ID]);
-					model.handle = Convert.ToString(reader[DBTableName.HANDLE]);
-					model.matrixTransform = DBMatrix3d.SelectRow(connection, Convert.ToInt64(reader[DBTableName.MATRIX_ID]));
-					model.position = DBPoint3D.SelectRow(connection, Convert.ToInt64(reader[DBTableName.POSITION_ID]));
-					model.ALIAS = Convert.ToString(reader[DBTableName.ALIAS]);
-					model.A_VALUE = Convert.ToString(reader[DBTableName.A_VALUE]);
+					model = CreateModel(reader, connection);
                 }
 				return model;
             }
         }
+
+		private static TableModel CreateModel(SQLiteDataReader reader, SQLiteConnection connection)
+        {
+			TableModel model = new TableModel();
+			model.ID = Convert.ToInt64(reader[DBTableName.ID]);
+			model.handle = Convert.ToString(reader[DBTableName.HANDLE]);
+			model.matrixTransform = DBMatrix3d.SelectRow(connection, Convert.ToInt64(reader[DBTableName.MATRIX_ID]));
+			model.position = DBPoint3D.SelectRow(connection, Convert.ToInt64(reader[DBTableName.POSITION_ID]));
+			model.ALIAS = Convert.ToString(reader[DBTableName.ALIAS]);
+			model.A_VALUE = Convert.ToString(reader[DBTableName.A_VALUE]);
+
+			return model;
+		}
+
 		public static long UpdateRow(SQLiteConnection connection, TableModel model)
         {
 			using (SQLiteCommand command = connection.CreateCommand())
@@ -115,6 +143,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 
     class DBTableCommands
     {
+		
 		public static void SelectCount(SQLiteCommand command, string handle, long file_ID)
         {
 			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.HANDLE, DBTableName_AT.handle },
@@ -136,7 +165,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 		public static void SelectRows(SQLiteCommand command, long File_ID)
 		{
 			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id, ID } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id, File_ID } };
 			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
 		}
 
@@ -211,7 +240,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 				{DBTableName_AT.a_value, model.A_VALUE}
 			};
 
-			DBCommand.InsertCommand(DBTableName.name, variables, paraDict.Keys.ToList(), paraDict, command);
+			DBCommand.InsertCommand(DBTableName.name, variables, paraDict, command);
 		}
 
 		public static void DeleteTable(SQLiteCommand command)
@@ -241,7 +270,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 
     class DBTableName : DBBlockName
     {
-		public const string name = "TABLE";
+		public const string name = "DB_TABLE";
 		public const string ALIAS = "ALIAS";
 		public const string A_VALUE = "A_VALUE";
     }

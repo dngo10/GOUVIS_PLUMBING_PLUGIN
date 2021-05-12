@@ -70,11 +70,11 @@ CREATE TABLE "FIXTURE_DETAILS" (
 				return GetFixtureDetail(command);
 			}
 		}
-		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, string handle)
+		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, string handle, long fileID)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				DBFixtureDetailsCommands.SelectRow(command, handle);
+				DBFixtureDetailsCommands.SelectRow(command, handle, fileID);
 				return GetFixtureDetail(command);
 			}
 			
@@ -241,123 +241,105 @@ CREATE TABLE "FIXTURE_DETAILS" (
     {
 		public static void SelectCount(SQLiteCommand command, long ID)
 		{
-			string commandStr = string.Format("SELECT COUNT(*) FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@id", ID));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureDetailsNames_AT.id, ID } };
+			DBCommand.SelectCount(DBFixtureDetailsNames.name, conDict, paraDict, command);
 		}
 		public static void SelectRows(SQLiteCommand command, long fileID)
 		{
-			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.FILE_ID);
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@id", fileID));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureDetailsNames_AT.file, fileID } };
+			DBCommand.SelectRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
 		}
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@id", ID));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureDetailsNames_AT.id, ID}};
+			DBCommand.SelectRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
         }
-		public static void SelectRow(SQLiteCommand command, string handle)
+		public static void SelectRow(SQLiteCommand command, string handle, long fileID)
         {
-			string commandStr = string.Format("SELECT * FROM {0} WHERE {1} = @handle;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.HANDLE);
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@handle", handle));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames_AT.handle },
+																				  { DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file }};
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureDetailsNames_AT.handle, handle},
+																				   {DBFixtureDetailsNames_AT.file, fileID} };
+			DBCommand.SelectRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
         }
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			string commandStr = string.Format("DELETE FROM {0} WHERE {1} = @id;", DBFixtureDetailsNames.name, DBFixtureDetailsNames.ID);
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@id", ID));
+			Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id} };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureDetailsNames_AT.id, ID } };
+			DBCommand.DeleteRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
         }
 		public static void UpdateRow(FixtureDetailsModel model, SQLiteCommand command)
         {
-			StringBuilder sb = new StringBuilder();
-			sb.Append(string.Format("UPDATE {0} SET ", DBFixtureDetailsNames.name));
-			sb.Append(string.Format("{0} = @position ,", DBFixtureDetailsNames.POSITION_ID));
-			sb.Append(string.Format("{0} = @matrix ,", DBFixtureDetailsNames.MATRIX_ID));
-			sb.Append(string.Format("{0} = @handle ,", DBFixtureDetailsNames.HANDLE));
-			sb.Append(string.Format("{0} = @indexx ,", DBFixtureDetailsNames.INDEXX));
-			sb.Append(string.Format("{0} = @fixture_name ,", DBFixtureDetailsNames.FIXTURE_NAME));
-			sb.Append(string.Format("{0} = @tag ,", DBFixtureDetailsNames.TAG));
-			sb.Append(string.Format("{0} = @number ,", DBFixtureDetailsNames.NUMBER));
-			sb.Append(string.Format("{0} = @cw_dia ,", DBFixtureDetailsNames.CW_DIA));
-			sb.Append(string.Format("{0} = @hw_dia ,", DBFixtureDetailsNames.HW_DIA));
-			sb.Append(string.Format("{0} = @waste_dia ,", DBFixtureDetailsNames.WASTE_DIA));
-			sb.Append(string.Format("{0} = @vent_dia ,", DBFixtureDetailsNames.VENT_DIA));
-			sb.Append(string.Format("{0} = @storm_dia ,", DBFixtureDetailsNames.STORM_DIA));
-			sb.Append(string.Format("{0} = @wsfu ,", DBFixtureDetailsNames.WSFU));
-			sb.Append(string.Format("{0} = @cwsfu ,", DBFixtureDetailsNames.CWSFU));
-			sb.Append(string.Format("{0} = @hwsfu ,", DBFixtureDetailsNames.CWSFU));
-			sb.Append(string.Format("{0} = @dfu ,", DBFixtureDetailsNames.DFU));
-			sb.Append(string.Format("{0} = @file ,", DBFixtureDetailsNames.FILE_ID));
-			sb.Append(string.Format("{0} = @desc WHERE ", DBFixtureDetailsNames.DESCRIPTION));
-			sb.Append(string.Format("{0} = @id;", DBFixtureDetailsNames.ID));
+			List<List<object>> items = new List<List<object>> {
+				new List<object>{DBFixtureDetailsNames.POSITION_ID, DBFixtureDetailsNames_AT.position, model.position.ID },
+				new List<object>{DBFixtureDetailsNames.MATRIX_ID, DBFixtureDetailsNames_AT.matrix, model.matrixTransform.ID },
+				new List<object>{DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames_AT.handle, model.handle },
+				new List<object>{DBFixtureDetailsNames.INDEXX, DBFixtureDetailsNames_AT.indexx, model.INDEX },
+				new List<object>{DBFixtureDetailsNames.FIXTURE_NAME, DBFixtureDetailsNames_AT.fixture, model.FIXTURENAME },
+				new List<object>{DBFixtureDetailsNames.TAG, DBFixtureDetailsNames_AT.tag, model.TAG },
+				new List<object>{DBFixtureDetailsNames.NUMBER, DBFixtureDetailsNames_AT.num, model.NUMBER },
+				new List<object>{DBFixtureDetailsNames.CW_DIA, DBFixtureDetailsNames_AT.cwD, model.CW_DIA },
+				new List<object>{DBFixtureDetailsNames.HW_DIA, DBFixtureDetailsNames_AT.hwD, model.HW_DIA },
+				new List<object>{DBFixtureDetailsNames.WASTE_DIA, DBFixtureDetailsNames_AT.wD, model.WASTE_DIA },
+				new List<object>{DBFixtureDetailsNames.VENT_DIA, DBFixtureDetailsNames_AT.vD, model.VENT_DIA },
+				new List<object>{DBFixtureDetailsNames.STORM_DIA, DBFixtureDetailsNames_AT.sD, model.STORM_DIA },
+				new List<object>{DBFixtureDetailsNames.WSFU, DBFixtureDetailsNames_AT.wsfu, model.WSFU },
+				new List<object>{DBFixtureDetailsNames.CWSFU, DBFixtureDetailsNames_AT.cwsfu, model.CWSFU },
+				new List<object>{DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames_AT.hwsfu, model.HWSFU },
+				new List<object>{DBFixtureDetailsNames.DFU, DBFixtureDetailsNames_AT.dfu, model.DFU },
+				new List<object>{DBFixtureDetailsNames.DESCRIPTION, DBFixtureDetailsNames_AT.desc, model.DESCRIPTION },
+				new List<object>{DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file, model.file }
+			};
 
-			command.CommandText = sb.ToString();
-			command.Parameters.Add(new SQLiteParameter("@position", model.position.ID));
-			command.Parameters.Add(new SQLiteParameter("@matrix", model.matrixTransform.ID));
-			command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
-			command.Parameters.Add(new SQLiteParameter("@indexx", model.INDEX));
-			command.Parameters.Add(new SQLiteParameter("@fixture_name", model.FIXTURENAME));
-			command.Parameters.Add(new SQLiteParameter("@tag", model.TAG));
-			command.Parameters.Add(new SQLiteParameter("@number", model.NUMBER));
-			command.Parameters.Add(new SQLiteParameter("@cw_dia", model.CW_DIA));
-			command.Parameters.Add(new SQLiteParameter("@hw_dia", model.HW_DIA));
-			command.Parameters.Add(new SQLiteParameter("@waste_dia", model.WASTE_DIA));
-			command.Parameters.Add(new SQLiteParameter("@vent_dia", model.VENT_DIA));
-			command.Parameters.Add(new SQLiteParameter("@storm_dia", model.STORM_DIA));
-			command.Parameters.Add(new SQLiteParameter("@wsfu", model.WSFU));
-			command.Parameters.Add(new SQLiteParameter("@cwsfu", model.CWSFU));
-			command.Parameters.Add(new SQLiteParameter("@hwsfu", model.HWSFU));
-			command.Parameters.Add(new SQLiteParameter("@dfu", model.DFU));
-			command.Parameters.Add(new SQLiteParameter("@desc", model.DESCRIPTION));
-			command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
-			command.Parameters.Add(new SQLiteParameter("@id", model.ID));
+			Dictionary<string, string> variables = new Dictionary<string, string>();
+			Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id} };
+			Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+			foreach(List<object> item in items)
+            {
+				variables.Add((string)item[0], (string)item[1]);
+				paraDict.Add((string)item[1], item[2]);
+            }
+
+			paraDict.Add(DBFixtureDetailsNames_AT.id, model.ID);
+
+			DBCommand.UpdateRow(DBFixtureDetailsNames.name, variables, conDict, paraDict, command);
 		}
 		public static void InsertRow(FixtureDetailsModel model, SQLiteCommand command)
         {
-			string commandStr = string.Format("INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}') VALUES ",
-				DBFixtureDetailsNames.name,
-				DBFixtureDetailsNames.POSITION_ID,
-				DBFixtureDetailsNames.MATRIX_ID,
-				DBFixtureDetailsNames.HANDLE,
-				DBFixtureDetailsNames.INDEXX,
-				DBFixtureDetailsNames.FIXTURE_NAME,
-				DBFixtureDetailsNames.TAG,
-				DBFixtureDetailsNames.NUMBER,
-				DBFixtureDetailsNames.CW_DIA,
-				DBFixtureDetailsNames.HW_DIA,
-				DBFixtureDetailsNames.WASTE_DIA,
-				DBFixtureDetailsNames.VENT_DIA,
-				DBFixtureDetailsNames.STORM_DIA,
-				DBFixtureDetailsNames.WSFU,
-				DBFixtureDetailsNames.CWSFU,
-				DBFixtureDetailsNames.HWSFU,
-				DBFixtureDetailsNames.DFU,
-				DBFixtureDetailsNames.DESCRIPTION,
-				DBFixtureDetailsNames.FILE_ID);
+			List<List<object>> items = new List<List<object>> {
+				new List<object>{DBFixtureDetailsNames.POSITION_ID, DBFixtureDetailsNames_AT.position, model.position.ID },
+				new List<object>{DBFixtureDetailsNames.MATRIX_ID, DBFixtureDetailsNames_AT.matrix, model.matrixTransform.ID },
+				new List<object>{DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames_AT.handle, model.handle },
+				new List<object>{DBFixtureDetailsNames.INDEXX, DBFixtureDetailsNames_AT.indexx, model.INDEX },
+				new List<object>{DBFixtureDetailsNames.FIXTURE_NAME, DBFixtureDetailsNames_AT.fixture, model.FIXTURENAME },
+				new List<object>{DBFixtureDetailsNames.TAG, DBFixtureDetailsNames_AT.tag, model.TAG },
+				new List<object>{DBFixtureDetailsNames.NUMBER, DBFixtureDetailsNames_AT.num, model.NUMBER },
+				new List<object>{DBFixtureDetailsNames.CW_DIA, DBFixtureDetailsNames_AT.cwD, model.CW_DIA },
+				new List<object>{DBFixtureDetailsNames.HW_DIA, DBFixtureDetailsNames_AT.hwD, model.HW_DIA },
+				new List<object>{DBFixtureDetailsNames.WASTE_DIA, DBFixtureDetailsNames_AT.wD, model.WASTE_DIA },
+				new List<object>{DBFixtureDetailsNames.VENT_DIA, DBFixtureDetailsNames_AT.vD, model.VENT_DIA },
+				new List<object>{DBFixtureDetailsNames.STORM_DIA, DBFixtureDetailsNames_AT.sD, model.STORM_DIA },
+				new List<object>{DBFixtureDetailsNames.WSFU, DBFixtureDetailsNames_AT.wsfu, model.WSFU },
+				new List<object>{DBFixtureDetailsNames.CWSFU, DBFixtureDetailsNames_AT.cwsfu, model.CWSFU },
+				new List<object>{DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames_AT.hwsfu, model.HWSFU },
+				new List<object>{DBFixtureDetailsNames.DFU, DBFixtureDetailsNames_AT.dfu, model.DFU },
+				new List<object>{DBFixtureDetailsNames.DESCRIPTION, DBFixtureDetailsNames_AT.desc, model.DESCRIPTION },
+				new List<object>{DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file, model.file }
+			};
 
-			commandStr += string.Format("(@position, @matrix ,@handle ,@indexx ,@fixtureName ,@tag , @number ,@cw_dia ,@hw_dia ,@waste_dia ,@vent_dia ,@storm_dia ,@wsfu ,@cwsfu ,@hwsfu , @dfu, @desc, @file);");
+			List<string> variables = new List<string>();
+			Dictionary<string, object> paraDict = new Dictionary<string, object>();
 
-			command.CommandText = commandStr;
-			command.Parameters.Add(new SQLiteParameter("@position", model.position.ID));
-			command.Parameters.Add(new SQLiteParameter("@matrix", model.matrixTransform.ID));
-			command.Parameters.Add(new SQLiteParameter("@handle", model.handle));
-			command.Parameters.Add(new SQLiteParameter("@indexx", model.INDEX));
-			command.Parameters.Add(new SQLiteParameter("@fixtureName", model.FIXTURENAME));
-			command.Parameters.Add(new SQLiteParameter("@tag", model.TAG));
-			command.Parameters.Add(new SQLiteParameter("@number", model.NUMBER));
-			command.Parameters.Add(new SQLiteParameter("@cw_dia", model.CW_DIA));
-			command.Parameters.Add(new SQLiteParameter("@hw_dia", model.HW_DIA));
-			command.Parameters.Add(new SQLiteParameter("@waste_dia", model.WASTE_DIA));
-			command.Parameters.Add(new SQLiteParameter("@vent_dia", model.VENT_DIA));
-			command.Parameters.Add(new SQLiteParameter("@storm_dia", model.STORM_DIA));
-			command.Parameters.Add(new SQLiteParameter("@wsfu", model.WSFU));
-			command.Parameters.Add(new SQLiteParameter("@cwsfu", model.CWSFU));
-			command.Parameters.Add(new SQLiteParameter("@hwsfu", model.HWSFU));
-			command.Parameters.Add(new SQLiteParameter("@dfu", model.DFU));
-			command.Parameters.Add(new SQLiteParameter("@desc", model.DESCRIPTION));
-			command.Parameters.Add(new SQLiteParameter("@file", model.file.ID));
+			foreach(List<object> item in items){
+				variables.Add((string)item[0]);
+				paraDict.Add((string)item[1], item[2]);
+            }
+
+			DBCommand.InsertCommand(DBFixtureDetailsNames.name, variables, paraDict, command);
 		}
 		public static void CreateTable(SQLiteCommand command)
         {
@@ -391,8 +373,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 
 		public static void DeleteTable(SQLiteCommand command)
         {
-			string commandStr = string.Format("DROP TABLE IF EXISTS {0};", DBFixtureDetailsNames.name);
-			command.CommandText = commandStr;
+			DBCommand.DeleteTable(DBFixtureDetailsNames.name, command);
 		}
     }
 
@@ -414,5 +395,23 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		public static string HWSFU = "HWSFU";
 		public static string DFU = "DFU";
 		public static string DESCRIPTION = "DESCRIPTION";
+	}
+
+	class DBFixtureDetailsNames_AT : DBBlockName_AT
+    {
+		public static string indexx = "@indexx";
+		public static string fixture = "@fixture";
+		public static string tag = "@tag";
+		public static string num = "@num";
+		public static string cwD = "@cwD";
+		public static string hwD = "@hwD";
+		public static string wD = "@wasteDia";
+		public static string vD = "@ventDia";
+		public static string sD = "@stormIDia";
+		public static string wsfu = "@wsfu";
+		public static string cwsfu = "@cwsfu";
+		public static string hwsfu = "@hwsfu";
+		public static string dfu = "@dfu";
+		public static string desc = "@desc";
 	}
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Data.SQLite;
 using GouvisPlumbingNew.DATABASE.DBModels;
+using ClassLibrary1.DATABASE.Controllers;
 
 namespace GouvisPlumbingNew.DATABASE.Controllers
 {
@@ -43,6 +44,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBFixtureDetails.CreateTable(sqliteConn);
                 DBFixtureBeingUsedArea.CreateTable(sqliteConn);
                 DBDwgFile.CreateTable(sqliteConn);
+                DBTable.CreateTable(sqliteConn);
 
                 if (projectElement.P_NOTE != null) projectElement.P_NOTE.WriteToDatabase(sqliteConn);
 
