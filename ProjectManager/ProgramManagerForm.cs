@@ -161,5 +161,10 @@ namespace ProjectManager
         {
 
         }
+
+        private void P_NODE_PATH_BOX_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

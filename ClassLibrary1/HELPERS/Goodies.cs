@@ -30,7 +30,8 @@ namespace GouvisPlumbingNew.HELPERS
             {
                 BlockTableRecord blockTableRecord = (BlockTableRecord)bref.DynamicBlockTableRecord.GetObject(OpenMode.ForRead);
                 return blockTableRecord.Name;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("The HELPERS/GetDyamicName function error, check it " + e.Message);
             }
@@ -61,7 +62,7 @@ namespace GouvisPlumbingNew.HELPERS
         /// <param name="blockName"></param>
         public static void AddBlockToDrawing(string blockDrawingFile, string blockDestinationFile, string blockName)
         {
-            if(!GoodiesPath.IsFileLocked(blockDestinationFile) && !GoodiesPath.IsFileReadOnly(blockDestinationFile))
+            if (!GoodiesPath.IsFileLocked(blockDestinationFile) && !GoodiesPath.IsFileReadOnly(blockDestinationFile))
             {
                 using (Database db = new Database())
                 {
@@ -122,7 +123,7 @@ namespace GouvisPlumbingNew.HELPERS
         private static bool HasBlockDefinition(string BlockName, Database db)
         {
             bool result = false;
-            using(Transaction tr = db.TransactionManager.StartTransaction())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
             {
                 BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
                 result = bt.Has(BlockName);
@@ -172,9 +173,9 @@ namespace GouvisPlumbingNew.HELPERS
         //INSERT BLOCK INTO TABLE CELL;
         public static void InsertDynamicBlockToTableCell(Cell tCell, Database db, string BlockName, FixtureDetails df)
         {
-            using(Transaction tr = db.TransactionManager.StartTransaction())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                
+
                 //tCell.DeleteContent();
                 BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForWrite);
                 if (bt.Has(BlockName))
@@ -189,10 +190,11 @@ namespace GouvisPlumbingNew.HELPERS
                             if (dbObj is AttributeDefinition)
                             {
                                 AttributeDefinition attDef = (AttributeDefinition)dbObj;
-                                if(attDef.Tag == HexNoteName.ID)
+                                if (attDef.Tag == HexNoteName.ID)
                                 {
                                     tCell.SetBlockAttributeValue(id, df.model.TAG);
-                                }else if(attDef.Tag == HexNoteName.NUM)
+                                }
+                                else if (attDef.Tag == HexNoteName.NUM)
                                 {
                                     tCell.SetBlockAttributeValue(id, df.model.NUMBER);
                                 }
@@ -228,7 +230,7 @@ namespace GouvisPlumbingNew.HELPERS
                 {
                     LayerTableRecord ltr = new LayerTableRecord();
                     ltr.Color = Color.FromColorIndex(ColorMethod.ByAci, colorIndex);
-                    if(lineTypeId != null)
+                    if (lineTypeId != null)
                     {
                         ltr.LinetypeObjectId = lineTypeId;
                     }
@@ -249,11 +251,11 @@ namespace GouvisPlumbingNew.HELPERS
         //in process;
         public static void CreateLayoutInCurrentDrawing(Database db)
         {
-            using(Transaction tr = db.TransactionManager.StartTransaction())
+            using (Transaction tr = db.TransactionManager.StartTransaction())
             {
                 ObjectId layOutDict = db.LayoutDictionaryId;
                 DBDictionary dBOjbect = (DBDictionary)tr.GetObject(layOutDict, OpenMode.ForRead);
-                foreach(DBDictionaryEntry kv in dBOjbect)
+                foreach (DBDictionaryEntry kv in dBOjbect)
                 {
                     string LayoutName = kv.Key;
                     ObjectId id = kv.Value;
@@ -266,9 +268,9 @@ namespace GouvisPlumbingNew.HELPERS
         public static List<string> GetListOfDocumentOpening()
         {
             DocumentCollection docCol = Application.DocumentManager;
-            List<string> docPathList = new List<string>(); 
+            List<string> docPathList = new List<string>();
 
-            foreach(Document doc in docCol)
+            foreach (Document doc in docCol)
             {
                 docPathList.Add(doc.Name);
             }
@@ -291,16 +293,16 @@ namespace GouvisPlumbingNew.HELPERS
                 return new FileStatus(3, path);
             }
 
-            if(path == Application.DocumentManager.MdiActiveDocument.Name)
+            if (path == Application.DocumentManager.MdiActiveDocument.Name)
             {
                 return new FileStatus(0, path);
             }
 
             if (GetListOfDocumentOpening().Contains(path))
             {
-                foreach(Document doc in Application.DocumentManager)
+                foreach (Document doc in Application.DocumentManager)
                 {
-                    if(doc.Name == path)
+                    if (doc.Name == path)
                     {
                         //Application.DocumentManager.MdiActiveDocument = doc;
                         return new FileStatus(1, path);
@@ -397,19 +399,19 @@ namespace GouvisPlumbingNew.HELPERS
                 return null;
             }
 
-            if(Application.DocumentManager.MdiActiveDocument.Name == dwgPath)
+            if (Application.DocumentManager.MdiActiveDocument.Name == dwgPath)
             {
                 return Application.DocumentManager.MdiActiveDocument;
             }
 
-            foreach(Document doc in Application.DocumentManager)
+            foreach (Document doc in Application.DocumentManager)
             {
-                if(doc.Name == dwgPath)
+                if (doc.Name == dwgPath)
                 {
                     return doc;
                 }
             }
-            return Application.DocumentManager.Add(dwgPath);
+            return null;
         }
     }
 }

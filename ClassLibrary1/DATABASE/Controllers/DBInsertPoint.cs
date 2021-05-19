@@ -35,16 +35,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    string alias = (string)reader[DBInsertPointName.ALIAS];
-                    string name = (string)reader[DBInsertPointName.NAME];
-                    long ID = (long)reader[DBInsertPointName.ID];
-                    string handle = (string)reader[DBInsertPointName.HANDLE];
-                    Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
-
-                    DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
-                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
-
-                    InsertPointModel model = new InsertPointModel(alias, name, ID, file, handle, pos, matrix);
+                    InsertPointModel model = GetModel(reader, connection);
                     insertPoints.Add(model);
                 }
                 reader.Close();
@@ -71,18 +62,25 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    string alias = (string)reader[DBInsertPointName.ALIAS];
-                    string name = (string)reader[DBInsertPointName.NAME];
-                    long ID = (long)reader[DBInsertPointName.ID];
-                    Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
-                    string handle1 = (string)reader[DBInsertPointName.HANDLE];
-                    DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
-                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
-
-                    model = new InsertPointModel(alias, name, ID, file, handle1, pos, matrix);
+                    model = GetModel(reader, connection);
                 }
                 reader.Close();
             }
+            return model;
+        }
+
+        private static InsertPointModel GetModel (SQLiteDataReader reader, SQLiteConnection connection)
+        {
+            string alias = (string)reader[DBInsertPointName.ALIAS];
+            string name = (string)reader[DBInsertPointName.ANAME];
+            long ID = (long)reader[DBInsertPointName.ID];
+            Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
+            string handle1 = (string)reader[DBInsertPointName.HANDLE];
+            DwgFileModel file = DBDwgFile.SelectRow(connection, (long)reader[DBInsertPointName.FILE_ID]);
+            Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
+
+            InsertPointModel model = new InsertPointModel(alias, name, ID, file, handle1, pos, matrix);
+
             return model;
         }
         public static InsertPointModel SelectRow(SQLiteConnection connection, long ID)
@@ -95,7 +93,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 while (reader.Read())
                 {
                     string alias = (string)reader[DBInsertPointName.ALIAS];
-                    string name = (string)reader[DBInsertPointName.NAME];
+                    string name = (string)reader[DBInsertPointName.ANAME];
                     string handle = (string)reader[DBInsertPointName.HANDLE];
                     Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
                     long ID1 = (long)reader[DBInsertPointName.ID];
@@ -196,14 +194,14 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.ID, DBInsertPointName_AT.id } };
             Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.id, ID } };
-            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
+            DBCommand.SelectCount(DBInsertPointName.NAME, conDict, paraDict, command);
         }
 
         public static void SelectRows(SQLiteCommand command, long fileID)
         {
             Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.FILE_ID, DBInsertPointName_AT.file } };
             Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.file, fileID } };
-            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
+            DBCommand.SelectRow(DBInsertPointName.NAME, conDict, paraDict, command);
         }
 
         public static void SelectRow(SQLiteCommand command, string handle, long file_ID)
@@ -214,33 +212,26 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.handle, handle},
                                                                                    { DBInsertPointName_AT.file, file_ID} };
-            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
+            DBCommand.SelectRow(DBInsertPointName.NAME, conDict, paraDict, command);
         }
 
         public static void SelectRow(SQLiteCommand command, long ID)
         {
             Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.ID, DBInsertPointName_AT.id } };
             Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.id, ID } };
-            DBCommand.SelectRow(DBInsertPointName.tableName, conDict, paraDict, command);
+            DBCommand.SelectRow(DBInsertPointName.NAME, conDict, paraDict, command);
         }
 
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
             Dictionary<string, string> conDict = new Dictionary<string, string> { {DBInsertPointName.ID, DBInsertPointName_AT.id} };
             Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBInsertPointName_AT.id, ID} };
-            DBCommand.DeleteRow(DBInsertPointName.tableName, conDict, paraDict, command);
+            DBCommand.DeleteRow(DBInsertPointName.NAME, conDict, paraDict, command);
         }
 
         public static void UpdateRow(SQLiteCommand command, InsertPointModel model)
         {
-            List<List<object>> items = new List<List<object>> {
-                new List<object>{DBInsertPointName.ALIAS, DBInsertPointName_AT.alias, model.alias},
-                new List<object>{DBInsertPointName.NAME, DBInsertPointName_AT.value_name, model.name},
-                new List<object>{DBInsertPointName.HANDLE, DBInsertPointName_AT.handle, model.handle},
-                new List<object>{DBInsertPointName.POSITION_ID, DBInsertPointName_AT.position, model.position.ID},
-                new List<object>{DBInsertPointName.MATRIX_ID, DBInsertPointName_AT.matrix, model.matrixTransform.ID},
-                new List<object>{DBInsertPointName.FILE_ID, DBInsertPointName_AT.file, model.file.ID},
-            };
+            List<List<object>> items = GetItemsList(model);
 
             Dictionary<string, string> variables = new Dictionary<string, string>();
             Dictionary<string, string> conditions = new Dictionary<string, string> { {DBInsertPointName.ID, DBInsertPointName_AT.id} };
@@ -254,19 +245,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             paraDict.Add(DBBlockName_AT.id, model.ID);
 
-            DBCommand.UpdateRow(DBInsertPointName.tableName, variables, conditions, paraDict, command);
+            DBCommand.UpdateRow(DBInsertPointName.NAME, variables, conditions, paraDict, command);
         }
 
         public static void InsertRow(SQLiteCommand command, InsertPointModel model)
         {
-            List<List<object>> items = new List<List<object>> {
-                new List<object>{DBInsertPointName.ALIAS, DBInsertPointName_AT.alias, model.alias},
-                new List<object>{DBInsertPointName.NAME, DBInsertPointName_AT.value_name, model.name},
-                new List<object>{DBInsertPointName.HANDLE, DBInsertPointName_AT.handle, model.handle},
-                new List<object>{DBInsertPointName.POSITION_ID, DBInsertPointName_AT.position, model.position.ID},
-                new List<object>{DBInsertPointName.MATRIX_ID, DBInsertPointName_AT.matrix, model.matrixTransform.ID},
-                new List<object>{DBInsertPointName.FILE_ID, DBInsertPointName_AT.file, model.file.ID},
-            };
+            List<List<object>> items = GetItemsList(model);
 
             List<string> variables = new List<string>();
             Dictionary<string, object> paraDict = new Dictionary<string, object>();
@@ -281,16 +265,30 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             DBCommand.InsertCommand(DBInsertPointName.NAME, variables, paraDict, command);
         }
 
+        private static List<List<object>> GetItemsList(InsertPointModel model)
+        {
+            List<List<object>> items = new List<List<object>> {
+                new List<object>{DBInsertPointName.ALIAS, DBInsertPointName_AT.alias, model.alias},
+                new List<object>{DBInsertPointName.ANAME, DBInsertPointName_AT.value_name, model.name},
+                new List<object>{DBInsertPointName.HANDLE, DBInsertPointName_AT.handle, model.handle},
+                new List<object>{DBInsertPointName.POSITION_ID, DBInsertPointName_AT.position, model.position.ID},
+                new List<object>{DBInsertPointName.MATRIX_ID, DBInsertPointName_AT.matrix, model.matrixTransform.ID},
+                new List<object>{DBInsertPointName.FILE_ID, DBInsertPointName_AT.file, model.file.ID},
+            };
+
+            return items;
+        }
+
         public static void DeleteTable(SQLiteCommand command)
         {
-            DBCommand.DeleteTable(DBInsertPointName.NAME, command);
+            DBCommand.DeleteTable(DBInsertPointName.ANAME, command);
         }
         public static void CreateTable(SQLiteCommand command){
             StringBuilder builder = new StringBuilder();
-            builder.Append($"CREATE TABLE '{DBInsertPointName.tableName}'( ");
+            builder.Append($"CREATE TABLE '{DBInsertPointName.NAME}'( ");
             builder.Append($"'{DBInsertPointName.ID}'    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ");
             builder.Append($"'{DBInsertPointName.ALIAS}' TEXT, ");
-            builder.Append($"'{DBInsertPointName.NAME}'  TEXT, ");
+            builder.Append($"'{DBInsertPointName.ANAME}'  TEXT, ");
             builder.Append($"'{DBInsertPointName.HANDLE}'    TEXT NOT NULL,");
             builder.Append($"'{DBInsertPointName.POSITION_ID}'   INTEGER NOT NULL, ");
             builder.Append($"'{DBInsertPointName.MATRIX_ID}'  INTEGER NOT NULL, ");
@@ -306,9 +304,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBInsertPointName : DBBlockName {
         public const string ALIAS = "ALIAS";
-        public const string NAME = "NAME";
-
-        public const string tableName = "INSERT_POINT";
+        public const string ANAME = "NAME";
+        public const string NAME = "INSERT_POINT";
     }
 
     class DBInsertPointName_AT: DBBlockName_AT

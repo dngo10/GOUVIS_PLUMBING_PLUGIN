@@ -43,6 +43,20 @@ namespace ClassLibrary1.DATABASE.Controllers
 			return false;
         }
 
+		public static void DeleteRow(SQLiteConnection connection, TableModel model)
+        {
+			using(SQLiteCommand command = connection.CreateCommand())
+            {
+				DBTableCommands.DeleteRow(command, model.ID);
+				long check = Convert.ToInt64(command.ExecuteNonQuery());
+				if(check == 1)
+                {
+					DBPoint3D.DeleteRow(model.position.ID, connection);
+					DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
+                }
+            }
+        }
+
 		public static List<TableModel> SelectRows(SQLiteConnection connection, long FILE_ID)
         {
 			List<TableModel> models = new List<TableModel>();
@@ -82,6 +96,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 			model.position = DBPoint3D.SelectRow(connection, Convert.ToInt64(reader[DBTableName.POSITION_ID]));
 			model.ALIAS = Convert.ToString(reader[DBTableName.ALIAS]);
 			model.A_VALUE = Convert.ToString(reader[DBTableName.A_VALUE]);
+			model.file = DBDwgFile.SelectRow(connection, Convert.ToInt64(reader[DBTableName.FILE_ID]));
 
 			return model;
 		}
@@ -115,6 +130,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 				if (check == 1)
 				{
 					model.ID = connection.LastInsertRowId;
+					return model.ID;
 				}else if(check == 0)
                 {
 					throw new Exception("DBTable -> InsertRow -> Can't insert.");
@@ -164,8 +180,8 @@ namespace ClassLibrary1.DATABASE.Controllers
 		//FIX THIS
 		public static void SelectRows(SQLiteCommand command, long File_ID)
 		{
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id, File_ID } };
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.FILE_ID, DBTableName_AT.file } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.file, File_ID } };
 			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
 		}
 
@@ -177,7 +193,6 @@ namespace ClassLibrary1.DATABASE.Controllers
 			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.handle, handle },
 																				   { DBTableName_AT.file, file_ID } };
 			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
-
 		}
 
 		public static void SelectRow(SQLiteCommand command, long ID)
@@ -185,6 +200,23 @@ namespace ClassLibrary1.DATABASE.Controllers
 			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
 			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id , ID } }; 
 			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
+		}
+
+		public static void DeleteRow(SQLiteCommand command, string handle, long file_ID)
+        {
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.HANDLE, DBTableName_AT.handle},
+																				  { DBTableName.FILE_ID, DBTableName_AT.file }};
+
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.handle, handle },
+																				   { DBTableName_AT.file, file_ID } };
+			DBCommand.DeleteRow(DBTableName.name, conDict, paraDict, command);
+		}
+
+		public static void DeleteRow(SQLiteCommand command, long ID)
+        {
+			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
+			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id, ID } };
+			DBCommand.DeleteRow(DBTableName.name, conDict, paraDict, command);
 		}
 
 		public static void UpdateRow(SQLiteCommand command, TableModel model)
@@ -250,7 +282,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 		public static void CreateTable(SQLiteCommand command)
         {
 			StringBuilder builder = new StringBuilder();
-			builder.Append($"CREATE TABLE {DBTableName.name}( ");
+			builder.Append($"CREATE TABLE IF NOT EXISTS {DBTableName.name}( ");
 			builder.Append($"'{DBTableName.ID}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ");
 			builder.Append($"'{DBTableName.HANDLE}' TEXT NOT NULL, ");
 			builder.Append($"'{DBTableName.POSITION_ID}' INTEGER NOT NULL, ");

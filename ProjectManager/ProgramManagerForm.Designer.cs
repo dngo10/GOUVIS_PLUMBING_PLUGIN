@@ -216,6 +216,7 @@
             this.P_NODE_PATH_BOX.Name = "P_NODE_PATH_BOX";
             this.P_NODE_PATH_BOX.Size = new System.Drawing.Size(644, 21);
             this.P_NODE_PATH_BOX.TabIndex = 2;
+            this.P_NODE_PATH_BOX.TextChanged += new System.EventHandler(this.P_NODE_PATH_BOX_TextChanged);
             // 
             // label1
             // 

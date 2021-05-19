@@ -241,6 +241,19 @@ namespace GouvisPlumbingNew.HELPERS
                 return "";
             }
         }
+
+        public static string GetFullPathFromRelativePath(string relPath, SQLiteConnection connection)
+        {
+            string dbPath = connection.FileName;
+            string basePath = Directory.GetParent(Directory.GetParent(dbPath).FullName).FullName;
+            string fullDwgPath = basePath + relPath;
+
+            if (File.Exists(fullDwgPath))
+            {
+                return fullDwgPath;
+            }
+            else return "";
+        }
         public static string GetNotePathFromADwgPath(string path, SQLiteConnection sqlConn)
         {
             string dataPath = GetDatabasePathFromDwgPath(path);
@@ -281,6 +294,65 @@ namespace GouvisPlumbingNew.HELPERS
                 Console.WriteLine(string.Format("HasDwgPathInDatabase Func -> Could not find database from file: {0}", path));
             }
             return false;
+        }
+
+
+
+        /// <summary>
+        /// Check Whether or Not dwg path is in database.
+        /// </summary>
+        /// <param name="dwgPath">full Path</param>
+        /// <returns></returns>
+        public static bool IsPathInDatabase(string dwgPath, SQLiteConnection connection)
+        {
+            string relPath = MakeRelativePath(dwgPath);
+
+            if (string.IsNullOrEmpty(relPath)) return false;
+            if(DBDwgFile.HasRowPath(connection, relPath))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static DateTime GetModifiedOfFile(string fullDwgPath)
+        {
+
+            if (File.Exists(fullDwgPath))
+            {
+                return File.GetLastWriteTimeUtc(fullDwgPath);
+            }
+
+            return DateTime.MinValue;
+        }
+
+
+        /// <summary>
+        /// Check whether or not file and database has different date.
+        /// This is used to decide whether or not to read from database or file Dwg.
+        /// </summary>
+        /// <param name="dwgPath">Full Dwg Path</param>
+        /// <returns></returns>
+        public static bool IsDateTheSame(string dwgPath, SQLiteConnection connection) {
+            if (!IsPathInDatabase(dwgPath, connection)) return false;
+            string relPath = MakeRelativePath(dwgPath);
+
+            DwgFileModel file = DBDwgFile.SelectRow(connection, relPath);
+
+            return file.modifieddate == GetModifiedOfFile(dwgPath).Ticks;
+        }
+
+        public static void RemoveBackSlash(ref string str)
+        {
+            str = str.Replace("\\", ConstantName.backSlashReplace);
+            str = str.Trim();
+        }
+
+        public static void ReInstallBackSlash(ref string str)
+        {
+            str = str.Replace(ConstantName.backSlashReplace, "\\");
+            str = str.Trim();
         }
     }
 }

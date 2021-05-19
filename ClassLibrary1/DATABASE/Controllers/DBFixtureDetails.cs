@@ -45,7 +45,6 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		{
 			using (SQLiteCommand command = connection.CreateCommand())
 			{
-				DBFixtureDetailsCommands.SelectRows(command, fileID);
 				return GetFixtureDetails(command, fileID);
 			}
 		}
@@ -129,9 +128,11 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			double DFU = (double)reader[DBFixtureDetailsNames.DFU];
 			string DESCRIPTION = (string)reader[DBFixtureDetailsNames.DESCRIPTION];
 			long ID = (long)reader[DBFixtureDetailsNames.ID];
+			long FILE_ID = (long)reader[DBFixtureDetailsNames.FILE_ID];
 
 			Matrix3dModel matrix = DBMatrix3d.SelectRow(command.Connection, TRANSFORM_ID);
 			Point3dModel position = DBPoint3D.SelectRow(command.Connection, POSITION_ID);
+			DwgFileModel file = DBDwgFile.SelectRow(command.Connection, FILE_ID);
 
 			model = new FixtureDetailsModel();
 			model.position = position;
@@ -152,6 +153,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			model.DFU = DFU;
 			model.DESCRIPTION = DESCRIPTION;
 			model.ID = ID;
+			model.file = file;
 
 			return model;
 		}
@@ -273,26 +275,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
         }
 		public static void UpdateRow(FixtureDetailsModel model, SQLiteCommand command)
         {
-			List<List<object>> items = new List<List<object>> {
-				new List<object>{DBFixtureDetailsNames.POSITION_ID, DBFixtureDetailsNames_AT.position, model.position.ID },
-				new List<object>{DBFixtureDetailsNames.MATRIX_ID, DBFixtureDetailsNames_AT.matrix, model.matrixTransform.ID },
-				new List<object>{DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames_AT.handle, model.handle },
-				new List<object>{DBFixtureDetailsNames.INDEXX, DBFixtureDetailsNames_AT.indexx, model.INDEX },
-				new List<object>{DBFixtureDetailsNames.FIXTURE_NAME, DBFixtureDetailsNames_AT.fixture, model.FIXTURENAME },
-				new List<object>{DBFixtureDetailsNames.TAG, DBFixtureDetailsNames_AT.tag, model.TAG },
-				new List<object>{DBFixtureDetailsNames.NUMBER, DBFixtureDetailsNames_AT.num, model.NUMBER },
-				new List<object>{DBFixtureDetailsNames.CW_DIA, DBFixtureDetailsNames_AT.cwD, model.CW_DIA },
-				new List<object>{DBFixtureDetailsNames.HW_DIA, DBFixtureDetailsNames_AT.hwD, model.HW_DIA },
-				new List<object>{DBFixtureDetailsNames.WASTE_DIA, DBFixtureDetailsNames_AT.wD, model.WASTE_DIA },
-				new List<object>{DBFixtureDetailsNames.VENT_DIA, DBFixtureDetailsNames_AT.vD, model.VENT_DIA },
-				new List<object>{DBFixtureDetailsNames.STORM_DIA, DBFixtureDetailsNames_AT.sD, model.STORM_DIA },
-				new List<object>{DBFixtureDetailsNames.WSFU, DBFixtureDetailsNames_AT.wsfu, model.WSFU },
-				new List<object>{DBFixtureDetailsNames.CWSFU, DBFixtureDetailsNames_AT.cwsfu, model.CWSFU },
-				new List<object>{DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames_AT.hwsfu, model.HWSFU },
-				new List<object>{DBFixtureDetailsNames.DFU, DBFixtureDetailsNames_AT.dfu, model.DFU },
-				new List<object>{DBFixtureDetailsNames.DESCRIPTION, DBFixtureDetailsNames_AT.desc, model.DESCRIPTION },
-				new List<object>{DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file, model.file }
-			};
+			List<List<object>> items = getListItems(model);
 
 			Dictionary<string, string> variables = new Dictionary<string, string>();
 			Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id} };
@@ -309,6 +292,21 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			DBCommand.UpdateRow(DBFixtureDetailsNames.name, variables, conDict, paraDict, command);
 		}
 		public static void InsertRow(FixtureDetailsModel model, SQLiteCommand command)
+        {
+			List<List<object>> items = getListItems(model);
+
+			List<string> variables = new List<string>();
+			Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+			foreach(List<object> item in items){
+				variables.Add((string)item[0]);
+				paraDict.Add((string)item[1], item[2]);
+            }
+
+			DBCommand.InsertCommand(DBFixtureDetailsNames.name, variables, paraDict, command);
+		}
+
+		private static List<List<object>> getListItems(FixtureDetailsModel model)
         {
 			List<List<object>> items = new List<List<object>> {
 				new List<object>{DBFixtureDetailsNames.POSITION_ID, DBFixtureDetailsNames_AT.position, model.position.ID },
@@ -328,19 +326,12 @@ CREATE TABLE "FIXTURE_DETAILS" (
 				new List<object>{DBFixtureDetailsNames.HWSFU, DBFixtureDetailsNames_AT.hwsfu, model.HWSFU },
 				new List<object>{DBFixtureDetailsNames.DFU, DBFixtureDetailsNames_AT.dfu, model.DFU },
 				new List<object>{DBFixtureDetailsNames.DESCRIPTION, DBFixtureDetailsNames_AT.desc, model.DESCRIPTION },
-				new List<object>{DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file, model.file }
+				new List<object>{DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file, model.file.ID }
 			};
 
-			List<string> variables = new List<string>();
-			Dictionary<string, object> paraDict = new Dictionary<string, object>();
-
-			foreach(List<object> item in items){
-				variables.Add((string)item[0]);
-				paraDict.Add((string)item[1], item[2]);
-            }
-
-			DBCommand.InsertCommand(DBFixtureDetailsNames.name, variables, paraDict, command);
+			return items;
 		}
+
 		public static void CreateTable(SQLiteCommand command)
         {
 			StringBuilder builder = new StringBuilder();

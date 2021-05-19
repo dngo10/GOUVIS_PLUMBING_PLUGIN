@@ -1,4 +1,7 @@
-﻿using GouvisPlumbingNew.DATABASE.DBModels;
+﻿using ClassLibrary1.DATABASE.Controllers;
+using ClassLibrary1.DATABASE.DBModels;
+using GouvisPlumbingNew.DATABASE.DBModels;
+using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -28,11 +31,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    DwgFileModel model = new DwgFileModel();
-                    model.ID = (long)reader[DBDwgFileName.ID];
-                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
-                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
-                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+                    DwgFileModel model = GetFile(reader);
 
                     dwgs.Add(model);
                 }
@@ -47,23 +46,29 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 DBDwgFileCommands.GetPNoteFile(command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    model = new DwgFileModel();
-                    model.ID = (long)reader[DBDwgFileName.ID];
-                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
-                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
-                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+                    while (reader.Read())
+                    {
+                        model = GetFile(reader);
+                    }
+                    reader.Close();
                 }
-                reader.Close();
+
             }
             return model;
         }
 
+        /// <summary>
+        /// Check if the connection has path.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="path">relative path</param>
+        /// <returns></returns>
         public static bool HasRowPath(SQLiteConnection connection, string path)
         {
             long count = 0;
+
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 DBDwgFileCommands.SelectCount(command, path);
@@ -78,7 +83,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             using (SQLiteCommand command = connection.CreateCommand())
             {
                 DBDwgFileCommands.SelectCount(command, ID);
-                count = Convert.ToInt64(command.ExecuteReader());
+                count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
         }
@@ -92,11 +97,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    model = new DwgFileModel();
-                    model.ID = (long)reader[DBDwgFileName.ID];
-                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
-                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
-                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+                    model = GetFile(reader);
                 }
                 reader.Close();
             }
@@ -131,15 +132,25 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    model = new DwgFileModel();
-                    model.ID = (long)reader[DBDwgFileName.ID];
-                    model.relativePath = (string)reader[DBDwgFileName.RELATIVE_PATH];
-                    model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
-                    model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+                    model = GetFile(reader);
                 }
                 reader.Close();
                 
             }
+            return model;
+        }
+
+        private static DwgFileModel GetFile(SQLiteDataReader reader)
+        {
+            DwgFileModel model = new DwgFileModel();
+            model.ID = (long)reader[DBDwgFileName.ID];
+
+            string tempRelPath = (string)reader[DBDwgFileName.RELATIVE_PATH];
+            model.relativePath = tempRelPath;
+
+            model.isP_Notes = (long)reader[DBDwgFileName.ISP_NOTES];
+            model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
+
             return model;
         }
         public static void DeleteRow(SQLiteConnection connection, DwgFileModel model)
@@ -150,6 +161,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 List<FixtureDetailsModel> fixtures = DBFixtureDetails.SelectRows(connection, model.ID);
                 List<FixtureBeingUsedAreaModel> areas = DBFixtureBeingUsedArea.SelectRows(connection, model.ID);
                 List<InsertPointModel> insertPoints = DBInsertPoint.SelectRows(connection, model.ID);
+                List<TableModel> tables = DBTable.SelectRows(connection, model.ID);
 
                 foreach (FixtureDetailsModel fixture in fixtures)
                 {
@@ -164,6 +176,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 foreach (InsertPointModel insertPoint in insertPoints)
                 {
                     DBInsertPoint.DeleteRow(insertPoint, connection);
+                }
+
+                foreach (TableModel table in tables)
+                {
+                    DBTable.DeleteRow(connection, table);
                 }
 
                 DBDwgFileCommands.DeleteRow(command, model.ID);
@@ -282,9 +299,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void UpdateRow(SQLiteCommand command, DwgFileModel model)
         {
+            string relPath = model.relativePath;
+
             List<List<object>> items = new List<List<object>>()
             {
-                new List<object>{ DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath, model.relativePath },
+                new List<object>{ DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath, relPath },
                 new List<object>{ DBDwgFileName.MODIFIEDDATE, DBDwgFileName_AT.modDate, model.modifieddate },
                 new List<object>{ DBDwgFileName.ISP_NOTES, DBDwgFileName_AT.iNote, model.isP_Notes},
             };
@@ -306,11 +325,13 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         }
         public static void InsertRow(SQLiteCommand command, DwgFileModel model)
         {
+            string relPath = model.relativePath;
+
             List<List<object>> items = new List<List<object>>
             {
                 new List<object>{DBDwgFileName.ISP_NOTES, DBDwgFileName_AT.iNote, model.isP_Notes},
                 new List<object>{DBDwgFileName.MODIFIEDDATE, DBDwgFileName_AT.modDate, model.modifieddate},
-                new List<object>{DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath, model.relativePath}
+                new List<object>{DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath, relPath}
             };
 
             List<string> variables = new List<string>();
@@ -334,7 +355,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             builder.Append(string.Format("CREATE TABLE IF NOT EXISTS {0} (", DBDwgFileName.name));
             builder.Append(string.Format($"'{DBDwgFileName.ID}' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,"));
-            builder.Append(string.Format($"'{DBDwgFileName.RELATIVE_PATH}' TEXT UNIQUE,"));
+            builder.Append(string.Format($"'{DBDwgFileName.RELATIVE_PATH}' TEXT NOT NULL UNIQUE,"));
             builder.Append(string.Format($"'{DBDwgFileName.MODIFIEDDATE}' INTEGER NOT NULL,"));
             builder.Append(string.Format($"'{DBDwgFileName.ISP_NOTES}' INTEGER"));
             builder.Append(string.Format(");"));
@@ -345,7 +366,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBDwgFileName
     {
-        public static string name = "FILE";
+        public static string name = "DB_FILE";
         public static string ID = "ID";
         public static string RELATIVE_PATH = "RELATIVE_PATH";
         public static string MODIFIEDDATE = "MODIFIEDDATE";
@@ -356,8 +377,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
         public static string name = "@name";
         public static string id = "@id";
-        public static string relPath = "@relPath";
-        public static string modDate = "@modDate";
-        public static string iNote = "@iNote";
+        public static string relPath = "@relpath";
+        public static string modDate = "@moddate";
+        public static string iNote = "@inote";
     }
 }

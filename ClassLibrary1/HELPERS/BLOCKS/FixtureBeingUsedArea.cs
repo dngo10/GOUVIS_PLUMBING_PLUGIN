@@ -74,6 +74,12 @@ namespace GouvisPlumbingNew.HELPERS
             return xInside && yInside;
         }
 
+        public bool IsInsideTheBox(FixtureDetails fd)
+        {
+            Point3d pos = new Point3d(fd.model.position.X, fd.model.position.Y, fd.model.position.Z);
+            return IsInsideTheBox(pos);
+        }
+
         public bool IsInsideTheBox(BlockReference bref)
         {
             return IsInsideTheBox(bref.Position);

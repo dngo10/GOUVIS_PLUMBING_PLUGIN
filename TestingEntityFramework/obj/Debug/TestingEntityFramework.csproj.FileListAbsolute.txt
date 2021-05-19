@@ -1,0 +1,12 @@
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\TestingEntityFramework.dll.config
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\TestingEntityFramework.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\TestingEntityFramework.pdb
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\EntityFramework.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\EntityFramework.xml
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\obj\Debug\TestingEntityFramework.csprojAssemblyReference.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\obj\Debug\TestingEntityFramework.csproj.CoreCompileInputs.cache
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\obj\Debug\TestingEntityFramework.csproj.CopyComplete
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\obj\Debug\TestingEntityFramework.dll
+C:\Users\dngo\source\repos\Plumbing_Gouvis\TestingEntityFramework\obj\Debug\TestingEntityFramework.pdb

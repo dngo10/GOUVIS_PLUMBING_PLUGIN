@@ -7,6 +7,7 @@ namespace GouvisPlumbingNew.HELPERS
         //INVALIDS
         public const int invalidNum = -2100000000;
         public const string invalidStr = "__Is_InValid__";
+        public const string backSlashReplace = "BZ__ZB";
         //BLOCK NAMES
         public const string FixtureInformationArea = "FixtureBeingUsedArea";
         public const string FixtureDetailsBox = "FixtureDetails";
@@ -16,7 +17,7 @@ namespace GouvisPlumbingNew.HELPERS
         //LAYER NAMES
         public const string TABLE = "TABLE";
 
-        //INVALID_NUMBER
+        //INVALID_NUMBERsvelte
         //RETURN THIS EVERYTIME VALUE BECOME INVALID;
 
         //TABLE XDATA NAME

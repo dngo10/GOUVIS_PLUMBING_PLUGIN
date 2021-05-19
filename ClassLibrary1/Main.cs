@@ -38,61 +38,13 @@ namespace GouvisPlumbingNew
             using (SQLiteTransaction sqlTr = connection.BeginTransaction())
             {
                 //P_NODE_EDIT.TestingFunction.testing1(ConstantName.TEMPPATH);
-                ReadPNote.ReadDwgPNoteFile(connection);
+                ReadPNote.ReadDataPNode(connection);
                 sqlTr.Commit();
                 connection.Close();
             }
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-        }
-
-        [CommandMethod("abc")]
-        public void RunTest()
-        {
-            string dwgPath = Application.DocumentManager.MdiActiveDocument.Name;
-            string dbPath = GoodiesPath.GetDatabasePathFromDwgPath(dwgPath);
-
-            if (string.IsNullOrEmpty(dbPath))
-            {
-                MessageBox.Show("Couldn't find the database!");
-                return;
-            }
-
-            SQLiteConnection connection = PlumbingDatabaseManager.OpenSqliteConnection(dbPath);
-            connection.Open();
-            using (SQLiteTransaction sqlTr = connection.BeginTransaction())
-            {
-                //P_NODE_EDIT.TestingFunction.testing1(ConstantName.TEMPPATH);
-                ReadPNote.ReadDwgPNoteFile(connection);
-                sqlTr.Commit();
-                connection.Close();
-            }
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-        }
-
-        [CommandMethod("def")]
-        public void RunTest2()
-        {
-            string dwgPath = Application.DocumentManager.MdiActiveDocument.Name;
-            string dbPath = GoodiesPath.GetDatabasePathFromDwgPath(dwgPath);
-
-            if (string.IsNullOrEmpty(dbPath))
-            {
-                MessageBox.Show("Couldn't find the database!");
-                return;
-            }
-
-            SQLiteConnection connection = PlumbingDatabaseManager.OpenSqliteConnection(dbPath);
-            connection.Open();
-            using (SQLiteTransaction sqlTr = connection.BeginTransaction())
-            {
-                ReadPNote.ReadFromDatabase(connection);
-                sqlTr.Commit();
-                connection.Close();
-            }
-            GC.Collect();
         }
 
         [CommandMethod("ADDTABLE")]
@@ -117,6 +69,12 @@ namespace GouvisPlumbingNew
             }
             GC.Collect();
             GC.WaitForPendingFinalizers();
+        }
+
+        [CommandMethod("ADDFIXTURE")]
+        public void AddFixture()
+        {
+            
         }
 
         

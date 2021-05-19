@@ -25,24 +25,24 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void DeleteRow(string tableName, Dictionary<string, string> conditions, Dictionary<string, object> paraDict, SQLiteCommand command)
         {
-            string conStr = createConditionString(conditions);
-            command.CommandText = $"DELETE FROM {tableName} WHERE {conStr}; ";
+            string conStr = CreateConditionString(conditions);
+            command.CommandText = $"DELETE FROM '{tableName}' WHERE {conStr}; ";
             SetCommandParameter(command, paraDict);
         }
 
         public static void SelectRow(string tableName,  Dictionary<string, string> conditions, Dictionary<string, object> paraDict, SQLiteCommand command)
         {
-            string conStr = createConditionString(conditions);
+            string conStr = CreateConditionString(conditions);
 
-            command.CommandText = $"SELECT * FROM {tableName} WHERE {conStr};";
+            command.CommandText = $"SELECT * FROM '{tableName}' WHERE {conStr};";
             SetCommandParameter(command, paraDict);
         }
 
         public static void SelectCount(string tableName, Dictionary<string, string> conditions, Dictionary<string, object> paraDict, SQLiteCommand command)
         {
-            string conStr = createConditionString(conditions);
+            string conStr = CreateConditionString(conditions);
 
-            command.CommandText = $"SELECT COUNT(*) FROM {tableName} WHERE {conStr};";
+            command.CommandText = $"SELECT COUNT(*) FROM '{tableName}' WHERE {conStr} ;";
             SetCommandParameter(command, paraDict);
         }
 
@@ -71,7 +71,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 subCommand.Add($" {kv.Key} = {kv.Value} ");
             }
             string s_command = string.Join(" , ", subCommand);
-            string s_condition = createConditionString(conditions);
+            string s_condition = CreateConditionString(conditions);
             command.CommandText = $"UPDATE '{tableName}' SET {s_command} WHERE {s_condition} ; ";
             SetCommandParameter(command, paraDict);
         }
@@ -84,19 +84,17 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
         }
 
-        private static string createConditionString(Dictionary<string, string> conditions)
+        private static string CreateConditionString(Dictionary<string, string> conditions)
         {
             List<string> terms = new List<string>();
 
             foreach (KeyValuePair<string, string> kv in conditions)
             {
-                terms.Add($"{kv.Key} = {kv.Value}");
+                terms.Add($" {kv.Key}={kv.Value} ");                
             }
 
             string conStr = string.Join(" AND ", terms);
-
             return conStr;
         }
-
     }
 }

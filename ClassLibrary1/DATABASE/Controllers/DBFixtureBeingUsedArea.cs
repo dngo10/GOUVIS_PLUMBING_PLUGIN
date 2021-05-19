@@ -244,17 +244,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         }
         public static void UpdateRow(SQLiteCommand command, FixtureBeingUsedAreaModel model)
         {
-            List<List<object>> items = new List<List<object>> {
-                new List<object>{DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle, model.handle },
-                new List<object>{DBFixtureBeingUsedAreaName.POSITION_ID, DBFixtureBeingUsedAreaName_AT.position, model.position.ID },
-                new List<object>{DBFixtureBeingUsedAreaName.X, DBFixtureBeingUsedAreaName_AT.x, model.X },
-                new List<object>{DBFixtureBeingUsedAreaName.Y, DBFixtureBeingUsedAreaName_AT.y, model.Y },
-                new List<object>{DBFixtureBeingUsedAreaName.ORIGIN_ID, DBFixtureBeingUsedAreaName_AT.origin, model.origin.ID },
-                new List<object>{DBFixtureBeingUsedAreaName.POINT_TOP_ID, DBFixtureBeingUsedAreaName_AT.top, model.pointTop.ID },
-                new List<object>{DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID,DBFixtureBeingUsedAreaName_AT.bottom, model.pointBottom.ID },
-                new List<object>{DBFixtureBeingUsedAreaName.MATRIX_ID, DBFixtureBeingUsedAreaName_AT.matrix, model.matrixTransform.ID },
-                new List<object>{DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file, model.file.ID },
-            };
+            List<List<object>> items = GetItems(model);
 
             Dictionary<string, string> variables = new Dictionary<string, string>();
             Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id } };
@@ -270,6 +260,22 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         }
         public static void InsertRow(FixtureBeingUsedAreaModel model, SQLiteCommand command)
         {
+            List<List<object>> items = GetItems(model);
+
+            List<string> variables = new List<string>();
+            Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+            foreach (List<object> item in items)
+            {
+                variables.Add((string)item[0]);
+                paraDict.Add((string)item[1], item[2]);
+            }
+
+            DBCommand.InsertCommand(DBFixtureBeingUsedAreaName.name, variables, paraDict, command);
+        }
+
+        private static List<List<object>> GetItems(FixtureBeingUsedAreaModel model)
+        {
             List<List<object>> items = new List<List<object>> {
                 new List<object>{DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle, model.handle },
                 new List<object>{DBFixtureBeingUsedAreaName.POSITION_ID, DBFixtureBeingUsedAreaName_AT.position, model.position.ID },
@@ -282,17 +288,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 new List<object>{DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file, model.file.ID },
             };
 
-            List<string> variables = new List<string>();
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id}};
-            Dictionary<string, object> paraDict = new Dictionary<string, object>();
-
-            foreach (List<object> item in items)
-            {
-                variables.Add((string)item[0]);
-                paraDict.Add((string)item[1], item[2]);
-            }
-
-            DBCommand.InsertCommand(DBFixtureBeingUsedAreaName.name, variables, paraDict, command);
+            return items;
         }
 
         public static void CreateTable(SQLiteCommand command)

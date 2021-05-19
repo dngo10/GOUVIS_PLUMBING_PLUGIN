@@ -28,7 +28,7 @@ namespace ClassLibrary1.DATABASE.DBModels
             matrixTransform.WriteToDatabase(connection);
             position.WriteToDatabase(connection);
             DBTable.CreateTable(connection);
-            if(DBTable.HasRow(connection, ID))
+            if(!DBTable.HasRow(connection, ID))
             {
                 DBTable.InsertRow(connection, this);
             }
@@ -36,7 +36,6 @@ namespace ClassLibrary1.DATABASE.DBModels
             {
                 DBTable.UpdateRow(connection, this);
             }
-            
         }
     }
 }

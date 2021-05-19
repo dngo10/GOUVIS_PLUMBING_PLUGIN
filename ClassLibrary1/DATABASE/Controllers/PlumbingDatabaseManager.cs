@@ -168,17 +168,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return model;
         }
 
-        public static bool CheckModified(string dwgFullPath, SQLiteConnection connection)
-        {
-            string relPath = GoodiesPath.MakeRelativePath(dwgFullPath);
-            if (!string.IsNullOrEmpty(relPath) && DBDwgFile.HasRowPath(connection, relPath))
-            {
-                DwgFileModel model = DBDwgFile.SelectRow(connection, relPath);
-                return model.modifieddate != File.GetLastWriteTimeUtc(dwgFullPath).Ticks;
-            }
-            return true;
-        }
-
         [ConditionalAttribute("DEBUG")]
         public static void DebugMessage(string message)
         {

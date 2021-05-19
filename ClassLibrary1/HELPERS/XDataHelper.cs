@@ -18,13 +18,13 @@ namespace ClassLibrary1.HELPERS
                 TypedValue[] tvs = rb.AsArray();
                 if(tvs[0].TypeCode == (short)DxfCode.ExtendedDataRegAppName && (string)tvs[0].Value == ConstantName.tableAlias)
                 {
-                    return (string)tvs[0].Value;
+                    return (string)tvs[1].Value;
                 }
             }
 
             return "";
         }
-        public static void AddTableXData(BlockReference bref, Transaction tr, Database db)
+        public static void AddTableXData(ref Table bref, Transaction tr, Database db)
         {
             AddRegAppTableRecord(db, tr, ConstantName.tableAlias);
             ResultBuffer rb = new ResultBuffer(
@@ -53,6 +53,6 @@ namespace ClassLibrary1.HELPERS
     {
         //ALIAS;
         public const string tableSchedule = "TS";
-
+        public const string fixtureSchedule = "FS";
     }
 }

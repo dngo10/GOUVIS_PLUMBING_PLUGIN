@@ -65,7 +65,11 @@ namespace ProjectManager
             ClearUp(treeView, dataGridView);
 
             DwgFileModel pe = new DwgFileModel();
-            pe.modifieddate = File.GetLastWriteTimeUtc(textBox.Text).Ticks;
+
+            //To make sure file is update later.
+            //pe.modifieddate = File.GetLastWriteTimeUtc(textBox.Text).Ticks;
+            pe.modifieddate = 0;
+
             pe.relativePath = "\\" + Path.GetFileName(textBox.Text);
             pe.isP_Notes = 1;
 
@@ -254,12 +258,11 @@ namespace ProjectManager
             if (GoodiesPath.IsDwgPath(relativeDwgPath))
             {
                 DwgFileModel fe = new DwgFileModel();
-                fe.modifieddate = GetModifiedOfFile(relativeDwgPath).Ticks;
+                //fe.modifieddate = GoodiesPath.GetModifiedOfFile(ProjectFolder + relativeDwgPath).Ticks;
+
+                // this is to make sure later file is going to be updated.
+                fe.modifieddate = 0;
                 fe.isP_Notes = 0;
-                if (fe.modifieddate == DateTime.MinValue.Ticks)
-                {
-                    //CHECK THIS
-                }
                 fe.relativePath = relativeDwgPath;
 
                 //string fullDwgPath = Root + relativeDwgPath;
@@ -272,18 +275,6 @@ namespace ProjectManager
                     PlumbingDatabaseManager.projectElement.Dwgs.Remove(fe);
                 }
             }
-        }
-
-        public static DateTime GetModifiedOfFile(string relativaPath)
-        {
-            string fullPath = ProjectFolder + relativaPath;
-
-            if (File.Exists(fullPath))
-            {
-                return File.GetLastWriteTimeUtc(fullPath);
-            }
-
-            return DateTime.MinValue;
         }
 
         //You must understand that the check box event (in winform) is called Recursively, you don't

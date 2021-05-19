@@ -16,7 +16,6 @@ namespace ClassLibrary1.HELPERS
 
         public TableData( BlockReference bref, Transaction tr, Database db)
         {
-            model = new TableModel();
             model.handle = Goodies.ConvertHandleToString(bref.Handle);
             model.position = new Point3dModel(bref.Position.ToArray());
             model.matrixTransform = new Matrix3dModel(bref.BlockTransform.ToArray());
@@ -29,6 +28,11 @@ namespace ClassLibrary1.HELPERS
             }
 
             model.A_VALUE = ConstantName.invalidStr;
+        }
+
+        public TableData(TableModel model)
+        {
+            this.model = model;
         }
     }
 }

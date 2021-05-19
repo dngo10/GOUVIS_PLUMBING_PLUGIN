@@ -1,4 +1,6 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
+using ClassLibrary1.DATABASE.Controllers;
+using ClassLibrary1.DATABASE.DBModels;
 using ClassLibrary1.HELPERS;
 using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.DATABASE.DBModels;
@@ -51,6 +53,10 @@ namespace GouvisPlumbingNew.PNOTE
             {
                 ip.model.WriteToDataBase(connection);
             }
+            foreach(TableData table in TableDataSet)
+            {
+                table.model.WriteToDatabase(connection);
+            }
         }
 
         /// <summary>
@@ -64,6 +70,7 @@ namespace GouvisPlumbingNew.PNOTE
             FixtureBoxSet.Clear();
             InsertPointSet.Clear();
             FixtureDetailSet.Clear();
+            TableDataSet.Clear();
 
             string relPath = GoodiesPath.MakeRelativePath(pathDwg);
             file = DBDwgFile.SelectRow(connection, relPath);
@@ -84,12 +91,20 @@ namespace GouvisPlumbingNew.PNOTE
             {
                 FixtureDetails fd = new FixtureDetails(detailModel);
                 FixtureDetailSet.Add(fd);
+
+                
             }
 
             foreach(InsertPointModel insertPointModel in DBInsertPoint.SelectRows(connection, file.ID))
             {
                 InsertPoint ip = new InsertPoint(insertPointModel);
                 InsertPointSet.Add(ip);
+            }
+
+            foreach (TableModel model in DBTable.SelectRows(connection, file.ID))
+            {
+                TableData table = new TableData(model);
+                TableDataSet.Add(table);
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Interop;
 using ClassLibrary1.HELPERS;
 using GouvisPlumbingNew.DATABASE.Controllers;
 using GouvisPlumbingNew.DATABASE.DBModels;
@@ -18,7 +19,51 @@ namespace ClassLibrary1.PNOTE
 {
     class ReadPNote
     {
-        public static NODEDWG ReadDwgPNoteFile(SQLiteConnection connection)
+        /// <summary>
+        /// ReadPNote is read Note in general, can be from database, can be from dwg depends on current situation.
+        /// If dwgPNote is opened, is active or not, is modified or not (can't check whether or not it is modied), refer to read from DWG and updateDatabase.
+        /// If dwgPNote is Not open check date, if if equals, read from database.
+        /// Else: read from file + udpate todatabase.
+        /// FK IT, JUST FOUND DOWN THE INTEROPT SHIT
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <returns></returns>
+
+        //public static NODEDWG ReadPNoteFromDwg(SQLiteConnection connection)
+        //{
+        //    NODEDWG note = null;
+        //
+        //    string notePath = GoodiesPath.GetNotePathFromADwgPath(Application.DocumentManager.MdiActiveDocument.Name, connection);
+        //    if (!string.IsNullOrEmpty(notePath))
+        //    {
+        //        if (Goodies.GetListOfDocumentOpening().Contains(notePath))
+        //        {
+        //            Document doc = Goodies.GetDocumentFromDwgpath(notePath);
+        //
+        //            if (doc == null)
+        //            {
+        //                Application.ShowAlertDialog("ReadDwgNoteFile -> There is no Document, weird!");
+        //                return null;
+        //            }
+        //            note = GetData(doc.Database, connection);
+        //        }
+        //        else
+        //        {
+        //            Database db = new Database();
+        //            try
+        //            {
+        //                db.ReadDwgFile(notePath, FileOpenMode.OpenForReadAndAllShare, false, "");
+        //                note = GetData(db, connection);
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                MessageBox.Show(e.Message);
+        //            }
+        //        }
+        //    }
+        //    return note;
+        //}
+        public static NODEDWG ReadDataPNode(SQLiteConnection connection)
         {
             NODEDWG note = null;
 
@@ -28,9 +73,24 @@ namespace ClassLibrary1.PNOTE
                 if (Goodies.GetListOfDocumentOpening().Contains(notePath))
                 {
                     Document doc = Goodies.GetDocumentFromDwgpath(notePath);
-                    using (Database db = doc.Database)
+                    
+                    if (doc == null)
                     {
-                        note = GetData(db, connection);
+                        Application.ShowAlertDialog("ReadDwgNoteFile -> There is no Document, weird!");
+                        return null;
+                    }
+
+                    AcadDocument acadDoct = (AcadDocument)doc.GetAcadDocument();
+                    if (acadDoct.Saved && GoodiesPath.IsDateTheSame(notePath, connection))
+                    {
+                        note = ReadFromDatabase(connection);
+                    }
+                    else
+                    {
+                        using (Database db = doc.Database)
+                        {
+                            note = GetData(db, connection);
+                        }
                     }
                 }
                 else
@@ -38,8 +98,16 @@ namespace ClassLibrary1.PNOTE
                     Database db = new Database();
                     try
                     {
-                        db.ReadDwgFile(notePath, FileOpenMode.OpenForReadAndAllShare, false, "");
-                        note = GetData(db, connection);
+                        if(GoodiesPath.IsDateTheSame(notePath, connection))
+                        {
+                            note = ReadFromDatabase(connection);
+                        }
+                        else
+                        {
+                            db.ReadDwgFile(notePath, FileOpenMode.OpenForReadAndAllShare, false, "");
+                            note = GetData(db, connection);
+                        }
+
                     }catch(Exception e)
                     {
                         MessageBox.Show(e.Message);
@@ -72,27 +140,59 @@ namespace ClassLibrary1.PNOTE
                                 if (brefName.Equals(ConstantName.FixtureInformationArea))
                                 {
                                     FixtureBeingUsedArea dbA = new FixtureBeingUsedArea(bref);
-                                    note.FixtureBoxSet.Add(dbA);
+                                    if(dbA.model != null)
+                                    {
+                                        note.FixtureBoxSet.Add(dbA);
+                                    }
+                                    
                                 }
                             }
                             else if (bref.Name == ConstantName.FixtureDetailsBox)
                             {
                                 FixtureDetails FD = new FixtureDetails(bref, tr);
-                                note.FixtureDetailSet.Add(FD);
+                                if(FD.model != null)
+                                {
+                                    note.FixtureDetailSet.Add(FD);
+                                }
+                                
                             }
                             else if (bref.Name == ConstantName.InsertPoint)
                             {
                                 InsertPoint IP = new InsertPoint(bref, tr);
-                                note.InsertPointSet.Add(IP);
+                                if(IP.model != null)
+                                {
+                                    note.InsertPointSet.Add(IP);
+                                }
+                                
                             }
                             else if (bref is Table)
                             {
                                 TableData tb = new TableData(bref, tr, db);
-                                note.TableDataSet.Add(tb);
+                                if(tb.model != null)
+                                {
+                                    note.TableDataSet.Add(tb);
+                                }
+                                
                             }
                         }
                     }
                 }
+
+                List<FixtureDetails> newFixs = new List<FixtureDetails>();
+
+                foreach(FixtureBeingUsedArea fba in note.FixtureBoxSet)
+                {
+                    foreach(FixtureDetails fd in note.FixtureDetailSet)
+                    {
+                        if (fba.IsInsideTheBox(fd))
+                        {
+                            newFixs.Add(fd);
+                        }
+                    }
+                }
+
+                note.FixtureDetailSet.Clear();
+                foreach (FixtureDetails fd in newFixs) note.FixtureDetailSet.Add(fd);
             }
 
             //Write to Database
@@ -105,6 +205,7 @@ namespace ClassLibrary1.PNOTE
             } 
 
             note.file = DBDwgFile.GetPNote(connection);
+            note.file.modifieddate = GoodiesPath.GetModifiedOfFile(GoodiesPath.GetFullPathFromRelativePath(note.file.relativePath, connection)).Ticks;
 
             if(note.file == null)
             {
@@ -124,6 +225,10 @@ namespace ClassLibrary1.PNOTE
             {
                 ip.model.file = note.file;
             }
+            foreach(TableData table in note.TableDataSet)
+            {
+                table.model.file = note.file;
+            }
 
             DBDwgFile.DeleteRow(connection, note.file);
 
@@ -132,7 +237,7 @@ namespace ClassLibrary1.PNOTE
             return note;
         }
 
-        public static NODEDWG ReadFromDatabase(SQLiteConnection connection)
+        private static NODEDWG ReadFromDatabase(SQLiteConnection connection)
         {
             NODEDWG note = new NODEDWG();
 

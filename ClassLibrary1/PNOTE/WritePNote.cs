@@ -33,12 +33,15 @@ namespace ClassLibrary1.PNOTE
             if (fileStatus == null || fileStatus.db == null) return;
             //if (doc == null) return;
 
-            DwgFileModel model = PlumbingDatabaseManager.GetNotePath(connection);
-            if (notePath == model.relativePath)
+            DwgFileModel fileModel = PlumbingDatabaseManager.GetNotePath(connection);
+            if (notePath == fileModel.relativePath)
             {
-                if (PlumbingDatabaseManager.CheckModified(notePathFull, connection))
+                if (GoodiesPath.IsDateTheSame(notePathFull, connection))
                 {
-                    NODEDWG note = ReadPNote.ReadFromDatabase(connection);
+
+                    NODEDWG note = ReadPNote.ReadDataPNode(connection);
+
+
                     InsertPoint ip = note.InsertPointSet.Where(insertpoint => insertpoint.model.alias == "FS").FirstOrDefault();
                     Table table = TableSchedule.CreateTable(note.FixtureDetailSet, ip);
                     Document doc = Application.DocumentManager.GetDocument(fileStatus.db);
@@ -46,19 +49,24 @@ namespace ClassLibrary1.PNOTE
                     {
                         using (fileStatus.db)
                         {
+                            TableSchedule.DeleteTableSchedule(fileStatus.db, XDataHelperName.tableSchedule);
+
                             using (Transaction tr = fileStatus.db.TransactionManager.StartTransaction())
                             {
                                 BlockTable bt = (BlockTable)tr.GetObject(fileStatus.db.BlockTableId, OpenMode.ForRead);
                                 BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
                                 Goodies.InsertTable(table, tr, btr);
-                                //Have to add layer AFTER WRITING IT
+
                                 table.Layer = ConstantName.TABLE;
+                                XDataHelper.AddTableXData(ref table, tr, fileStatus.db);
                                 tr.Commit();
                                 tr.Dispose();
+                                TableData tableData = new TableData(table, tr, fileStatus.db);
+                                tableData.model.file = fileModel;
+                                tableData.model.WriteToDatabase(connection);
                             }
                             TableSchedule.AddBlockToTable(table, fileStatus.db, note.FixtureDetailSet);
                             fileStatus.Save();
-                            //Condition
                         }
                     }
                     fileStatus.ReturnPreviousDocument();
@@ -67,3 +75,5 @@ namespace ClassLibrary1.PNOTE
         }
     }
 }
+
+//DART everywhere.

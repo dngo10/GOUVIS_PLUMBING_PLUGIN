@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+using ClassLibrary1.HELPERS;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using System;
 using System.Collections.Generic;
@@ -123,6 +124,35 @@ namespace GouvisPlumbingNew.HELPERS
                 for (int i = 2; i < t.Rows.Count; i++)
                 {
                     Goodies.InsertDynamicBlockToTableCell(t.Cells[i, 0], db, ConstantName.HexNote, fixtureDetails.ElementAt(i - 2));
+                }
+                tr.Commit();
+            }
+        }
+
+        //Delete all Database in
+        //Add Alias in, as a general function.
+        public static void DeleteTableSchedule(Database db, string alias)
+        {
+            using(Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+
+                foreach(ObjectId id in btr)
+                {
+                    DBObject dbObj = tr.GetObject(id, OpenMode.ForRead);
+                    if(dbObj is Table)
+                    {
+                        Table tb = (Table)dbObj;
+                        if (XDataHelper.GetTableType(tb, tr, db) == alias)
+                        {
+                            tb.UpgradeOpen();
+                            if (!tb.IsErased)
+                            {
+                                tb.Erase();
+                            }
+                        }
+                    }
                 }
                 tr.Commit();
             }
