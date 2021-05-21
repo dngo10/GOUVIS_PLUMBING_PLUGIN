@@ -37,7 +37,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBFixtureBeingUsedAreaCommands.SelectRows(command, fileID);
+                DBCommand.SelectRows(DBFixtureBeingUsedAreaName.name, fileID, command);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -53,7 +53,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBFixtureBeingUsedAreaCommands.SelectCount(command, ID);
+                DBCommand.SelectCount(DBFixtureBeingUsedAreaName.name, ID, command);
                 count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
@@ -63,7 +63,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBFixtureBeingUsedAreaCommands.SelectRow(command, handle, fileID);
+                DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, handle, fileID, command);
                 return GetFixtureBeingUsedAreaModel(command);
             }
         }
@@ -71,7 +71,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         {
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBFixtureBeingUsedAreaCommands.SelectRow(command, ID);
+                DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, ID, command);
                 return GetFixtureBeingUsedAreaModel(command);
             }
         }
@@ -139,7 +139,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             {
                 if(DBFixtureBeingUsedArea.HasRow(connection, model.ID))
                 {
-                    DBFixtureBeingUsedAreaCommands.DeleteRow(command, model.ID);
+                    DBCommand.DeleteRow(DBFixtureBeingUsedAreaName.name, model.ID, command);
                     long check = command.ExecuteNonQuery();
                     if (model.position != null) DBPoint3D.DeleteRow(model.position.ID, connection);
                     if (model.origin != null) DBPoint3D.DeleteRow(model.origin.ID, connection);
@@ -189,59 +189,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBFixtureBeingUsedAreaCommands
     {
-        public static void SelectRows(SQLiteCommand command, long FileID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureBeingUsedAreaName_AT.file, FileID } };
-
-            DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
-        }
-        public static void SelectRow(SQLiteCommand command, string handle, long fileID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle},
-                                                                                  {DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file}
-                                                                                };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureBeingUsedAreaName_AT.handle, handle},
-                                                                                   {DBFixtureBeingUsedAreaName_AT.file, fileID}
-                                                                                };
-
-            DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
-        }
-
-        public static void SelectCount(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureBeingUsedAreaName_AT.id, ID } };
-
-            DBCommand.SelectCount(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
-        }
-        public static void SelectRow(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureBeingUsedAreaName_AT.id, ID } };
-
-            DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
-
-        }
-        public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.ID, DBFixtureBeingUsedAreaName_AT.id} };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> {{DBFixtureBeingUsedAreaName_AT.id, ID} };
-
-            DBCommand.DeleteRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
-        }
-
-        public static void DeleteRow(SQLiteCommand command, string handle, long fileID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureBeingUsedAreaName.HANDLE, DBFixtureBeingUsedAreaName_AT.handle},
-                                                                                  {DBFixtureBeingUsedAreaName.FILE_ID, DBFixtureBeingUsedAreaName_AT.file}
-                                                                                };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureBeingUsedAreaName_AT.handle, handle},
-                                                                                   {DBFixtureBeingUsedAreaName_AT.file, fileID}
-                                                                                };
-
-            DBCommand.DeleteRow(DBFixtureBeingUsedAreaName.name, conDict, paraDict, command);
-        }
         public static void UpdateRow(SQLiteCommand command, FixtureBeingUsedAreaModel model)
         {
             List<List<object>> items = GetItems(model);

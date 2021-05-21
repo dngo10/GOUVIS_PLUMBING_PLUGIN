@@ -31,7 +31,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             List<InsertPointModel> insertPoints = new List<InsertPointModel>();
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBInsertPointCommands.SelectRows(command, fileID);
+                DBCommand.SelectRows(InsertPointName.NAME, fileID, command);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -48,7 +48,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBInsertPointCommands.SelectCount(command, ID);
+                DBCommand.SelectCount(DBInsertPointName.NAME, ID, command);
                 count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
@@ -58,7 +58,23 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             InsertPointModel model = null;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBInsertPointCommands.SelectRow(command, handle, fileID);
+                DBCommand.SelectRow(DBInsertPointName.NAME, handle, fileID, command);
+                SQLiteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    model = GetModel(reader, connection);
+                }
+                reader.Close();
+            }
+            return model;
+        }
+
+        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle, string relPath)
+        {
+            InsertPointModel model = null;
+            using (SQLiteCommand command = connection.CreateCommand())
+            {
+                DBCommand.SelectRow(DBInsertPointName.NAME, handle, relPath, command);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -88,19 +104,11 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             InsertPointModel model = null;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBInsertPointCommands.SelectRow(command, ID);
+                DBCommand.SelectRow(DBInsertPointName.NAME, ID, command);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    string alias = (string)reader[DBInsertPointName.ALIAS];
-                    string name = (string)reader[DBInsertPointName.ANAME];
-                    string handle = (string)reader[DBInsertPointName.HANDLE];
-                    Point3dModel pos = DBPoint3D.SelectRow(connection, (long)reader[DBInsertPointName.POSITION_ID]);
-                    long ID1 = (long)reader[DBInsertPointName.ID];
-                    DwgFileModel file = DBDwgFile.SelectRow(connection,(long)reader[DBInsertPointName.FILE_ID]);
-                    Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, (long)reader[DBInsertPointName.MATRIX_ID]);
-
-                    model = new InsertPointModel(alias, name, ID1, file, handle, pos, matrix);
+                    model = GetModel(reader, connection);
                 }
                 reader.Close();
             }
@@ -168,7 +176,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             {
                 if(DBInsertPoint.HasRow(connection, model.ID))
                 {
-                    DBInsertPointCommands.DeleteRow(command, model.ID);
+                    DBCommand.DeleteRow(InsertPointName.NAME, model.ID, command);
                     long check = command.ExecuteNonQuery();
                     if (model.position != null) DBPoint3D.DeleteRow(model.position.ID, command.Connection);
                     if (model.matrixTransform != null) DBMatrix3d.DeleteRow(command.Connection, model.matrixTransform.ID);
@@ -189,45 +197,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     }
 
     class DBInsertPointCommands {
-
-        public static void SelectCount(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.ID, DBInsertPointName_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.id, ID } };
-            DBCommand.SelectCount(DBInsertPointName.NAME, conDict, paraDict, command);
-        }
-
-        public static void SelectRows(SQLiteCommand command, long fileID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.FILE_ID, DBInsertPointName_AT.file } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.file, fileID } };
-            DBCommand.SelectRow(DBInsertPointName.NAME, conDict, paraDict, command);
-        }
-
-        public static void SelectRow(SQLiteCommand command, string handle, long file_ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> {
-                { DBInsertPointName.HANDLE, DBInsertPointName_AT.handle },
-                {DBInsertPointName.FILE_ID, DBInsertPointName_AT.file } };
-
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.handle, handle},
-                                                                                   { DBInsertPointName_AT.file, file_ID} };
-            DBCommand.SelectRow(DBInsertPointName.NAME, conDict, paraDict, command);
-        }
-
-        public static void SelectRow(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBInsertPointName.ID, DBInsertPointName_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBInsertPointName_AT.id, ID } };
-            DBCommand.SelectRow(DBInsertPointName.NAME, conDict, paraDict, command);
-        }
-
-        public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBInsertPointName.ID, DBInsertPointName_AT.id} };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBInsertPointName_AT.id, ID} };
-            DBCommand.DeleteRow(DBInsertPointName.NAME, conDict, paraDict, command);
-        }
 
         public static void UpdateRow(SQLiteCommand command, InsertPointModel model)
         {

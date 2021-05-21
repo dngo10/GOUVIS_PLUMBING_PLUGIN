@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.DBModels;
+﻿using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     //THIS CLASS STORE FUNCTIONS TO CREATE DATABASE QUERIES
     class DBCommand
     {
+        //NEW COMMAND:
+        //SELECT * FROM 'DB_TABLE' WHERE HANDLE = "1FE61" AND 'FILE_ID' IN (SELECT 'FILE_ID' FROM 'DB_FILE' WHERE RELATIVE_PATH = "\TEMPLATE_FILE_V1_p_notes.dwg" LIMIT 1); 
         public static string GetConnectionString(string dbFullPath)
         {
             return string.Format(@"data source = ""{0}"";PRAGMA journal_mode=WAL; PRAGMA foreign_keys = ON;", dbFullPath);
@@ -28,6 +31,204 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             string conStr = CreateConditionString(conditions);
             command.CommandText = $"DELETE FROM '{tableName}' WHERE {conStr}; ";
             SetCommandParameter(command, paraDict);
+        }
+
+        public static void DeleteRow(string tableName, long ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.ID, DBBlockName_AT.id}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.id, ID}
+            };
+
+            DeleteRow(tableName, conDict, paraDict, command);
+        }
+
+        public static void DeleteRow(string tableName, string handle, long File_ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.HANDLE, DBBlockName_AT.handle},
+                {DBBlockName.FILE_ID, DBBlockName_AT.file }
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.handle, handle},
+                {DBBlockName_AT.file, File_ID}
+            };
+
+            DeleteRow(tableName, conDict, paraDict, command);
+        }
+
+        public static void DeleteRow(string tableName, string handle, string relPath, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.HANDLE, DBBlockName_AT.handle}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.handle, handle},
+                {DBDwgFileName_AT.relPath, relPath}
+            };
+
+            string conStr = CreateConditionString(conDict);
+
+            string cmdStr = $"DELETE FROM '{tableName}' WHERE {conStr} AND {SelectFileRow()} ;";
+
+            command.CommandText = cmdStr;
+            SetCommandParameter(command, paraDict);
+        }
+
+
+
+        public static void SelectCount(string tableName, string handle, string relPath, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.HANDLE, DBBlockName_AT.handle}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.handle, handle},
+                {DBDwgFileName_AT.relPath, relPath}
+            };
+
+            string conStr = CreateConditionString(conDict);
+
+            string cmdStr = $"SELECT COUNT(*) FROM '{tableName}' WHERE {conStr} AND {SelectFileRow()} ;";
+
+            command.CommandText = cmdStr;
+            SetCommandParameter(command, paraDict);
+        }
+
+        public static void SelectCount(string tableName, string handle, long file_ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.HANDLE, DBBlockName_AT.handle},
+                {DBBlockName.FILE_ID, DBBlockName_AT.file }
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.handle, handle},
+                {DBBlockName_AT.file, file_ID}
+            };
+
+            SelectCount(tableName, conDict, paraDict, command);
+        }
+
+        public static void SelectCount(string tableName, long ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.ID, DBBlockName_AT.id}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.id, ID}
+            };
+
+            SelectCount(tableName, conDict, paraDict, command);
+        }
+
+        public static void SelectRows(string tableName, string relPath, SQLiteCommand command)
+        {
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBDwgFileName_AT.relPath, relPath}
+            };
+
+            string cmdStr = $"SELECT * FROM {tableName} WHERE {SelectFileRow()};";
+            command.CommandText = cmdStr;
+            SetCommandParameter(command, paraDict);
+        }
+
+        public static void SelectRows(string tableName, long file_ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.FILE_ID, DBBlockName_AT.file}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.file, file_ID}
+            };
+
+            SelectRow(tableName, conDict, paraDict, command);
+        }
+
+        public static void SelectRow(string tableName, long ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.ID, DBBlockName_AT.id}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.id, ID}
+            };
+
+            SelectRow(tableName, conDict, paraDict, command);
+        }
+
+        public static void SelectRow(string tableName, string handle, long file_ID, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.HANDLE, DBBlockName_AT.handle},
+                {DBBlockName.FILE_ID, DBBlockName_AT.file }
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.handle, handle},
+                {DBBlockName_AT.file, file_ID}
+            };
+
+            SelectRow(tableName, conDict, paraDict, command);
+        }
+
+        public static void SelectRow(string tableName, string handle, string relPath, SQLiteCommand command)
+        {
+            Dictionary<string, string> conDict = new Dictionary<string, string>
+            {
+                {DBBlockName.HANDLE, DBBlockName_AT.handle}
+            };
+
+            Dictionary<string, object> paraDict = new Dictionary<string, object>
+            {
+                {DBBlockName_AT.handle, handle},
+                {DBDwgFileName_AT.relPath, relPath}
+            };
+
+            string conStr = CreateConditionString(conDict);
+
+            string cmdStr = $"SELECT * FROM '{tableName}' WHERE {conStr} AND {SelectFileRow()} ;";
+
+            command.CommandText = cmdStr;
+            SetCommandParameter(command, paraDict);
+        }
+
+        /// <summary>
+        /// Return a part of command form checkin File.
+        /// </summary>
+        /// <param name="relPath"></param>
+        /// <returns></returns>
+        private static string SelectFileRow()
+        {
+            return $"{DBBlockName.FILE_ID} IN (SELECT '{DBBlockName.FILE_ID}') FROM '{DBDwgFileName.name}' WHERE {DBDwgFileName.RELATIVE_PATH} = {DBDwgFileName_AT.relPath} LIMIT 1)";
         }
 
         public static void SelectRow(string tableName,  Dictionary<string, string> conditions, Dictionary<string, object> paraDict, SQLiteCommand command)

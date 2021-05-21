@@ -160,44 +160,20 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
 		public static void SelectCount(SQLiteCommand command, long ID)
 		{
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBMatrixName.ID, DBMatrixName_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBMatrixName_AT.id, ID } };
-			DBCommand.SelectCount(DBMatrixName.name, conDict, paraDict, command);
+			DBCommand.SelectCount(DBMatrixName.name, ID, command);
 		}
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBMatrixName.ID, DBMatrixName_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBMatrixName_AT.id, ID } };
-			DBCommand.SelectRow(DBMatrixName.name, conDict, paraDict, command);
+			DBCommand.SelectRow(DBMatrixName.name, ID, command);
 		}
 
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { {DBMatrixName.ID, DBMatrixName_AT.id} };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBMatrixName_AT.id, ID } };
-			DBCommand.DeleteRow(DBMatrixName.name, conDict, paraDict, command);
+			DBCommand.DeleteRow(DBMatrixName.name, ID, command);
         }
 		public static void Update(SQLiteCommand command, Matrix3dModel model)
         {
-			List<List<object>> items = new List<List<object>>
-			{
-				new List<object>{DBMatrixName.R00, DBMatrixName_AT.r00, model.index[0] },
-				new List<object>{DBMatrixName.R01, DBMatrixName_AT.r01, model.index[1] },
-				new List<object>{DBMatrixName.R02, DBMatrixName_AT.r02, model.index[2] },
-				new List<object>{DBMatrixName.R03, DBMatrixName_AT.r03, model.index[3] },
-				new List<object>{DBMatrixName.R10, DBMatrixName_AT.r10, model.index[4] },
-				new List<object>{DBMatrixName.R11, DBMatrixName_AT.r11, model.index[5] },
-				new List<object>{DBMatrixName.R12, DBMatrixName_AT.r12, model.index[6] },
-				new List<object>{DBMatrixName.R13, DBMatrixName_AT.r13, model.index[7] },
-				new List<object>{DBMatrixName.R20, DBMatrixName_AT.r20, model.index[8] },
-				new List<object>{DBMatrixName.R21, DBMatrixName_AT.r21, model.index[9] },
-				new List<object>{DBMatrixName.R22, DBMatrixName_AT.r22, model.index[10] },
-				new List<object>{DBMatrixName.R23, DBMatrixName_AT.r23, model.index[11] },
-				new List<object>{DBMatrixName.R30, DBMatrixName_AT.r30, model.index[12] },
-				new List<object>{DBMatrixName.R31, DBMatrixName_AT.r31, model.index[13] },
-				new List<object>{DBMatrixName.R32, DBMatrixName_AT.r32, model.index[14] },
-				new List<object>{DBMatrixName.R33, DBMatrixName_AT.r33, model.index[15] }
-			};
+			List<List<object>> items = getItems(model);
 
 			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBMatrixName.ID, DBMatrixName_AT.id } };
 			Dictionary<string, string> variables = new Dictionary<string, string>();
@@ -215,6 +191,21 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 		}
 		public static void Insert(SQLiteCommand command, Matrix3dModel model)
         {
+			List<List<object>> items = getItems(model);
+			List<string> variables = new List<string>();
+			Dictionary<string, object> paraDict = new Dictionary<string, object>();
+
+			foreach(List<object> item in items)
+            {
+				variables.Add((string)item[0]);
+				paraDict.Add((string)item[1], item[2]);
+            }
+
+			DBCommand.InsertCommand(DBMatrixName.name, variables, paraDict, command);
+		}
+
+		private static List<List<object>> getItems(Matrix3dModel model)
+        {
 			List<List<object>> items = new List<List<object>>
 			{
 				new List<object>{DBMatrixName.R00, DBMatrixName_AT.r00, model.index[0] },
@@ -235,17 +226,9 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 				new List<object>{DBMatrixName.R33, DBMatrixName_AT.r33, model.index[15] }
 			};
 
-			List<string> variables = new List<string>();
-			Dictionary<string, object> paraDict = new Dictionary<string, object>();
-
-			foreach(List<object> item in items)
-            {
-				variables.Add((string)item[0]);
-				paraDict.Add((string)item[1], item[2]);
-            }
-
-			DBCommand.InsertCommand(DBMatrixName.name, variables, paraDict, command);
+			return items;
 		}
+
 		public static void CreateTable(SQLiteCommand command)
         {
 			StringBuilder builder = new StringBuilder();
@@ -281,7 +264,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 	class DBMatrixName
     {
 		public static string name = "MATRIX3D";
-		public static string ID = "ID";
+		public static string ID = "ID"; //MUST BE THE SAME AS DBBLOCK
 		public static string R00 = "R00";
 		public static string R01 = "R01";
 		public static string R02 = "R02";
@@ -303,7 +286,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 	class DBMatrixName_AT
 	{
 		public static string name = "@name";
-		public static string id = "@id";
+		public static string id = "@id"; //MUST BE THE SAME AS DBBLOCK
 		public static string r00 = "@r00";
 		public static string r01 = "@r01";
 		public static string r02 = "@r02";

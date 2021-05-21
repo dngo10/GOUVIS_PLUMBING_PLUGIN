@@ -15,5 +15,14 @@ namespace ClassLibrary1.DATABASE.DBModels.BaseBlockModel
         public Point3dModel position = null;
         public Matrix3dModel matrixTransform = null;
         public DwgFileModel file = null;
+
+        public virtual void CopyModel(BlockModelBase model)
+        {
+            ID = model.ID;
+            handle = model.handle;
+            position = model.position;
+            matrixTransform = model.matrixTransform;
+            file = model.file;
+        }
     }
 }

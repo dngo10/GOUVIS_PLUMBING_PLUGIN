@@ -54,7 +54,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     }
                     reader.Close();
                 }
-
             }
             return model;
         }
@@ -82,7 +81,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             long count = 0;
             using (SQLiteCommand command = connection.CreateCommand())
             {
-                DBDwgFileCommands.SelectCount(command, ID);
+                DBCommand.SelectCount(DBDwgFileName.name, ID, command);
                 count = Convert.ToInt64(command.ExecuteScalar());
             }
             return count == 1;
@@ -93,7 +92,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             DwgFileModel model = null;
             using(SQLiteCommand command = connection.CreateCommand())
             {
-                DBDwgFileCommands.SelectRow(command, ID);
+                DBCommand.SelectRow(DBDwgFileName.name, ID, command);
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -183,7 +182,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     DBTable.DeleteRow(connection, table);
                 }
 
-                DBDwgFileCommands.DeleteRow(command, model.ID);
+                DBCommand.DeleteRow(DBDwgFileName.name, model.ID, command);
                 long check = command.ExecuteNonQuery();
             }
         }
@@ -248,19 +247,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             DBCommand.SelectCount(DBDwgFileName.name, conDict, paraDict, command);
         }
 
-        public static void SelectCount(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.ID, DBDwgFileName_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.id, ID } };
-            DBCommand.SelectCount(DBDwgFileName.name, conDict, paraDict, command);
-        }
-        public static void SelectRow(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBDwgFileName.ID, DBDwgFileName_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBDwgFileName_AT.id, ID } };
-            DBCommand.SelectRow(DBDwgFileName.name, conDict, paraDict, command);
-        }
-
         public static void SelectRow(SQLiteCommand command, string relPath)
         {
             Dictionary<string, string> conDict = new Dictionary<string, string> { {DBDwgFileName.RELATIVE_PATH, DBDwgFileName_AT.relPath} };
@@ -268,13 +254,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             DBCommand.SelectRow(DBDwgFileName.name, conDict, paraDict, command);
         }
-        public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBDwgFileName.ID, DBDwgFileName_AT.id} };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBDwgFileName_AT.id, ID} };
-            DBCommand.DeleteRow(DBDwgFileName.name, conDict, paraDict, command);
-        }
-
 
         //FIX LATER
         public static void GetAllFixtureBeingUsedAreaID(SQLiteCommand command, DwgFileModel model)
@@ -367,7 +346,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     class DBDwgFileName
     {
         public static string name = "DB_FILE";
-        public static string ID = "ID";
+        public static string ID = "ID"; // Don't change this
         public static string RELATIVE_PATH = "RELATIVE_PATH";
         public static string MODIFIEDDATE = "MODIFIEDDATE";
         public static string ISP_NOTES = "ISP_NOTES";
@@ -376,7 +355,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     class DBDwgFileName_AT
     {
         public static string name = "@name";
-        public static string id = "@id";
+        public static string id = "@id"; // Don't change this
         public static string relPath = "@relpath";
         public static string modDate = "@moddate";
         public static string iNote = "@inote";

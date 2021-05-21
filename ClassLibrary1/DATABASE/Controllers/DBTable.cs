@@ -162,19 +162,12 @@ namespace ClassLibrary1.DATABASE.Controllers
 		
 		public static void SelectCount(SQLiteCommand command, string handle, long file_ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.HANDLE, DBTableName_AT.handle },
-																				  { DBTableName.FILE_ID, DBTableName_AT.file } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.handle, handle },
-																				   { DBTableName_AT.file, file_ID } };
-			DBCommand.SelectCount(DBTableName.name, conDict, paraDict, command);
+			DBCommand.SelectCount(DBDwgFileName.name, handle, file_ID, command);
         }
 
 		public static void SelectCount(SQLiteCommand command, long ID)
         {
-			Dictionary<string, string> conDict =  new Dictionary<string, string> {{DBTableName.ID, DBTableName_AT.id} };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> {{ DBTableName_AT.id, ID}};
-
-			DBCommand.SelectCount(DBTableName.name, conDict, paraDict, command);
+			DBCommand.SelectCount(DBTableName.name, ID, command);
         }
 
 		//FIX THIS
@@ -187,36 +180,22 @@ namespace ClassLibrary1.DATABASE.Controllers
 
 		public static void SelectRow(SQLiteCommand command, string handle, long file_ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.HANDLE, DBTableName_AT.handle},
-																				  { DBTableName.FILE_ID, DBTableName_AT.file }};
-
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.handle, handle },
-																				   { DBTableName_AT.file, file_ID } };
-			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
+			DBCommand.SelectRow(DBTableName.name, handle, file_ID, command);
 		}
 
 		public static void SelectRow(SQLiteCommand command, long ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id , ID } }; 
-			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
+			DBCommand.SelectRow(DBTableName.name, ID, command);
 		}
 
 		public static void DeleteRow(SQLiteCommand command, string handle, long file_ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.HANDLE, DBTableName_AT.handle},
-																				  { DBTableName.FILE_ID, DBTableName_AT.file }};
-
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.handle, handle },
-																				   { DBTableName_AT.file, file_ID } };
-			DBCommand.DeleteRow(DBTableName.name, conDict, paraDict, command);
+			DBCommand.DeleteRow(DBTableName.name, handle, file_ID, command);
 		}
 
 		public static void DeleteRow(SQLiteCommand command, long ID)
         {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.ID, DBTableName_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.id, ID } };
-			DBCommand.DeleteRow(DBTableName.name, conDict, paraDict, command);
+			DBCommand.DeleteRow(DBTableName.name, ID, command);
 		}
 
 		public static void UpdateRow(SQLiteCommand command, TableModel model)

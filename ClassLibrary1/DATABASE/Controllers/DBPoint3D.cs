@@ -148,16 +148,12 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     {
         public static void SelectCount(SQLiteCommand command, long ID)
         {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBPoint3DName.ID, DBPoint3D_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBPoint3D_AT.id, ID } };
-            DBCommand.SelectCount(DBPoint3DName.tableName, conDict, paraDict, command);
+            DBCommand.SelectCount(DBPoint3DName.tableName, ID, command);
         }
 
         public static void SelectRow(SQLiteCommand command, long ID)
         {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { {DBPoint3DName.ID, DBPoint3D_AT.id} };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBPoint3D_AT.id, ID} };
-            DBCommand.SelectRow(DBPoint3DName.tableName, conDict, paraDict, command);
+            DBCommand.SelectRow(DBPoint3DName.tableName, ID, command);
         }
         public static void DeleteTable(SQLiteCommand command)
         {
@@ -166,9 +162,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void DeleteRow(SQLiteCommand command, long ID)
         {
-            Dictionary<string, string> conDict = new Dictionary<string, string> { { DBPoint3DName.ID, DBPoint3D_AT.id } };
-            Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBPoint3D_AT.id, ID } };
-            DBCommand.DeleteRow(DBPoint3DName.tableName, conDict, paraDict, command);
+            DBCommand.DeleteRow(DBPoint3DName.tableName, ID, command);
         }
         public static void CreateTable(SQLiteCommand command)
         {
@@ -225,6 +219,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBPoint3DName
     {
+        //ID MUST BE THE SAME STRING AS DBBlockName's ID
         public static string tableName = "POINT3D";
         public static string ID = "ID";
         public static string X = "X";
@@ -234,6 +229,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBPoint3D_AT
     {
+        //id MUST BE THE SAME STRING AS DBBlockName_AT's id
         public static string name = "@name";
         public static string id = "@id";
         public static string x = "@x";

@@ -54,8 +54,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			long count = 0;
 			using (SQLiteCommand command = connection.CreateCommand())
 			{
-				
-				DBFixtureDetailsCommands.SelectCount(command, ID);
+				DBCommand.SelectCount(DBFixtureDetailsNames.name, ID, command);
 				count = Convert.ToInt64(command.ExecuteScalar());
 			}
 			return count == 1;
@@ -65,7 +64,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
         {
 			using (SQLiteCommand command = connection.CreateCommand())
 			{
-				DBFixtureDetailsCommands.SelectRow(command, ID);
+				DBCommand.SelectRow(DBFixtureDetailsNames.name, ID, command);
 				return GetFixtureDetail(command);
 			}
 		}
@@ -73,7 +72,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
-				DBFixtureDetailsCommands.SelectRow(command, handle, fileID);
+				DBCommand.SelectRow(DBFixtureDetailsNames.name, handle, fileID, command);
 				return GetFixtureDetail(command);
 			}
 			
@@ -83,7 +82,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
         {
 
 			List<FixtureDetailsModel> fixtures = new List<FixtureDetailsModel>();
-			DBFixtureDetailsCommands.SelectRows(command, fileID);
+			DBCommand.SelectRows(DBFixtureDetailsNames.name, fileID, command);
 			SQLiteDataReader reader = command.ExecuteReader();
 			while (reader.Read())
 			{
@@ -163,7 +162,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
             {
 				if(HasRow(connection, fixture.ID))
                 {
-					DBFixtureDetailsCommands.DeleteRow(command, fixture.ID);
+					DBCommand.DeleteRow(DBFixtureDetailsNames.name, fixture.ID, command);
 					long check = command.ExecuteNonQuery();
 					if (fixture.position != null) DBPoint3D.DeleteRow(fixture.position.ID, command.Connection);
 					if (fixture.matrixTransform != null) DBMatrix3d.DeleteRow(command.Connection, fixture.matrixTransform.ID);
@@ -205,15 +204,14 @@ CREATE TABLE "FIXTURE_DETAILS" (
 		}
 		public static long InsertRow(SQLiteConnection connection, ref FixtureDetailsModel model)
         {
-			long index;
 			using(SQLiteCommand command = connection.CreateCommand())
             {
 				DBFixtureDetailsCommands.InsertRow(model, command);
 				long check = command.ExecuteNonQuery();
 				if(check == 1)
                 {
-					index = connection.LastInsertRowId;
-					return index;
+					model.ID = connection.LastInsertRowId;
+					return model.ID;
                 }else if(check == 0)
                 {
 					throw new Exception("DBFixtureDetails -> InsertRow -> No Row is Inserted.");
@@ -241,38 +239,6 @@ CREATE TABLE "FIXTURE_DETAILS" (
 
 	class DBFixtureDetailsCommands
     {
-		public static void SelectCount(SQLiteCommand command, long ID)
-		{
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureDetailsNames_AT.id, ID } };
-			DBCommand.SelectCount(DBFixtureDetailsNames.name, conDict, paraDict, command);
-		}
-		public static void SelectRows(SQLiteCommand command, long fileID)
-		{
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureDetailsNames_AT.file, fileID } };
-			DBCommand.SelectRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
-		}
-		public static void SelectRow(SQLiteCommand command, long ID)
-        {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureDetailsNames_AT.id, ID}};
-			DBCommand.SelectRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
-        }
-		public static void SelectRow(SQLiteCommand command, string handle, long fileID)
-        {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBFixtureDetailsNames.HANDLE, DBFixtureDetailsNames_AT.handle },
-																				  { DBFixtureDetailsNames.FILE_ID, DBFixtureDetailsNames_AT.file }};
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { {DBFixtureDetailsNames_AT.handle, handle},
-																				   {DBFixtureDetailsNames_AT.file, fileID} };
-			DBCommand.SelectRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
-        }
-		public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-			Dictionary<string, string> conDict = new Dictionary<string, string> { {DBFixtureDetailsNames.ID, DBFixtureDetailsNames_AT.id} };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBFixtureDetailsNames_AT.id, ID } };
-			DBCommand.DeleteRow(DBFixtureDetailsNames.name, conDict, paraDict, command);
-        }
 		public static void UpdateRow(FixtureDetailsModel model, SQLiteCommand command)
         {
 			List<List<object>> items = getListItems(model);
