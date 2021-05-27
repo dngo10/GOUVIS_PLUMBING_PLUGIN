@@ -29,4 +29,3 @@ C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Debug\ProjectM
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Debug\ProjectManager.exe
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Debug\ProjectManager.pdb
 C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\bin\x64\Debug\GhostscriptSharp.dll
-C:\Users\dngo\source\repos\Plumbing_Gouvis\ProjectManager\obj\x64\Debug\ProjectManager.csprojAssemblyReference.cache

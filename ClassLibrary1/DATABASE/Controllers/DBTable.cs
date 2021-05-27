@@ -29,63 +29,61 @@ namespace ClassLibrary1.DATABASE.Controllers
      */
     class DBTable
     {
-		public static bool HasRow(SQLiteConnection connection, long ID)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBTableCommands.SelectCount(command, ID);
-				long check = Convert.ToInt64(command.ExecuteScalar());
-				if(check == 1)
-                {
-					return true;
-                }
-            }
-			return false;
-        }
+		public static BlockGeneral<TableModel> gBlock = new BlockGeneral<TableModel>(CreateModel, DBTableName.name);
+		public static List<TableModel> SelectRows(SQLiteConnection connection, long fileID) { return gBlock.SelectRows(fileID, connection); }
+		public static List<TableModel> SelectRows(SQLiteConnection connection, string relPath) { return gBlock.SelectRows(relPath, connection); }
+		public static List<TableModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRows(conDict, paraDict, connection); }
 
-		public static void DeleteRow(SQLiteConnection connection, TableModel model)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBTableCommands.DeleteRow(command, model.ID);
-				long check = Convert.ToInt64(command.ExecuteNonQuery());
-				if(check == 1)
-                {
-					DBPoint3D.DeleteRow(model.position.ID, connection);
-					DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
-                }
-            }
-        }
+		public static TableModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+		public static TableModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+		public static TableModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+		public static TableModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRow(conDict, paraDict, connection); }
 
-		public static List<TableModel> SelectRows(SQLiteConnection connection, long FILE_ID)
-        {
-			List<TableModel> models = new List<TableModel>();
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBTableCommands.SelectRows(command, FILE_ID);
-				SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-					models.Add(CreateModel(reader, connection));
-                }
-            }
-			return models;
-        }
-		public static TableModel SelectRow(SQLiteConnection connection, long ID)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBTableCommands.SelectRow(command, ID);
-				SQLiteDataReader reader = command.ExecuteReader();
+		public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+		public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+		public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+		public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.HasRow(conDict, paraDict, connection); }
 
-				TableModel model = null;
-                while (reader.Read())
-                {
-					model = CreateModel(reader, connection);
-                }
-				return model;
-            }
-        }
+		public static void DeleteRow(SQLiteConnection connection, long ID)
+		{
+			TableModel model = SelectRow(connection, ID);
+			gBlock.DeleteRow(ID, connection);
+			DeleteOthers(model, connection);
+		}
+
+		public static void DeleteRow(SQLiteConnection connection, string handle, long fileID)
+		{
+			TableModel model = SelectRow(connection, handle, fileID);
+			gBlock.DeleteRow(handle, fileID, connection);
+			DeleteOthers(model, connection);
+		}
+		public static void DeleteRow(SQLiteConnection connection, string handle, string relPath)
+		{
+			TableModel model = SelectRow(connection, handle, relPath);
+			gBlock.DeleteRow(handle, relPath, connection);
+			DeleteOthers(model, connection);
+		}
+		public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{
+			TableModel model = SelectRow(connection, conDict, paraDict);
+			gBlock.DeleteRow(conDict, paraDict, connection);
+			DeleteOthers(model, connection);
+		}
+
+		private static void DeleteOthers(TableModel model, SQLiteConnection connection)
+		{
+			if (model != null)
+			{
+
+				if (model.matrixTransform != null) { DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID); };
+				if (model.position != null) { DBPoint3D.DeleteRow(connection, model.position.ID); };
+			}
+		}
+
+		public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
 
 		private static TableModel CreateModel(SQLiteDataReader reader, SQLiteConnection connection)
         {
@@ -101,24 +99,14 @@ namespace ClassLibrary1.DATABASE.Controllers
 			return model;
 		}
 
-		public static long UpdateRow(SQLiteConnection connection, TableModel model)
+		public static void UpdateRow(SQLiteConnection connection, TableModel model)
         {
 			using (SQLiteCommand command = connection.CreateCommand())
 			{
 				DBTableCommands.UpdateRow(command, model);
 				long check = command.ExecuteNonQuery();
-
-				if (check == 1)
-                {
-					DBPoint3D.UpdateRow(model.position, connection);
-					//Update MORE
-					DBMatrix3d.Update(connection, model.matrixTransform);
-				}else if(check == 0)
-                {
-					Console.WriteLine("DBTable -> UpdateRow -> Nothing is updated");
-					return ConstantName.invalidNum;
-                }
-				throw new Exception("DBTable -> UpdateRow -> Failed to Update.");
+				DBPoint3D.UpdateRow(model.position, connection);
+				DBMatrix3d.Update(connection, model.matrixTransform);
             }
         }
 		public static long InsertRow(SQLiteConnection connection, TableModel model)
@@ -137,15 +125,6 @@ namespace ClassLibrary1.DATABASE.Controllers
                 }
 				throw new Exception("DBTable -> InsertRow -> Failed to Insert.");
 			}
-
-        }
-		public static void DeleteTable(SQLiteConnection connection)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBTableCommands.DeleteTable(command);
-				command.ExecuteNonQuery();
-            }
         }
 		public static void CreateTable(SQLiteConnection connection)
         {
@@ -159,44 +138,6 @@ namespace ClassLibrary1.DATABASE.Controllers
 
     class DBTableCommands
     {
-		
-		public static void SelectCount(SQLiteCommand command, string handle, long file_ID)
-        {
-			DBCommand.SelectCount(DBDwgFileName.name, handle, file_ID, command);
-        }
-
-		public static void SelectCount(SQLiteCommand command, long ID)
-        {
-			DBCommand.SelectCount(DBTableName.name, ID, command);
-        }
-
-		//FIX THIS
-		public static void SelectRows(SQLiteCommand command, long File_ID)
-		{
-			Dictionary<string, string> conDict = new Dictionary<string, string> { { DBTableName.FILE_ID, DBTableName_AT.file } };
-			Dictionary<string, object> paraDict = new Dictionary<string, object> { { DBTableName_AT.file, File_ID } };
-			DBCommand.SelectRow(DBTableName.name, conDict, paraDict, command);
-		}
-
-		public static void SelectRow(SQLiteCommand command, string handle, long file_ID)
-        {
-			DBCommand.SelectRow(DBTableName.name, handle, file_ID, command);
-		}
-
-		public static void SelectRow(SQLiteCommand command, long ID)
-        {
-			DBCommand.SelectRow(DBTableName.name, ID, command);
-		}
-
-		public static void DeleteRow(SQLiteCommand command, string handle, long file_ID)
-        {
-			DBCommand.DeleteRow(DBTableName.name, handle, file_ID, command);
-		}
-
-		public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-			DBCommand.DeleteRow(DBTableName.name, ID, command);
-		}
 
 		public static void UpdateRow(SQLiteCommand command, TableModel model)
         {

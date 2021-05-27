@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.DBModels;
+﻿using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -32,16 +33,43 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
      */
 	class DBMatrix3d
     {
-		public static bool HasRow(SQLiteConnection connection, long ID)
-        {
-			long count = 0;
-			using (SQLiteCommand command = connection.CreateCommand())
-			{
-				DBMatrix3dCommands.SelectCount(command, ID);
-				count = Convert.ToInt64(command.ExecuteScalar());
-			}
-			return count == 1;
+		public static BlockGeneral<Matrix3dModel> gBlock = new BlockGeneral<Matrix3dModel>(GetItem, DBMatrixName.name);
+		//public static List<Matrix3dModel> SelectRows(SQLiteConnection connection, long fileID) { return gBlock.SelectRows(fileID, connection); }
+		//public static List<Matrix3dModel> SelectRows(SQLiteConnection connection, string relPath) { return gBlock.SelectRows(relPath, connection); }
+		public static List<Matrix3dModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRows(conDict, paraDict, connection); }
+
+		public static Matrix3dModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+		//public static Matrix3dModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+		//public static Matrix3dModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+		public static Matrix3dModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRow(conDict, paraDict, connection); }
+
+		public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+		//public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+		//public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+		public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.HasRow(conDict, paraDict, connection); }
+
+		public static void DeleteRow(SQLiteConnection connection, long ID)
+		{
+			gBlock.DeleteRow(ID, connection);
 		}
+
+		//public static void DeleteRow(SQLiteConnection connection, string handle, long fileID)
+		//{
+		//	gBlock.DeleteRow(handle, fileID, connection);
+		//}
+		//public static void DeleteRow(SQLiteConnection connection, string handle, string relPath)
+		//{
+		//	gBlock.DeleteRow(handle, relPath, connection);
+		//}
+		public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{
+			gBlock.DeleteRow(conDict, paraDict, connection);
+		}
+
+		public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
 
 		/// <summary>
 		/// This Will return 1 model, if ID not found, will return null.
@@ -49,60 +77,32 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 		/// <param name="connection"></param>
 		/// <param name="ID">ID of matrix in database</param>
 		/// <returns></returns>
-		public static Matrix3dModel SelectRow(SQLiteConnection connection, long ID)
-        {
-			Matrix3dModel model = null;
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBMatrix3dCommands.SelectRow(command, ID);
-				SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-					double R00 = (double)reader[DBMatrixName.R00];
-					double R01 = (double)reader[DBMatrixName.R01];
-					double R02 = (double)reader[DBMatrixName.R02];
-					double R03 = (double)reader[DBMatrixName.R03];
-					double R10 = (double)reader[DBMatrixName.R10];
-					double R11 = (double)reader[DBMatrixName.R11];
-					double R12 = (double)reader[DBMatrixName.R12];
-					double R13 = (double)reader[DBMatrixName.R13];
-					double R20 = (double)reader[DBMatrixName.R20];
-					double R21 = (double)reader[DBMatrixName.R21];
-					double R22 = (double)reader[DBMatrixName.R22];
-					double R23 = (double)reader[DBMatrixName.R23];
-					double R30 = (double)reader[DBMatrixName.R30];
-					double R31 = (double)reader[DBMatrixName.R31];
-					double R32 = (double)reader[DBMatrixName.R32];
-					double R33 = (double)reader[DBMatrixName.R33];
+		/// 
 
-					double[] arr = new double[] { R00, R01, R02, R03, R10, R11, R12, R13, R20, R21, R22, R23, R30, R31, R32, R33 };
-					model = new Matrix3dModel(arr, ID);
-				}
-				reader.Close();
-            }
-			return model;
-		}
-		public static long DeleteRow(SQLiteConnection connection, long ID)
+		private static Matrix3dModel GetItem(SQLiteDataReader reader, SQLiteConnection connection)
         {
-			using (SQLiteCommand command = connection.CreateCommand())
-            {
-				if(DBMatrix3d.HasRow(connection, ID))
-                {
-					DBMatrix3dCommands.DeleteRow(command, ID);
-					long check = command.ExecuteNonQuery();
-					if (check == 1)
-					{
-						return connection.LastInsertRowId;
-					}
-					else if (check == 0)
-					{
-						throw new Exception("DBMatrix3d -> DeleteRow -> No Row is Deleted");
-					}
-					throw new Exception("DBMatrix3d -> DeleteRow -> Delete Row not successful");
-				}
-				return ConstantName.invalidNum;
-			}
-        }
+			double R00 = (double)reader[DBMatrixName.R00];
+			double R01 = (double)reader[DBMatrixName.R01];
+			double R02 = (double)reader[DBMatrixName.R02];
+			double R03 = (double)reader[DBMatrixName.R03];
+			double R10 = (double)reader[DBMatrixName.R10];
+			double R11 = (double)reader[DBMatrixName.R11];
+			double R12 = (double)reader[DBMatrixName.R12];
+			double R13 = (double)reader[DBMatrixName.R13];
+			double R20 = (double)reader[DBMatrixName.R20];
+			double R21 = (double)reader[DBMatrixName.R21];
+			double R22 = (double)reader[DBMatrixName.R22];
+			double R23 = (double)reader[DBMatrixName.R23];
+			double R30 = (double)reader[DBMatrixName.R30];
+			double R31 = (double)reader[DBMatrixName.R31];
+			double R32 = (double)reader[DBMatrixName.R32];
+			double R33 = (double)reader[DBMatrixName.R33];
+			long ID = (long)reader[DBMatrixName.ID];
+
+			double[] arr = new double[] { R00, R01, R02, R03, R10, R11, R12, R13, R20, R21, R22, R23, R30, R31, R32, R33 };
+			return new Matrix3dModel(arr, ID);
+		}
+
 		public static long Update(SQLiteConnection connection, Matrix3dModel model)
         {
 			using (SQLiteCommand command = connection.CreateCommand())
@@ -138,14 +138,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 				throw new Exception("DBMatrix3d -> Insert -> Insert Is Not Successful.");
             }
         }
-		public static void DropTable(SQLiteConnection connection)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBMatrix3dCommands.DeleteTable(command);
-				command.ExecuteNonQuery();
-            }
-        }
 		public static void CreateTable(SQLiteConnection connection)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
@@ -158,19 +150,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
 	class DBMatrix3dCommands
     {
-		public static void SelectCount(SQLiteCommand command, long ID)
-		{
-			DBCommand.SelectCount(DBMatrixName.name, ID, command);
-		}
-		public static void SelectRow(SQLiteCommand command, long ID)
-        {
-			DBCommand.SelectRow(DBMatrixName.name, ID, command);
-		}
-
-		public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-			DBCommand.DeleteRow(DBMatrixName.name, ID, command);
-        }
 		public static void Update(SQLiteCommand command, Matrix3dModel model)
         {
 			List<List<object>> items = getItems(model);

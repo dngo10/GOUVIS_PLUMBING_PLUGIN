@@ -41,71 +41,63 @@ CREATE TABLE "FIXTURE_DETAILS" (
      */
 	class DBFixtureDetails
     {
-		public static List<FixtureDetailsModel> SelectRows(SQLiteConnection connection, long fileID)
+		public static BlockGeneral<FixtureDetailsModel> gBlock = new BlockGeneral<FixtureDetailsModel>(GetFixture, FixtureDetailsName.FixtureName);
+		public static List<FixtureDetailsModel> SelectRows(SQLiteConnection connection, long fileID) { return gBlock.SelectRows(fileID, connection); }
+		public static List<FixtureDetailsModel> SelectRows(SQLiteConnection connection, string relPath) { return gBlock.SelectRows(relPath, connection); }
+		public static List<FixtureDetailsModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRows(conDict, paraDict, connection); }
+
+		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRow(conDict, paraDict, connection); }
+
+		public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+		public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+		public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+		public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.HasRow(conDict, paraDict, connection); }
+
+		public static void DeleteRow(SQLiteConnection connection, long ID)
 		{
-			using (SQLiteCommand command = connection.CreateCommand())
-			{
-				return GetFixtureDetails(command, fileID);
-			}
+			FixtureDetailsModel model = SelectRow(connection, ID);
+			gBlock.DeleteRow(ID, connection);
+			DeleteOthers(model, connection);
 		}
 
-		public static bool HasRow(SQLiteConnection connection, long ID)
+		public static void DeleteRow(SQLiteConnection connection, string handle, long fileID)
 		{
-			long count = 0;
-			using (SQLiteCommand command = connection.CreateCommand())
-			{
-				DBCommand.SelectCount(DBFixtureDetailsNames.name, ID, command);
-				count = Convert.ToInt64(command.ExecuteScalar());
-			}
-			return count == 1;
+			FixtureDetailsModel model = SelectRow(connection, handle, fileID);
+			gBlock.DeleteRow(handle, fileID, connection);
+			DeleteOthers(model, connection);
+		}
+		public static void DeleteRow(SQLiteConnection connection, string handle, string relPath)
+		{
+			FixtureDetailsModel model = SelectRow(connection, handle, relPath);
+			gBlock.DeleteRow(handle, relPath, connection);
+			DeleteOthers(model, connection);
+		}
+		public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{
+			FixtureDetailsModel model = SelectRow(connection, conDict, paraDict);
+			gBlock.DeleteRow(conDict, paraDict, connection);
+			DeleteOthers(model, connection);
 		}
 
-		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, long ID)
-        {
-			using (SQLiteCommand command = connection.CreateCommand())
+		private static void DeleteOthers(FixtureDetailsModel model, SQLiteConnection connection)
+		{
+			if (model != null)
 			{
-				DBCommand.SelectRow(DBFixtureDetailsNames.name, ID, command);
-				return GetFixtureDetail(command);
+				DBPoint3D.DeleteRow(connection, model.file.ID);
+				DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
 			}
 		}
-		public static FixtureDetailsModel SelectRow(SQLiteConnection connection, string handle, long fileID)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBCommand.SelectRow(DBFixtureDetailsNames.name, handle, fileID, command);
-				return GetFixtureDetail(command);
-			}
-			
-        }
 
-		private static List<FixtureDetailsModel> GetFixtureDetails(SQLiteCommand command, long fileID)
-        {
+		public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
 
-			List<FixtureDetailsModel> fixtures = new List<FixtureDetailsModel>();
-			DBCommand.SelectRows(DBFixtureDetailsNames.name, fileID, command);
-			SQLiteDataReader reader = command.ExecuteReader();
-			while (reader.Read())
-			{
-				FixtureDetailsModel model = GetFixture(reader, command);
-				if (model != null) fixtures.Add(model);
-			}
-			reader.Close();
-			return fixtures;
-		}
 
-		private static FixtureDetailsModel GetFixtureDetail(SQLiteCommand command)
-        {
-			FixtureDetailsModel model = null;
-			SQLiteDataReader reader = command.ExecuteReader();
-			while (reader.Read())
-			{
-				model = GetFixture(reader, command);
-			}
-			reader.Close();
-			return model;
-		} 
-
-		private static FixtureDetailsModel GetFixture(SQLiteDataReader reader, SQLiteCommand command)
+		private static FixtureDetailsModel GetFixture(SQLiteDataReader reader, SQLiteConnection connection)
         {
 			FixtureDetailsModel model;
 
@@ -129,9 +121,9 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			long ID = (long)reader[DBFixtureDetailsNames.ID];
 			long FILE_ID = (long)reader[DBFixtureDetailsNames.FILE_ID];
 
-			Matrix3dModel matrix = DBMatrix3d.SelectRow(command.Connection, TRANSFORM_ID);
-			Point3dModel position = DBPoint3D.SelectRow(command.Connection, POSITION_ID);
-			DwgFileModel file = DBDwgFile.SelectRow(command.Connection, FILE_ID);
+			Matrix3dModel matrix = DBMatrix3d.SelectRow(connection, TRANSFORM_ID);
+			Point3dModel position = DBPoint3D.SelectRow(connection, POSITION_ID);
+			DwgFileModel file = DBDwgFile.SelectRow(connection, FILE_ID);
 
 			model = new FixtureDetailsModel();
 			model.position = position;
@@ -156,32 +148,6 @@ CREATE TABLE "FIXTURE_DETAILS" (
 
 			return model;
 		}
-		public static long DeleteRow(SQLiteConnection connection, FixtureDetailsModel fixture)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				if(HasRow(connection, fixture.ID))
-                {
-					DBCommand.DeleteRow(DBFixtureDetailsNames.name, fixture.ID, command);
-					long check = command.ExecuteNonQuery();
-					if (fixture.position != null) DBPoint3D.DeleteRow(fixture.position.ID, command.Connection);
-					if (fixture.matrixTransform != null) DBMatrix3d.DeleteRow(command.Connection, fixture.matrixTransform.ID);
-					if (check == 1)
-					{
-						return connection.LastInsertRowId;
-					}
-					else if (check == 0)
-					{
-						throw new Exception("DBFixtureDetails -> DeleteRow -> No Row is Deleted");
-					}
-					else
-					{
-						throw new Exception("DBFixtureDetails -> DeleteRow -> Deletion failed");
-					}
-				}
-				return ConstantName.invalidNum;
-            }
-        }
 		public static long UpdateRow(SQLiteConnection connection, FixtureDetailsModel model)
         {
 			long index;
@@ -227,20 +193,15 @@ CREATE TABLE "FIXTURE_DETAILS" (
 				command.ExecuteNonQuery();
             }
         }
-		public static void DeleteTable(SQLiteConnection connection)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBFixtureDetailsCommands.DeleteTable(command);
-				command.ExecuteNonQuery();
-            }
-        }
     }
 
 	class DBFixtureDetailsCommands
     {
 		public static void UpdateRow(FixtureDetailsModel model, SQLiteCommand command)
         {
+			DBPoint3D.UpdateRow(model.position, command.Connection);
+			DBMatrix3d.Update(command.Connection, model.matrixTransform);
+			
 			List<List<object>> items = getListItems(model);
 
 			Dictionary<string, string> variables = new Dictionary<string, string>();
@@ -256,6 +217,7 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			paraDict.Add(DBFixtureDetailsNames_AT.id, model.ID);
 
 			DBCommand.UpdateRow(DBFixtureDetailsNames.name, variables, conDict, paraDict, command);
+			command.ExecuteNonQuery();
 		}
 		public static void InsertRow(FixtureDetailsModel model, SQLiteCommand command)
         {
@@ -270,6 +232,8 @@ CREATE TABLE "FIXTURE_DETAILS" (
             }
 
 			DBCommand.InsertCommand(DBFixtureDetailsNames.name, variables, paraDict, command);
+			command.ExecuteNonQuery();
+			model.ID = command.Connection.LastInsertRowId;
 		}
 
 		private static List<List<object>> getListItems(FixtureDetailsModel model)

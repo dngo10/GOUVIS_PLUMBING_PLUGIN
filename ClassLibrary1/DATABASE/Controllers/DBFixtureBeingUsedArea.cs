@@ -31,80 +31,83 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBFixtureBeingUsedArea
     {
-        public static List<FixtureBeingUsedAreaModel> SelectRows(SQLiteConnection connection, long fileID)
-        {
-            List<FixtureBeingUsedAreaModel> fixtureBoxs = new List<FixtureBeingUsedAreaModel>();
+        public static BlockGeneral<FixtureBeingUsedAreaModel> gBlock = new BlockGeneral<FixtureBeingUsedAreaModel>(GetModelFromReader, DBFixtureBeingUsedAreaName.name);
+        public static List<FixtureBeingUsedAreaModel> SelectRows(SQLiteConnection connection, long fileID) { return gBlock.SelectRows(fileID, connection); }
+        public static List<FixtureBeingUsedAreaModel> SelectRows(SQLiteConnection connection, string relPath) { return gBlock.SelectRows(relPath, connection); }
+        public static List<FixtureBeingUsedAreaModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRows(conDict, paraDict, connection); }
 
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRows(DBFixtureBeingUsedAreaName.name, fileID, command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    FixtureBeingUsedAreaModel model = GetModelFromReader(reader, command);
-                    if (model != null) fixtureBoxs.Add(model);
-                }
-            }
+        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRow(conDict, paraDict, connection); }
 
-            return fixtureBoxs;
-        }
-        public static bool HasRow(SQLiteConnection connection, long ID)
+        public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+        public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+        public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+        public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.HasRow(conDict, paraDict, connection); }
+
+        public static void DeleteRow(SQLiteConnection connection, long ID)
         {
-            long count = 0;
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectCount(DBFixtureBeingUsedAreaName.name, ID, command);
-                count = Convert.ToInt64(command.ExecuteScalar());
-            }
-            return count == 1;
+            FixtureBeingUsedAreaModel model = SelectRow(connection, ID);
+            gBlock.DeleteRow(ID, connection);
+            DeleteOthers(model, connection);
         }
 
-        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, string handle, long fileID)
+        public static void DeleteRow(SQLiteConnection connection, string handle, long fileID)
         {
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, handle, fileID, command);
-                return GetFixtureBeingUsedAreaModel(command);
-            }
+            FixtureBeingUsedAreaModel model = SelectRow(connection, handle, fileID);
+            gBlock.DeleteRow(handle, fileID, connection);
+            DeleteOthers(model, connection);
         }
-        public static FixtureBeingUsedAreaModel SelectRow(SQLiteConnection connection, long ID)
+        public static void DeleteRow(SQLiteConnection connection, string handle, string relPath)
         {
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRow(DBFixtureBeingUsedAreaName.name, ID, command);
-                return GetFixtureBeingUsedAreaModel(command);
-            }
+            FixtureBeingUsedAreaModel model = SelectRow(connection, handle, relPath);
+            gBlock.DeleteRow(handle, relPath, connection);
+            DeleteOthers(model, connection);
         }
-
-        private static FixtureBeingUsedAreaModel GetFixtureBeingUsedAreaModel(SQLiteCommand command)
+        public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
         {
-            FixtureBeingUsedAreaModel model = null;
-
-            SQLiteDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                model = GetModelFromReader(reader, command);
-            }
-            reader.Close();
-
-            return model;
+            FixtureBeingUsedAreaModel model = SelectRow(connection, conDict, paraDict);
+            gBlock.DeleteRow(conDict, paraDict, connection);
+            DeleteOthers(model, connection);
         }
 
-        private static FixtureBeingUsedAreaModel GetModelFromReader(SQLiteDataReader reader, SQLiteCommand command)
+        private static void DeleteOthers(FixtureBeingUsedAreaModel model, SQLiteConnection connection)
+        {
+            if (model != null)
+            {
+                DBPoint3D.DeleteRow(connection, model.file.ID);
+                DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
+
+                if (model.position != null) DBPoint3D.DeleteRow(connection, model.position.ID);
+                if (model.origin != null) DBPoint3D.DeleteRow(connection, model.origin.ID);
+                if (model.pointTop != null) DBPoint3D.DeleteRow(connection, model.pointTop.ID);
+                if (model.pointBottom != null) DBPoint3D.DeleteRow(connection, model.pointBottom.ID);
+                if (model.matrixTransform != null) DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
+            }
+        }
+
+        public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
+
+
+        private static FixtureBeingUsedAreaModel GetModelFromReader(SQLiteDataReader reader, SQLiteConnection connection)
         {
             FixtureBeingUsedAreaModel model = new FixtureBeingUsedAreaModel();
             model.ID = (long)reader[DBFixtureBeingUsedAreaName.ID];
             model.handle = (string)reader[DBFixtureBeingUsedAreaName.HANDLE];
 
-            model.position = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
-            model.pointTop = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_TOP_ID]);
-            model.pointBottom = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
-            model.origin = DBPoint3D.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.ORIGIN_ID]);
+            model.position = DBPoint3D.SelectRow(connection, (long)reader[DBFixtureBeingUsedAreaName.POSITION_ID]);
+            model.pointTop = DBPoint3D.SelectRow(connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_TOP_ID]);
+            model.pointBottom = DBPoint3D.SelectRow(connection, (long)reader[DBFixtureBeingUsedAreaName.POINT_BOTTOM_ID]);
+            model.origin = DBPoint3D.SelectRow(connection, (long)reader[DBFixtureBeingUsedAreaName.ORIGIN_ID]);
 
-            model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.MATRIX_ID]);
+            model.matrixTransform = DBMatrix3d.SelectRow(connection, (long)reader[DBFixtureBeingUsedAreaName.MATRIX_ID]);
             model.X = (double)reader[DBFixtureBeingUsedAreaName.X];
             model.Y = (double)reader[DBFixtureBeingUsedAreaName.Y];
-            model.file = DBDwgFile.SelectRow(command.Connection, (long)reader[DBFixtureBeingUsedAreaName.FILE_ID]);
+            model.file = DBDwgFile.SelectRow(connection, (long)reader[DBFixtureBeingUsedAreaName.FILE_ID]);
 
             if (model.ID == ConstantName.invalidNum)
             {
@@ -130,23 +133,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                     //throw new Exception("FixtureBeingUsedAreaModel -> UpdateRow -> No Row is Updated.");
                 }
                 throw new Exception("FixtureBeingUsedAreaModel -> UpdateRow -> Insert Not Successful.");
-            }
-        }
-
-        public static void DeleteRow(SQLiteConnection connection, FixtureBeingUsedAreaModel model)
-        {
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                if(DBFixtureBeingUsedArea.HasRow(connection, model.ID))
-                {
-                    DBCommand.DeleteRow(DBFixtureBeingUsedAreaName.name, model.ID, command);
-                    long check = command.ExecuteNonQuery();
-                    if (model.position != null) DBPoint3D.DeleteRow(model.position.ID, connection);
-                    if (model.origin != null) DBPoint3D.DeleteRow(model.origin.ID, connection);
-                    if (model.pointTop != null) DBPoint3D.DeleteRow(model.pointTop.ID, connection);
-                    if (model.pointBottom != null) DBPoint3D.DeleteRow(model.pointBottom.ID, connection);
-                    if (model.matrixTransform != null) DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
-                }
             }
         }
         
@@ -177,20 +163,18 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
         }
 
-        public static void DeleteTable(SQLiteConnection connection)
-        {
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBFixtureBeingUsedAreaCommands.DeleteTable(command);
-                command.ExecuteNonQuery();
-            }
-        }
     }
 
     class DBFixtureBeingUsedAreaCommands
     {
         public static void UpdateRow(SQLiteCommand command, FixtureBeingUsedAreaModel model)
         {
+            DBPoint3D.UpdateRow(model.pointTop, command.Connection);
+            DBPoint3D.UpdateRow(model.pointBottom, command.Connection);
+            DBPoint3D.UpdateRow(model.origin, command.Connection);
+            DBPoint3D.UpdateRow(model.position, command.Connection);
+            DBMatrix3d.Update(command.Connection, model.matrixTransform);
+
             List<List<object>> items = GetItems(model);
 
             Dictionary<string, string> variables = new Dictionary<string, string>();
@@ -204,6 +188,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
 
             DBCommand.UpdateRow(DBFixtureBeingUsedAreaName.name, variables, conDict, paraDict, command);
+            command.ExecuteNonQuery();
         }
         public static void InsertRow(FixtureBeingUsedAreaModel model, SQLiteCommand command)
         {
@@ -261,11 +246,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             builder.Append(string.Format(");"));
             command.CommandText = builder.ToString();
         }
-
-        public static void DeleteTable(SQLiteCommand command)
-        {
-            DBCommand.DeleteTable(DBFixtureBeingUsedAreaName.name, command);
-        }
     }
 
     class DBFixtureBeingUsedAreaName :DBBlockName
@@ -280,7 +260,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public const string name = "FIXTURE_BEING_USED_AREA";
 
         //USED ONLY FOR BLOCKREF
-        public const string basePoint = "Origin";
+        //public const string basePoint = "Origin";
     }
 
     class DBFixtureBeingUsedAreaName_AT: DBBlockName_AT
@@ -291,6 +271,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
         public const string x = "@x";
         public const string y = "@y";
         //USED ONLY FOR BLOCKREF
-        public const string basePoint = "@origin";
+        //public const string basePoint = "@origin";
     }
 }

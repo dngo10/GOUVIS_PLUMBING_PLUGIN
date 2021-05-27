@@ -29,18 +29,22 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
 
         public void WriteToDatabase(SQLiteConnection connection)
         {
-            position.WriteToDatabase(connection);
-            matrixTransform.WriteToDatabase(connection);
+            
 
             //File must be inserted to Database first (meaning it must have ID).
 
-            if(!DBFixtureDetails.HasRow(connection, ID))
+            if(!DBFixtureDetails.HasRow(connection, handle, file.ID))
             {
+                WriteToDatabase0(connection);
                 var temp = this;
                 ID = DBFixtureDetails.InsertRow(connection, ref temp);
             }
             else
             {
+                FixtureDetailsModel model = DBFixtureDetails.SelectRow(connection, handle, file.ID);
+                ID = model.ID;
+
+                UpdateToDatabase0(model.matrixTransform.ID, model.position.ID, connection);
                 DBFixtureDetails.UpdateRow(connection, this);
             }
 

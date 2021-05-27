@@ -10,50 +10,65 @@ using Autodesk.AutoCAD.Geometry;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.DATABASE.Controllers;
 using System.Data.SQLite;
+using ClassLibrary1.DATABASE.DBModels;
 
 namespace GouvisPlumbingNew.HELPERS
 {
-    class FixtureBeingUsedArea : ObjectData
+    class AreaBorder : ObjectData
     {
         //x and y are width and height of the XY dynamic dimension.
 
-        public FixtureBeingUsedAreaModel model = null;
+        public AreaBorderModel model = null;
 
         //public List<FixtureDetails> FDList = new List<FixtureDetails>();
 
-        public FixtureBeingUsedArea(BlockReference block)
+        public AreaBorder(BlockReference block, Transaction tr)
         {
-            GetTopAndBottomPoint(block);
+            GetTopAndBottomPoint(block, tr);
         }
 
-        public FixtureBeingUsedArea(FixtureBeingUsedAreaModel model)
+        public AreaBorder(AreaBorderModel model)
         {
             this.model = model;
         }
 
-        private void GetTopAndBottomPoint(BlockReference block)
+        private void GetTopAndBottomPoint(BlockReference block, Transaction tr)
         {
-            model = new FixtureBeingUsedAreaModel();
+            model = new AreaBorderModel();
             model.handle = Goodies.ConvertHandleToString(block.Handle);
             model.position = new Point3dModel(block.Position.ToArray());
             model.matrixTransform = new Matrix3dModel(block.BlockTransform.ToArray());
 
             DynamicBlockReferencePropertyCollection dynBlockPropCol = block.DynamicBlockReferencePropertyCollection;
-            foreach(DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
+            foreach (DynamicBlockReferenceProperty dynProp in dynBlockPropCol)
             {
-                if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.X)){
+                if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.X))
+                {
                     model.X = (double)dynProp.Value;
-                }else if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.Y))
+                }
+                else if (dynProp.PropertyName.Equals(DBFixtureBeingUsedAreaName.Y))
                 {
                     model.Y = (double)dynProp.Value;
-                }else if (dynProp.PropertyName.Equals("Origin"))
+                }
+                else if (dynProp.PropertyName.Equals("Origin"))
                 {
                     model.origin = new Point3dModel(((Point3d)dynProp.Value).ToArray());
                 }
             }
 
-            Point3d pointTop = new Point3d(model.origin.X, model.origin.Y, 0);
+            foreach (ObjectId id in block.AttributeCollection)
+            {
+                AttributeReference aRef = (AttributeReference)tr.GetObject(id, OpenMode.ForRead);
+                if(aRef.Tag == AreaBroderModelName.type)
+                {
+                    model.type = aRef.TextString;
+                }else if(aRef.Tag == AreaBroderModelName.alias)
+                {
+                    model.alias = aRef.TextString;
+                }
+            }
 
+            Point3d pointTop = new Point3d(model.origin.X, model.origin.Y, 0);
             //Use the regular X,Y coordinate, DO NOT use Game or Web coordinate
             Point3d pointBottom = new Point3d(model.origin.X + model.X, model.origin.Y - model.Y, 0);
             pointTop = pointTop.TransformBy(block.BlockTransform);

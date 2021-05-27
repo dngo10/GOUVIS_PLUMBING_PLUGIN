@@ -17,6 +17,7 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
 
         public InsertPointModel(string alias, string name, long ID, DwgFileModel file, string Handle, Point3dModel position, Matrix3dModel matrixTransform)
         {
+
             this.handle = Handle;
             this.alias = alias;
             this.name = name;
@@ -27,25 +28,27 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
         }
 
         public InsertPointModel()
-        {}
+        {
+
+        }
 
         public void WriteToDataBase(SQLiteConnection connection)
         {
-            position.WriteToDatabase(connection);
-            matrixTransform.WriteToDatabase(connection);
-
             //File must be inserted to Database first (meaning it must have ID).
 
-            if(!DBInsertPoint.HasRow(connection, ID))
+            if(!DBInsertPoint.HasRow(connection, handle, file.ID))
             {
                 var temp = this;
+                WriteToDatabase0(connection);
                 ID = DBInsertPoint.InsertRow(ref temp, connection);
             }
             else
             {
-                DBInsertPoint.UpdateRow(this, connection);
+                InsertPointModel model = DBInsertPoint.SelectRow(connection, handle, file.ID);
+                ID = model.ID;
+                UpdateToDatabase0(model.matrixTransform.ID, model.position.ID, connection);
+                DBInsertPoint.UpdateRow(connection, this);
             }
-
         }
     }
 }

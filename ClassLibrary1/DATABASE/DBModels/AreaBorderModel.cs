@@ -1,37 +1,39 @@
 ﻿using ClassLibrary1.DATABASE.DBModels.BaseBlockModel;
-using GouvisPlumbingNew.DATABASE.Controllers;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
+using ClassLibrary1.DATABASE.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GouvisPlumbingNew.DATABASE.Controllers;
 
-namespace GouvisPlumbingNew.DATABASE.DBModels
+namespace ClassLibrary1.DATABASE.DBModels
 {
-    class FixtureBeingUsedAreaModel : BlockModelBase
+    class AreaBorderModel : BlockModelBase
     {
+        public string type;
+        public string alias;
+
         public double X = ConstantName.invalidNum;
         public double Y = ConstantName.invalidNum;
         public Point3dModel origin = null;
         public Point3dModel pointTop = null;
         public Point3dModel pointBottom = null;
 
-        public void WriteToDataBase(SQLiteConnection connection)
-        {
-            WriteToDatabase0(connection);
+        public void WriteToDatabase(SQLiteConnection connection) {
+            var temp = this;
+
+            WriteToDatabase0(connection); 
 
             origin.WriteToDatabase(connection);
-            pointTop.WriteToDatabase(connection);
             pointBottom.WriteToDatabase(connection);
+            pointTop.WriteToDatabase(connection);
 
-            //File must be inserted to Database first (meaning it must have ID).
-
-            if(!DBFixtureBeingUsedArea.HasRow(connection, handle, file.ID))
+            if (!DBAreaBorder.HasRow(connection, handle, file.ID))
             {
-                var temp = this;
-                ID = DBFixtureBeingUsedArea.InsertRow(connection, ref temp);
                 WriteToDatabase0(connection);
                 DBPoint3D.InsertRow(ref origin, connection);
                 DBPoint3D.InsertRow(ref pointTop, connection);
@@ -39,21 +41,28 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
             }
             else
             {
-                FixtureBeingUsedAreaModel model = DBFixtureBeingUsedArea.SelectRow(connection, handle, file.ID);
+                AreaBorderModel model = DBAreaBorder.SelectRow(connection, handle, file.ID);
                 ID = model.ID;
 
                 UpdateToDatabase0(model.matrixTransform.ID, model.position.ID, connection);
 
-                origin.ID = model.origin.ID;
-                pointTop.ID = model.pointTop.ID;
-                pointBottom.ID = model.pointBottom.ID;
+                origin.ID = model.ID;
+                pointTop.ID = model.ID;
+                pointBottom.ID = model.ID;
 
                 DBPoint3D.UpdateRow(origin, connection);
                 DBPoint3D.UpdateRow(pointTop, connection);
                 DBPoint3D.UpdateRow(pointBottom, connection);
 
-                DBFixtureBeingUsedArea.UpdateRow(connection, this);
+                DBAreaBorder.UpdateRow(connection, this);
+
             }
         }
+    }
+
+    class AreaBroderModelName
+    {
+        public const string type = "TYPE";
+        public const string alias = "ALIAS";
     }
 }

@@ -1,4 +1,5 @@
-﻿using GouvisPlumbingNew.DATABASE.DBModels;
+﻿using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
+using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
 using System.Collections.Generic;
@@ -23,35 +24,53 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBPoint3D
     {
-        public static bool HasRow(SQLiteConnection connection, long ID)
+        public static BlockGeneral<Point3dModel> gBlock = new BlockGeneral<Point3dModel>(GetItem, DBPoint3DName.tableName);
+        //public static List<Point3dModel> SelectRows(SQLiteConnection connection, long fileID) { return gBlock.SelectRows(fileID, connection); }
+        //public static List<Point3dModel> SelectRows(SQLiteConnection connection, string relPath) { return gBlock.SelectRows(relPath, connection); }
+        public static List<Point3dModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRows(conDict, paraDict, connection); }
+
+        public static Point3dModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+        //public static Point3dModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+        //public static Point3dModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+        public static Point3dModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRow(conDict, paraDict, connection); }
+
+        public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+        //public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+        //public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+        public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.HasRow(conDict, paraDict, connection); }
+
+        public static void DeleteRow(SQLiteConnection connection, long ID)
         {
-            long count = 0;
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBPoint3DCommands.SelectCount(command, ID);
-                count = Convert.ToInt64(command.ExecuteScalar());
-            }
-            return count == 1;
+            gBlock.DeleteRow(ID, connection);
         }
-        public static Point3dModel SelectRow(SQLiteConnection connection, long ID)
+
+        //public static void DeleteRow(SQLiteConnection connection, string handle, long fileID)
+        //{
+        //    gBlock.DeleteRow(handle, fileID, connection);
+        //}
+        //public static void DeleteRow(SQLiteConnection connection, string handle, string relPath)
+        //{
+        //    gBlock.DeleteRow(handle, relPath, connection);
+        //}
+        public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
         {
-            Point3dModel point = null;
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBPoint3DCommands.SelectRow(command, ID);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    long ID1 = (long)reader[DBPoint3DName.ID];
-                    double X = (double)reader[DBPoint3DName.X];
-                    double Y = (double)reader[DBPoint3DName.Y];
-                    double Z = (double)reader[DBPoint3DName.Z];
-                    
-                    point = new Point3dModel(X, Y, Z, ID1);
-                }
-                reader.Close();
-            }
-            return point;
+            gBlock.DeleteRow(conDict, paraDict, connection);
+        }
+
+        public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
+
+        public static Point3dModel GetItem(SQLiteDataReader reader, SQLiteConnection connection)
+        {
+
+            long ID1 = (long)reader[DBPoint3DName.ID];
+            double X = (double)reader[DBPoint3DName.X];
+            double Y = (double)reader[DBPoint3DName.Y];
+            double Z = (double)reader[DBPoint3DName.Z];
+
+            return new Point3dModel(X, Y, Z, ID1);
         }
 
         /// <summary>
@@ -65,16 +84,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBPoint3DCommands.CreateTable(command);
                 command.ExecuteNonQuery();
             }
-        }
-
-        public static void DeleteTable(SQLiteConnection connection)
-        {
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBPoint3DCommands.DeleteTable(command);
-                command.ExecuteNonQuery();
-            }
-
         }
 
         /// <summary>
@@ -108,62 +117,14 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             {
                 DBPoint3DCommands.Update(command, model);
                 int check = command.ExecuteNonQuery();
-                if (check == 1)
-                {
-                    return connection.LastInsertRowId;
-                }
-                else if (check == 0)
-                {
-                    //throw new Exception("DBPoint3d -> UpdateRow -> No Row is Updated.");
-                }
-                throw new Exception("DBPoint3D -> UpdateRow -> Update Point not successful.");
+                return check;
             }
 
-        }
-
-        public static long DeleteRow(long ID, SQLiteConnection connection)
-        {
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                if(DBPoint3D.HasRow(connection, ID))
-                {
-                    DBPoint3DCommands.DeleteRow(command, ID);
-                    long check = command.ExecuteNonQuery();
-                    if (check == 1)
-                    {
-                        return connection.LastInsertRowId;
-                    }
-                    else if (check == 0)
-                    {
-                        throw new Exception("DBPoint3D -> DeleteRow -> No Row is Deleted");
-                    }
-                    throw new Exception("DBPoint3d -> DeleteRow -> Delete Row not successful");
-                }
-                return ConstantName.invalidNum;
-            }
         }
     }
 
     class DBPoint3DCommands
     {
-        public static void SelectCount(SQLiteCommand command, long ID)
-        {
-            DBCommand.SelectCount(DBPoint3DName.tableName, ID, command);
-        }
-
-        public static void SelectRow(SQLiteCommand command, long ID)
-        {
-            DBCommand.SelectRow(DBPoint3DName.tableName, ID, command);
-        }
-        public static void DeleteTable(SQLiteCommand command)
-        {
-            DBCommand.DeleteTable(DBPoint3DName.tableName, command);
-        }
-
-        public static void DeleteRow(SQLiteCommand command, long ID)
-        {
-            DBCommand.DeleteRow(DBPoint3DName.tableName, ID, command);
-        }
         public static void CreateTable(SQLiteCommand command)
         {
             string commandStr = string.Format("CREATE TABLE IF NOT EXISTS '{0}'('{1}' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '{2}' REAL NOT NULL, '{3}' REAL NOT NULL, '{4}' REAL NOT NULL);",

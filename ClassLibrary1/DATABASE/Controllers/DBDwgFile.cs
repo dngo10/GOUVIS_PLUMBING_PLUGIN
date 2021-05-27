@@ -1,4 +1,5 @@
 ﻿using ClassLibrary1.DATABASE.Controllers;
+using ClassLibrary1.DATABASE.Controllers.BlockInterFace;
 using ClassLibrary1.DATABASE.DBModels;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
@@ -22,6 +23,93 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
     class DBDwgFile
     {
+        public static BlockGeneral<DwgFileModel> gBlock = new BlockGeneral<DwgFileModel>(GetFile, DBDwgFileName.name);
+
+        public static List<DwgFileModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRows(conDict, paraDict, connection); }
+
+        public static DwgFileModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+
+        public static DwgFileModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRow(conDict, paraDict, connection); }
+
+        public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+
+        public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.HasRow(conDict, paraDict, connection); }
+
+        public static void DeleteRow(SQLiteConnection connection, long ID)
+        {
+            DwgFileModel model = SelectRow(connection, ID);
+            gBlock.DeleteRow(ID, connection);
+            DeleteOthers(model, connection);
+        }
+
+        public static void DeleteRow(SQLiteConnection connection, string relPath)
+        {
+            DwgFileModel model = SelectRow(connection, relPath);
+            gBlock.DeleteRow(model.ID, connection);
+            DeleteOthers(model, connection);
+        }
+
+        public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        {
+            DwgFileModel model = SelectRow(connection, conDict, paraDict);
+            gBlock.DeleteRow(conDict, paraDict, connection);
+            DeleteOthers(model, connection);
+        }
+
+        private static void DeleteOthers(DwgFileModel model, SQLiteConnection connection)
+        {
+            if (model != null)
+            {
+                using (SQLiteCommand command = connection.CreateCommand())
+                {
+                    //MUST DELETE CHILD FIRST.
+                    List<FixtureDetailsModel> fixtures = DBFixtureDetails.SelectRows(connection, model.relativePath);
+                    List<FixtureBeingUsedAreaModel> areas = DBFixtureBeingUsedArea.SelectRows(connection, model.relativePath);
+                    List<InsertPointModel> insertPoints = DBInsertPoint.SelectRows(connection, model.relativePath);
+                    List<TableModel> tables = DBTable.SelectRows(connection, model.relativePath);
+                    List<AreaBorderModel> areaU = DBAreaBorder.SelectRows(connection, model.relativePath);
+                    List<FixtureUnitModel> units = DBFixture_Unit.SelectRows(connection, model.relativePath); 
+
+                    foreach (FixtureDetailsModel fixture in fixtures)
+                    {
+                        DBFixtureDetails.DeleteRow(connection, fixture.ID);
+                    }
+
+                    foreach (FixtureBeingUsedAreaModel area in areas)
+                    {
+                        DBFixtureBeingUsedArea.DeleteRow(connection, area.ID);
+                    }
+
+                    foreach (InsertPointModel insertPoint in insertPoints)
+                    {
+                        DBInsertPoint.DeleteRow(connection, insertPoint.ID);
+                    }
+
+                    foreach (TableModel table in tables)
+                    {
+                        DBTable.DeleteRow(connection, table.ID);
+                    }
+
+                    foreach (AreaBorderModel m in areaU)
+                    {
+                        DBTable.DeleteRow(connection, m.ID);
+                    }
+
+                    foreach (FixtureUnitModel m in units)
+                    {
+                        DBTable.DeleteRow(connection, m.ID);
+                    }
+
+                    DBCommand.DeleteRow(DBDwgFileName.name, model.ID, command);
+                    long check = command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
         public static List<DwgFileModel> GetDwgFilesExceptPNote(SQLiteConnection connection)
         {
             List<DwgFileModel> dwgs = new List<DwgFileModel>();
@@ -31,7 +119,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    DwgFileModel model = GetFile(reader);
+                    DwgFileModel model = GetFile(reader, connection);
 
                     dwgs.Add(model);
                 }
@@ -50,7 +138,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 {
                     while (reader.Read())
                     {
-                        model = GetFile(reader);
+                        model = GetFile(reader, connection);
                     }
                     reader.Close();
                 }
@@ -87,22 +175,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return count == 1;
         }
 
-        public static DwgFileModel SelectRow(SQLiteConnection connection, long ID)
-        {
-            DwgFileModel model = null;
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRow(DBDwgFileName.name, ID, command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    model = GetFile(reader);
-                }
-                reader.Close();
-            }
-            return model;
-        }
-
+        //This is to update the file row only. Other has to be done in Note.
         public static void UpdateRow(SQLiteConnection connection, DwgFileModel model)
         {
             using (SQLiteCommand command = connection.CreateCommand())
@@ -131,7 +204,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 SQLiteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    model = GetFile(reader);
+                    model = GetFile(reader, connection);
                 }
                 reader.Close();
                 
@@ -139,7 +212,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return model;
         }
 
-        private static DwgFileModel GetFile(SQLiteDataReader reader)
+        private static DwgFileModel GetFile(SQLiteDataReader reader, SQLiteConnection connection)
         {
             DwgFileModel model = new DwgFileModel();
             model.ID = (long)reader[DBDwgFileName.ID];
@@ -151,40 +224,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             model.modifieddate = (long)reader[DBDwgFileName.MODIFIEDDATE];
 
             return model;
-        }
-        public static void DeleteRow(SQLiteConnection connection, DwgFileModel model)
-        {
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                //MUST DELETE CHILD FIRST.
-                List<FixtureDetailsModel> fixtures = DBFixtureDetails.SelectRows(connection, model.ID);
-                List<FixtureBeingUsedAreaModel> areas = DBFixtureBeingUsedArea.SelectRows(connection, model.ID);
-                List<InsertPointModel> insertPoints = DBInsertPoint.SelectRows(connection, model.ID);
-                List<TableModel> tables = DBTable.SelectRows(connection, model.ID);
-
-                foreach (FixtureDetailsModel fixture in fixtures)
-                {
-                    DBFixtureDetails.DeleteRow(connection, fixture);
-                }
-
-                foreach (FixtureBeingUsedAreaModel area in areas)
-                {
-                    DBFixtureBeingUsedArea.DeleteRow(connection, area);
-                }
-
-                foreach (InsertPointModel insertPoint in insertPoints)
-                {
-                    DBInsertPoint.DeleteRow(insertPoint, connection);
-                }
-
-                foreach (TableModel table in tables)
-                {
-                    DBTable.DeleteRow(connection, table);
-                }
-
-                DBCommand.DeleteRow(DBDwgFileName.name, model.ID, command);
-                long check = command.ExecuteNonQuery();
-            }
         }
 
         public static long InsertRow(SQLiteConnection connection, ref DwgFileModel model)
@@ -204,14 +243,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 throw new Exception("DBDwgFile -> insertRow -> Row insertion not successful.");
             }
         }
-        public static void DeleteTable(SQLiteConnection connection)
-        {
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBDwgFileCommands.DeleteTable(command);
-                command.ExecuteNonQuery();
-            }
-        }
+
         public static void CreateTable(SQLiteConnection connection)
         {
             using(SQLiteCommand command = connection.CreateCommand())
@@ -278,6 +310,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
         public static void UpdateRow(SQLiteCommand command, DwgFileModel model)
         {
+
+
             string relPath = model.relativePath;
 
             List<List<object>> items = new List<List<object>>()
@@ -301,6 +335,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             paradict.Add(DBDwgFileName.ID, model.ID);
 
             DBCommand.UpdateRow(DBDwgFileName.name, variables, conDict, paradict, command);
+            command.ExecuteNonQuery();
         }
         public static void InsertRow(SQLiteCommand command, DwgFileModel model)
         {

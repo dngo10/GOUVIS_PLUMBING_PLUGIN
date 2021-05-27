@@ -35,7 +35,7 @@ namespace ClassLibrary1.DATABASE.DBModels
                 
             }else if(this.file.ID != ConstantName.invalidNum && handle != ConstantName.invalidStr)
             {
-                TableModel model = DBTable.SelectRow()
+                TableModel model = DBTable.SelectRow(connection, ID);
             }
         }
 
@@ -48,15 +48,18 @@ namespace ClassLibrary1.DATABASE.DBModels
 
         public void WriteToDatabase(SQLiteConnection connection)
         {
-            matrixTransform.WriteToDatabase(connection);
-            position.WriteToDatabase(connection);
+
             DBTable.CreateTable(connection);
-            if(!DBTable.HasRow(connection, ID))
+            if(!DBTable.HasRow(connection, handle, file.ID))
             {
+                WriteToDatabase0(connection);
                 DBTable.InsertRow(connection, this);
             }
             else
             {
+                TableModel model = DBTable.SelectRow(connection, handle, file.ID);
+                ID = model.ID;
+                UpdateToDatabase0(model.matrixTransform.ID, model.position.ID, connection);
                 DBTable.UpdateRow(connection, this);
             }
         }

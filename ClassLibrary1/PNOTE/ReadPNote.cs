@@ -28,41 +28,6 @@ namespace ClassLibrary1.PNOTE
         /// </summary>
         /// <param name="connection"></param>
         /// <returns></returns>
-
-        //public static NODEDWG ReadPNoteFromDwg(SQLiteConnection connection)
-        //{
-        //    NODEDWG note = null;
-        //
-        //    string notePath = GoodiesPath.GetNotePathFromADwgPath(Application.DocumentManager.MdiActiveDocument.Name, connection);
-        //    if (!string.IsNullOrEmpty(notePath))
-        //    {
-        //        if (Goodies.GetListOfDocumentOpening().Contains(notePath))
-        //        {
-        //            Document doc = Goodies.GetDocumentFromDwgpath(notePath);
-        //
-        //            if (doc == null)
-        //            {
-        //                Application.ShowAlertDialog("ReadDwgNoteFile -> There is no Document, weird!");
-        //                return null;
-        //            }
-        //            note = GetData(doc.Database, connection);
-        //        }
-        //        else
-        //        {
-        //            Database db = new Database();
-        //            try
-        //            {
-        //                db.ReadDwgFile(notePath, FileOpenMode.OpenForReadAndAllShare, false, "");
-        //                note = GetData(db, connection);
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                MessageBox.Show(e.Message);
-        //            }
-        //        }
-        //    }
-        //    return note;
-        //}
         public static NODEDWG ReadDataPNode(SQLiteConnection connection)
         {
             NODEDWG note = null;
@@ -230,7 +195,7 @@ namespace ClassLibrary1.PNOTE
                 table.model.file = note.file;
             }
 
-            DBDwgFile.DeleteRow(connection, note.file);
+            DBDwgFile.DeleteRow(connection, note.file.relativePath);
 
             note.WriteToDataBase(connection);
 

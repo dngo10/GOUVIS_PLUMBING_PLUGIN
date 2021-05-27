@@ -26,64 +26,57 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
      */
     class DBInsertPoint
     {
-        public static List<InsertPointModel> SelectRows(SQLiteConnection connection, long fileID)
-        {
-            List<InsertPointModel> insertPoints = new List<InsertPointModel>();
-            using(SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRows(InsertPointName.NAME, fileID, command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    InsertPointModel model = GetModel(reader, connection);
-                    insertPoints.Add(model);
-                }
-                reader.Close();
-            }
+        public static BlockGeneral<InsertPointModel> gBlock = new BlockGeneral<InsertPointModel>(GetModel, DBInsertPointName.name);
+        public static List<InsertPointModel> SelectRows(SQLiteConnection connection, long fileID){return gBlock.SelectRows(fileID, connection);}
+        public static List<InsertPointModel> SelectRows(SQLiteConnection connection, string relPath){return gBlock.SelectRows(relPath, connection); }
+        public static List<InsertPointModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        {return gBlock.SelectRows(conDict, paraDict, connection); }
 
-            return insertPoints;
+        public static InsertPointModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+        public static InsertPointModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.SelectRow(conDict, paraDict, connection); }
+
+        public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+        public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+        public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+        public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+        { return gBlock.HasRow(conDict, paraDict, connection); }
+
+        public static void DeleteRow(SQLiteConnection connection, long ID) {
+            InsertPointModel model = SelectRow(connection, ID);
+            gBlock.DeleteRow(ID, connection);
+            DeleteOthers(model, connection);
         }
-        public static bool HasRow(SQLiteConnection connection, long ID)
-        {
-            long count = 0;
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectCount(DBInsertPointName.NAME, ID, command);
-                count = Convert.ToInt64(command.ExecuteScalar());
-            }
-            return count == 1;
+            
+        public static void DeleteRow(SQLiteConnection connection, string handle, long fileID) {
+            InsertPointModel model = SelectRow(connection, handle, fileID);
+            gBlock.DeleteRow(handle, fileID, connection);
+            DeleteOthers(model, connection);
         }
-        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle, long fileID)
+        public static void DeleteRow(SQLiteConnection connection, string handle, string relPath) {
+            InsertPointModel model = SelectRow(connection, handle, relPath);
+            gBlock.DeleteRow(handle, relPath, connection);
+            DeleteOthers(model, connection);
+        }
+        public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
         {
-            InsertPointModel model = null;
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRow(DBInsertPointName.NAME, handle, fileID, command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    model = GetModel(reader, connection);
-                }
-                reader.Close();
-            }
-            return model;
+            InsertPointModel model = SelectRow(connection, conDict, paraDict);
+            gBlock.DeleteRow(conDict, paraDict, connection);
+            DeleteOthers(model, connection);
         }
 
-        public static InsertPointModel SelectRow(SQLiteConnection connection, string handle, string relPath)
+        private static void DeleteOthers(InsertPointModel model, SQLiteConnection connection)
         {
-            InsertPointModel model = null;
-            using (SQLiteCommand command = connection.CreateCommand())
+            if(model != null)
             {
-                DBCommand.SelectRow(DBInsertPointName.NAME, handle, relPath, command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    model = GetModel(reader, connection);
-                }
-                reader.Close();
+                DBPoint3D.DeleteRow(connection, model.position.ID);
+                DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
             }
-            return model;
         }
+
+        public static void DeleteTable(SQLiteConnection connection){gBlock.DeleteTable(connection);}
 
         private static InsertPointModel GetModel (SQLiteDataReader reader, SQLiteConnection connection)
         {
@@ -99,21 +92,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
 
             return model;
         }
-        public static InsertPointModel SelectRow(SQLiteConnection connection, long ID)
-        {
-            InsertPointModel model = null;
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBCommand.SelectRow(DBInsertPointName.NAME, ID, command);
-                SQLiteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    model = GetModel(reader, connection);
-                }
-                reader.Close();
-            }
-            return model;
-        }
 
         public static void CreateTable(SQLiteConnection connection)
         {
@@ -122,16 +100,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBInsertPointCommands.CreateTable(command);
                 command.ExecuteNonQuery();
             }
-        }
-
-        public static void DeleteTable(SQLiteConnection connection)
-        {
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                DBInsertPointCommands.DeleteTable(command);
-                command.ExecuteNonQuery();
-            }
-
         }
         public static long InsertRow(ref InsertPointModel model, SQLiteConnection connection)
         {
@@ -151,7 +119,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 throw new Exception("DBInsertPoint -> Insert -> Insert Point not successful.");
             }
         }
-        public static long UpdateRow(InsertPointModel model, SQLiteConnection connection)
+        public static long UpdateRow(SQLiteConnection connection, InsertPointModel model)
         {
             using (SQLiteCommand command = connection.CreateCommand())
             {
@@ -169,37 +137,15 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
 
         }
-
-        public static long DeleteRow(InsertPointModel model, SQLiteConnection connection)
-        {
-            using (SQLiteCommand command = connection.CreateCommand())
-            {
-                if(DBInsertPoint.HasRow(connection, model.ID))
-                {
-                    DBCommand.DeleteRow(InsertPointName.NAME, model.ID, command);
-                    long check = command.ExecuteNonQuery();
-                    if (model.position != null) DBPoint3D.DeleteRow(model.position.ID, command.Connection);
-                    if (model.matrixTransform != null) DBMatrix3d.DeleteRow(command.Connection, model.matrixTransform.ID);
-                    if (check == 1)
-                    {
-                        return connection.LastInsertRowId;
-                    }
-                    else if (check == 0)
-                    {
-                        throw new Exception("DBInsertPoint -> DeleteRow -> No Row is Deleted");
-                    }
-                    throw new Exception("DBInsertPoint -> DeleteRow -> Delete Row not successful");
-                }
-                Console.WriteLine("No Round is Inserted");
-                return ConstantName.invalidNum;
-            }
-        }
     }
 
     class DBInsertPointCommands {
 
         public static void UpdateRow(SQLiteCommand command, InsertPointModel model)
         {
+            DBPoint3D.UpdateRow(model.position, command.Connection);
+            DBMatrix3d.Update(command.Connection, model.matrixTransform);
+            
             List<List<object>> items = GetItemsList(model);
 
             Dictionary<string, string> variables = new Dictionary<string, string>();
@@ -213,8 +159,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
 
             paraDict.Add(DBBlockName_AT.id, model.ID);
-
-            DBCommand.UpdateRow(DBInsertPointName.NAME, variables, conditions, paraDict, command);
+            DBCommand.UpdateRow(DBInsertPointName.name, variables, conditions, paraDict, command);
         }
 
         public static void InsertRow(SQLiteCommand command, InsertPointModel model)
@@ -231,7 +176,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
 
 
-            DBCommand.InsertCommand(DBInsertPointName.NAME, variables, paraDict, command);
+            DBCommand.InsertCommand(DBInsertPointName.name, variables, paraDict, command);
         }
 
         private static List<List<object>> GetItemsList(InsertPointModel model)
@@ -248,13 +193,9 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             return items;
         }
 
-        public static void DeleteTable(SQLiteCommand command)
-        {
-            DBCommand.DeleteTable(DBInsertPointName.ANAME, command);
-        }
         public static void CreateTable(SQLiteCommand command){
             StringBuilder builder = new StringBuilder();
-            builder.Append($"CREATE TABLE '{DBInsertPointName.NAME}'( ");
+            builder.Append($"CREATE TABLE '{DBInsertPointName.name}'( ");
             builder.Append($"'{DBInsertPointName.ID}'    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, ");
             builder.Append($"'{DBInsertPointName.ALIAS}' TEXT, ");
             builder.Append($"'{DBInsertPointName.ANAME}'  TEXT, ");
@@ -274,7 +215,7 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
     class DBInsertPointName : DBBlockName {
         public const string ALIAS = "ALIAS";
         public const string ANAME = "NAME";
-        public const string NAME = "INSERT_POINT";
+        public const string name = "INSERT_POINT";
     }
 
     class DBInsertPointName_AT: DBBlockName_AT

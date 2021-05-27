@@ -14,40 +14,73 @@ namespace ClassLibrary1.DATABASE.Controllers
 {
     class DBFixture_Unit
     {
+		public static BlockGeneral<FixtureUnitModel> gBlock = new BlockGeneral<FixtureUnitModel>(getItem, DBFixtureUnitName.name);
+		public static List<FixtureUnitModel> SelectRows(SQLiteConnection connection, long fileID) { return gBlock.SelectRows(fileID, connection); }
+		public static List<FixtureUnitModel> SelectRows(SQLiteConnection connection, string relPath) { return gBlock.SelectRows(relPath, connection); }
+		public static List<FixtureUnitModel> SelectRows(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRows(conDict, paraDict, connection); }
 
-		public static FixtureUnit SelectRow(SQLiteConnection connection, string handle, long FileID)
+		public static FixtureUnitModel SelectRow(SQLiteConnection connection, long ID) { return gBlock.SelectRow(ID, connection); }
+		public static FixtureUnitModel SelectRow(SQLiteConnection connection, string handle, long file_ID) { return gBlock.SelectRow(handle, file_ID, connection); }
+		public static FixtureUnitModel SelectRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.SelectRow(handle, relPath, connection); }
+		public static FixtureUnitModel SelectRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.SelectRow(conDict, paraDict, connection); }
+
+		public static bool HasRow(SQLiteConnection connection, long ID) { return gBlock.HasRow(ID, connection); }
+		public static bool HasRow(SQLiteConnection connection, string handle, long fileID) { return gBlock.HasRow(handle, fileID, connection); }
+		public static bool HasRow(SQLiteConnection connection, string handle, string relPath) { return gBlock.HasRow(handle, relPath, connection); }
+		public static bool HasRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{ return gBlock.HasRow(conDict, paraDict, connection); }
+
+		public static void DeleteRow(SQLiteConnection connection, long ID)
+		{
+			FixtureUnitModel model = SelectRow(connection, ID);
+			gBlock.DeleteRow(ID, connection);
+			DeleteOthers(model, connection);
+		}
+
+		public static void DeleteRow(SQLiteConnection connection, string handle, long fileID)
+		{
+			FixtureUnitModel model = SelectRow(connection, handle, fileID);
+			gBlock.DeleteRow(handle, fileID, connection);
+			DeleteOthers(model, connection);
+		}
+		public static void DeleteRow(SQLiteConnection connection, string handle, string relPath)
+		{
+			FixtureUnitModel model = SelectRow(connection, handle, relPath);
+			gBlock.DeleteRow(handle, relPath, connection);
+			DeleteOthers(model, connection);
+		}
+		public static void DeleteRow(SQLiteConnection connection, Dictionary<string, string> conDict, Dictionary<string, object> paraDict)
+		{
+			FixtureUnitModel model = SelectRow(connection, conDict, paraDict);
+			gBlock.DeleteRow(conDict, paraDict, connection);
+			DeleteOthers(model, connection);
+		}
+
+		private static void DeleteOthers(FixtureUnitModel model, SQLiteConnection connection)
+		{
+			if (model != null)
+			{
+				DBPoint3D.DeleteRow(connection, model.file.ID);
+				DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID);
+
+				if (model.matrixTransform != null) { DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID); };
+				if (model.position != null) { DBPoint3D.DeleteRow(connection, model.position.ID); };
+
+				if (model.tagPos != null) { DBPoint3D.DeleteRow(connection, model.tagPos.ID); };
+				if (model.ventPos != null) { DBPoint3D.DeleteRow(connection, model.ventPos.ID); };
+				if (model.hotStub != null) { DBPoint3D.DeleteRow(connection, model.hotStub.ID); };
+				if (model.coldStub != null) { DBPoint3D.DeleteRow(connection, model.coldStub.ID); };
+				if (model.drainPos != null) { DBPoint3D.DeleteRow(connection, model.drainPos.ID); };
+			}
+		}
+
+		public static void DeleteTable(SQLiteConnection connection) { gBlock.DeleteTable(connection); }
+
+		private static FixtureUnitModel getItem(SQLiteDataReader reader, SQLiteConnection connection)
         {
-
-        }
-
-		public static FixtureUnit SelectRow(SQLiteConnection connection, long ID)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				if(HasRow(connection, ID))
-                {
-					DBCommand.SelectRow(DBFixtureUnitName.name, ID, command);
-					SQLiteDataReader reader = command.ExecuteReader();
-
-					FixtureUnit model = null;
-					while (reader.Read())
-					{
-						model = getItem(reader, command);
-					}
-
-					return model;
-                }
-                else
-                {
-					return null;
-                }
-
-            }
-        }
-
-		private static FixtureUnit getItem(SQLiteDataReader reader, SQLiteCommand command)
-        {
-			FixtureUnit model = new FixtureUnit();
+			FixtureUnitModel model = new FixtureUnitModel();
 
 			long POSITION_ID = (long)reader[DBFixtureUnitName.POSITION_ID];
 			long TRANSFORM_ID = (long)reader[DBFixtureUnitName.MATRIX_ID];
@@ -67,6 +100,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 			model.ID = (long)reader[DBFixtureUnitName.ID];
 			long FILE_ID = (long)reader[DBFixtureUnitName.FILE_ID];
 
+			long tagID = (long)reader[DBFixtureUnitName.tagPos];
 			long ventID = (long)reader[DBFixtureUnitName.ventPos];
 			long hotStubID = (long)reader[DBFixtureUnitName.hotStub];
 			long coldStubID = (long)reader[DBFixtureUnitName.coldStub];
@@ -74,34 +108,19 @@ namespace ClassLibrary1.DATABASE.Controllers
 			model.drainType = (long)reader[DBFixtureUnitName.drainType];
 			model.studLength = (double)reader[DBFixtureUnitName.studLength];
 
-			model.matrixTransform = DBMatrix3d.SelectRow(command.Connection, TRANSFORM_ID);
-			model.position = DBPoint3D.SelectRow(command.Connection, POSITION_ID);
-			model.file = DBDwgFile.SelectRow(command.Connection, FILE_ID);
+			model.matrixTransform = DBMatrix3d.SelectRow(connection, TRANSFORM_ID);
+			model.position = DBPoint3D.SelectRow(connection, POSITION_ID);
+			model.file = DBDwgFile.SelectRow(connection, FILE_ID);
 
-			model.ventPos = DBPoint3D.SelectRow(command.Connection, ventID);
-			model.hotStub = DBPoint3D.SelectRow(command.Connection, hotStubID);
-			model.coldStub = DBPoint3D.SelectRow(command.Connection, coldStubID);
-			model.drainPos = DBPoint3D.SelectRow(command.Connection, drainPosID);
+			model.tagPos = DBPoint3D.SelectRow(connection, tagID);
+			model.ventPos = DBPoint3D.SelectRow(connection, ventID);
+			model.hotStub = DBPoint3D.SelectRow(connection, hotStubID);
+			model.coldStub = DBPoint3D.SelectRow(connection, coldStubID);
+			model.drainPos = DBPoint3D.SelectRow(connection, drainPosID);
 
 			return model;
 		}
-
-		public static bool HasRow(SQLiteConnection connection, long ID)
-        {
-
-        }
-
-		public static bool HasRow(SQLiteConnection connection, long ID)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBCommand.SelectCount(DBFixtureUnitName.name, ID, command);
-				long count = Convert.ToInt64(command.ExecuteScalar());
-				return count == 1;
-            }
-        }
-
-		public static long UpdateRow(SQLiteConnection connection, ref FixtureUnit model)
+		public static long UpdateRow(SQLiteConnection connection, FixtureUnitModel model)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
@@ -110,7 +129,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 				return check;
             }
         }
-		public static long InsertRow(SQLiteConnection connection, ref FixtureUnit model)
+		public static long InsertRow(SQLiteConnection connection, ref FixtureUnitModel model)
         {
 			using(SQLiteCommand command = connection.CreateCommand())
             {
@@ -122,15 +141,6 @@ namespace ClassLibrary1.DATABASE.Controllers
 					return model.ID;
                 }
 				throw new Exception("DBFixture_Unit -> InserRow -> insertRowNotSuccessful.");
-            }
-        }
-
-		public static void DeleteTable(SQLiteConnection connection)
-        {
-			using(SQLiteCommand command = connection.CreateCommand())
-            {
-				DBCommand.DeleteTable(DBFixtureUnitName.name, command);
-				command.ExecuteNonQuery();
             }
         }
 		public static void CreateTable(SQLiteConnection connection)
@@ -145,7 +155,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 
     class DBFixtureUnitCommands
     {
-		public static void UpdateRow(FixtureUnit model, SQLiteCommand command)
+		public static void UpdateRow(FixtureUnitModel model, SQLiteCommand command)
 		{
 			List<List<object>> items = getListItems(model);
 
@@ -163,7 +173,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 
 			DBCommand.UpdateRow(DBFixtureUnitName.name, variables, conDict, paraDict, command);
 		}
-		public static void InsertRow(FixtureUnit model, SQLiteCommand command)
+		public static void InsertRow(FixtureUnitModel model, SQLiteCommand command)
 		{
 			List<List<object>> items = getListItems(model);
 
@@ -179,7 +189,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 			DBCommand.InsertCommand(DBFixtureUnitName.name, variables, paraDict, command);
 		}
 
-		private static List<List<object>> getListItems(FixtureUnit model)
+		private static List<List<object>> getListItems(FixtureUnitModel model)
 		{
 			List<List<object>> items = new List<List<object>> {
 				new List<object>{DBFixtureUnitName.POSITION_ID, DBFixtureUnitName_AT.position, model.position.ID },
@@ -199,6 +209,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 				new List<object>{DBFixtureUnitName.DFU, DBFixtureUnitName_AT.dfu, model.DFU },
 				new List<object>{DBFixtureUnitName.FILE_ID, DBFixtureUnitName_AT.file, model.file.ID },
 
+				new List<object>{DBFixtureUnitName.tagPos, DBFixtureUnitName_AT.tagPos, model.tagPos.ID},
 				new List<object>{DBFixtureUnitName.ventPos, DBFixtureUnitName_AT.ventPos, model.ventPos.ID },
 				new List<object>{DBFixtureUnitName.hotStub, DBFixtureUnitName_AT.hotStub, model.hotStub.ID },
 				new List<object>{DBFixtureUnitName.coldStub, DBFixtureUnitName_AT.coldStub, model.coldStub.ID },
@@ -234,6 +245,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 			builder.Append(string.Format($"'{DBFixtureUnitName.FILE_ID}' INTEGER NOT NULL, "));
 
 			//FIX THIS
+			builder.Append(string.Format($"'{DBFixtureUnitName.tagPos}' INTEGER, "));
 			builder.Append(string.Format($"'{DBFixtureUnitName.ventPos}' INTEGER, "));
 			builder.Append(string.Format($"'{DBFixtureUnitName.drainPos}' INTEGER, "));
 			builder.Append(string.Format($"'{DBFixtureUnitName.hotStub}' INTEGER, "));
@@ -241,7 +253,7 @@ namespace ClassLibrary1.DATABASE.Controllers
 			builder.Append(string.Format($"'{DBFixtureUnitName.drainType}' INTEGER, "));
 			builder.Append(string.Format($"'{DBFixtureUnitName.studLength}' REAL, "));
 
-
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.tagPos}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.ventPos}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.drainPos}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.hotStub}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
@@ -279,7 +291,8 @@ namespace ClassLibrary1.DATABASE.Controllers
         public const string HWSFU = "HWSFU";
         public const string DFU = "HWSFU";
 
-        public const string ventPos = "VENTPOS";
+		public const string tagPos = "TAGPOS";
+		public const string ventPos = "VENTPOS";
         public const string drainPos = "DRAINPOS";
         public const string hotStub = "HOTSTUB";
         public const string coldStub = "COLDSTUB";
@@ -303,6 +316,7 @@ namespace ClassLibrary1.DATABASE.Controllers
         public static string hwsfu = "@hwsfu";
         public static string dfu = "@dfu";
 
+		public const string tagPos = "@tagPos";
         public const string ventPos = "@ventPos";
         public const string drainPos = "@drainPos";
         public const string hotStub = "@hotStub";
