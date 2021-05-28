@@ -84,4 +84,30 @@ namespace ClassLibrary1.DATABASE.DBModels
             }
         }
     }
+
+    class FixtureUnitModelName {
+        public const string R1 = "R1";
+        public const string A2 = "A2"; //Vent Angle
+        public const string Y2 = "Y2"; //For Double
+        public const string X2 = "X2";
+        public const string X2_2 = "X2_2";
+        public const string A3 = "A3"; // Drain Angle
+        public const string A1 = "A1"; //HC angle
+        public const string D1 = "D1";
+        public const string V = "V"; // Vent Position
+        public const string M = "M";// Tag Position
+
+        public const string INDEX = "INDEX";
+        public const string TAG = "TAG";
+        public const string NUMBER = "NUMBER";
+        public const string CW_DIA = "COLD_DIAMETER";
+        public const string HW_DIA = "HOT_DIAMETER";
+        public const string WASTE_DIA = "WASTE_DIAMETER";
+        public const string VENT_DIA = "VENT_DIAMETER";
+        public const string STORM_DIA = "STORM_DIAMETER";
+        public const string WSFU = "WSFU";
+        public const string CWSFU = "CWSFU";
+        public const string HWSFU = "HWSFU";
+        public const string DFU = "DFU";
+    }
 }

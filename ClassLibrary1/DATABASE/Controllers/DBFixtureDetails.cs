@@ -217,7 +217,6 @@ CREATE TABLE "FIXTURE_DETAILS" (
 			paraDict.Add(DBFixtureDetailsNames_AT.id, model.ID);
 
 			DBCommand.UpdateRow(DBFixtureDetailsNames.name, variables, conDict, paraDict, command);
-			command.ExecuteNonQuery();
 		}
 		public static void InsertRow(FixtureDetailsModel model, SQLiteCommand command)
         {
@@ -232,8 +231,6 @@ CREATE TABLE "FIXTURE_DETAILS" (
             }
 
 			DBCommand.InsertCommand(DBFixtureDetailsNames.name, variables, paraDict, command);
-			command.ExecuteNonQuery();
-			model.ID = command.Connection.LastInsertRowId;
 		}
 
 		private static List<List<object>> getListItems(FixtureDetailsModel model)

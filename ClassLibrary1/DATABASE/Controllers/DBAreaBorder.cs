@@ -164,6 +164,7 @@ namespace ClassLibrary1.DATABASE.Controllers
             }
 
             DBCommand.UpdateRow(DBAreaBorderNames.name, variables, conDict, paraDict, command);
+            command.ExecuteNonQuery();
         }
         public static void InsertRow(AreaBorderModel model, SQLiteCommand command)
         {

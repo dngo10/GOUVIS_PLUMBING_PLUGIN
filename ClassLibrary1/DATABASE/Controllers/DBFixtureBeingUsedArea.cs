@@ -188,7 +188,6 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
             }
 
             DBCommand.UpdateRow(DBFixtureBeingUsedAreaName.name, variables, conDict, paraDict, command);
-            command.ExecuteNonQuery();
         }
         public static void InsertRow(FixtureBeingUsedAreaModel model, SQLiteCommand command)
         {

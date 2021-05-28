@@ -17,7 +17,6 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
 
         public InsertPointModel(string alias, string name, long ID, DwgFileModel file, string Handle, Point3dModel position, Matrix3dModel matrixTransform)
         {
-
             this.handle = Handle;
             this.alias = alias;
             this.name = name;
