@@ -1,6 +1,7 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using ClassLibrary1.DATABASE.DBModels;
+using ClassLibrary1.HELPERS.BLOCKS.FixtureUnitBlocks;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
@@ -21,14 +22,12 @@ namespace ClassLibrary1.HELPERS.BLOCKS
             model.position = new Point3dModel(bRef.Position.ToArray());
             model.matrixTransform = new Matrix3dModel(bRef.BlockTransform.ToArray());
             model.blockName = Goodies.GetDynamicName(bRef);
+            model.fuS = FixtureUnitBlock.GetFixtureUnitStatus(model.blockName);
 
-            Point3d v = ConstantNameNoExecutable.inValidPoint;
-            Point3d m = ConstantNameNoExecutable.inValidPoint;
-            Point3d r1 = ConstantNameNoExecutable.inValidPoint;
+            Point3d v, m, r1;
+
             foreach (DynamicBlockReferenceProperty prop in bRef.DynamicBlockReferencePropertyCollection)
             {
-                
-
                 if(prop.PropertyName == FixtureUnitModelName.A1)
                 {
                     model.A1 = (double)prop.Value;
@@ -114,46 +113,11 @@ namespace ClassLibrary1.HELPERS.BLOCKS
                     throw new Exception("Check This Out.");
                 }
             }
-
-            if(v != ConstantNameNoExecutable.inValidPoint)
-            {
-                Point3d drawingPoint = v.TransformBy(bRef.BlockTransform);
-                model.ventPos = new Point3dModel(drawingPoint.X, drawingPoint.Y, drawingPoint.Z);
-            }
-
-            if(m != ConstantNameNoExecutable.inValidPoint)
-            {
-                Point3d drawingPoint = m.TransformBy(bRef.BlockTransform);
-                model.tagPos = new Point3dModel(drawingPoint.X, drawingPoint.Y, drawingPoint.Z);
-            }
-
-            if(r1 != ConstantNameNoExecutable.inValidPoint)
-            {
-                if(model.A3 != ConstantName.invalidNum)
-                {
-                    model.drainPos = new Point3dModel(bRef.Position.X, bRef.Position.Y, bRef.Position.Z);
-                }
-                else
-                {
-                    Point3d point = r1.TransformBy(bRef.BlockTransform);
-                    model.drainPos = new Point3dModel(point.X, point.Y, point.Z);
-                }
-            }
-
-            if(model.A1 != ConstantName.invalidNum)
-            {
-                //Cold Water Only
-                if(model.HW_DIA == ConstantName.invalidNum && )
-                {
-                    Point3d point = bRef.Position;
-                    Point3d coldWaterTipPoint = new Point3d(bRef.X +  )
-                }
-            }
         }
 
         /// <summary>
         /// Get Drain Position, Drawing Position.
-        /// If Double Drain return 
+        /// If Double Drain return the middle center.
         /// </summary>
         /// <returns></returns>
         private Point3d GetDoubleDrainTipPoint(BlockReference bref)
@@ -175,5 +139,6 @@ namespace ClassLibrary1.HELPERS.BLOCKS
                 return ConstantNameNoExecutable.inValidPoint;
             }
         }
+        
     }
 }

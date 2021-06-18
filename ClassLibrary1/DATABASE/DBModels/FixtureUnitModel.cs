@@ -1,5 +1,6 @@
 ﻿using ClassLibrary1.DATABASE.Controllers;
 using ClassLibrary1.DATABASE.DBModels.BaseBlockModel;
+using ClassLibrary1.HELPERS.BLOCKS.FixtureUnitBlocks;
 using GouvisPlumbingNew.DATABASE.DBModels;
 using GouvisPlumbingNew.HELPERS;
 using System;
@@ -32,8 +33,6 @@ namespace ClassLibrary1.DATABASE.DBModels
         public Point3dModel drainPos = null;
         public Point3dModel hotStub = null;
         public Point3dModel coldStub = null;
-        public long drainType = ConstantName.invalidNum;
-        public double studLength = ConstantName.invalidNum;
 
         public Point3dModel R1 = null; // Drain Position
         public double A2 = ConstantName.invalidNum; //Vent Angle
@@ -42,9 +41,10 @@ namespace ClassLibrary1.DATABASE.DBModels
         public double X2_2 = ConstantName.invalidNum;
         public double A3 = ConstantName.invalidNum; // Drain Angle
         public double A1 = ConstantName.invalidNum; //HC angle
-        public double D1 = ConstantName.invalidNum;
+        public double D1 = ConstantName.invalidNum; // Stud extends length
         public Point3dModel V = null; // Vent Position
         public Point3dModel M = null;// Tag Position
+        public FixtureUnitBlockStatic fuS = null;
 
         public void WriteToDabase(SQLiteConnection connection)
         {
@@ -60,7 +60,7 @@ namespace ClassLibrary1.DATABASE.DBModels
                 if (R1 != null) R1.WriteToDatabase(connection);
                 if (V != null) V.WriteToDatabase(connection);
 
-                //Tag can never null
+                //Tag can never be null
                 M.WriteToDatabase(connection);
                 ID = DBFixture_Unit.InsertRow(connection, ref temp);
             }
@@ -77,11 +77,93 @@ namespace ClassLibrary1.DATABASE.DBModels
                 if (model.coldStub != null) { coldStub.ID = model.coldStub.ID; coldStub.WriteToDatabase(connection); }
                 if (model.R1 != null) { R1.ID = model.R1.ID; R1.WriteToDatabase(connection); }
                 if (model.V != null) { V.ID = model.V.ID; V.WriteToDatabase(connection); }
+
                 M.ID = model.M.ID; M.WriteToDatabase(connection);
 
                 DBFixture_Unit.UpdateRow(connection, this);
 
             }
+        }
+
+        //It Will return position of drain
+        //If it is double drain, it will return 
+        public Point3dModel GetDrainPosition()
+        {
+            if (fuS.IsSingleDrainOnly() || fuS.IsDoubleDrainOnly())
+            {
+                return position;
+            }
+            else if (fuS.HasDoubleDrainButNotAtOrigin())
+            {
+                return matrixTransform.Transform(R1);
+            }
+            return null;
+        }
+
+        public Point3dModel GetDoubleDrainTip()
+        {
+            if (fuS.HasDoubleDrainButNotAtOrigin())
+            {
+                Point3dModel tipPoint = new Point3dModel(R1.X, R1.Y + Y2, R1.Z);
+                return matrixTransform.Transform(A3, R1, tipPoint);
+            }
+            return null;
+        }
+
+        public Point3dModel GetVentPosition()
+        {
+            if (fuS.HasVent())
+            {
+                return matrixTransform.Transform(V);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Point3dModel GetTagPosition()
+        {
+            return matrixTransform.Transform(M);
+        }
+
+        public Point3dModel GetHotWaterTip()
+        {
+            if(fuS.HasSingleStud() && fuS.HasHotStud())
+            {
+                Point3dModel point = new Point3dModel(0, 1 + D1, 0);
+                return matrixTransform.Transform(A1, point);
+            }
+            return null;
+        }
+
+        public Point3dModel GetColdWaterTip()
+        {
+            if (fuS.HasSingleStud() && fuS.HasColdStud())
+            {
+                Point3dModel point = new Point3dModel(0, 1 + D1, 0);
+                return matrixTransform.Transform(A1, point);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Return a list of points, the first one is hotWaterTipPoint, the second one is coldWaterTipPoint
+        /// </summary>
+        /// <returns></returns>
+        public List<Point3dModel> GetHotColdTip()
+        {
+            if (fuS.HasHotColdStud())
+            {
+                Point3dModel hotPoint = new Point3dModel(-5, 1 + D1, 0);
+                Point3dModel coldPoint = new Point3dModel(5, 1 + D1, 0);
+
+                return new List<Point3dModel> {
+                    matrixTransform.Transform(A1, hotPoint),
+                    matrixTransform.Transform(A2, coldPoint)
+                };
+            }
+            return null;
         }
     }
 

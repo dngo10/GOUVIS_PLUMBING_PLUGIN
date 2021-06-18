@@ -14,8 +14,8 @@ namespace ClassLibrary1.DATABASE.DBModels
 {
     class AreaBorderModel : BlockModelBase
     {
-        public string type;
-        public string alias;
+        public string type = "";
+        public string alias = "";
 
         public double X = ConstantName.invalidNum;
         public double Y = ConstantName.invalidNum;
@@ -35,9 +35,9 @@ namespace ClassLibrary1.DATABASE.DBModels
             if (!DBAreaBorder.HasRow(connection, handle, file.ID))
             {
                 WriteToDatabase0(connection);
-                DBPoint3D.InsertRow(ref origin, connection);
-                DBPoint3D.InsertRow(ref pointTop, connection);
-                DBPoint3D.InsertRow(ref pointBottom, connection);
+                origin.ID = DBPoint3D.InsertRow(ref origin, connection);
+                pointTop.ID = DBPoint3D.InsertRow(ref pointTop, connection);
+                pointBottom.ID = DBPoint3D.InsertRow(ref pointBottom, connection);
             }
             else
             {
@@ -55,7 +55,6 @@ namespace ClassLibrary1.DATABASE.DBModels
                 DBPoint3D.UpdateRow(pointBottom, connection);
 
                 DBAreaBorder.UpdateRow(connection, this);
-
             }
         }
     }

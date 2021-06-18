@@ -15,6 +15,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using ClassLibrary1.PNOTE;
 using System.Windows.Forms;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
+using ClassLibrary1.FIXTUREUNIT;
 
 namespace GouvisPlumbingNew
 {
@@ -45,6 +46,12 @@ namespace GouvisPlumbingNew
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
+        }
+
+        [CommandMethod("ADDFIXTUREUNIT")]
+        public void RunTest4()
+        {
+            FixtureUnitInsert.InsertFixtureUnit();
         }
 
         [CommandMethod("ADDTABLE")]

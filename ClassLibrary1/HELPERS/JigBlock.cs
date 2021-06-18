@@ -11,7 +11,6 @@ namespace GouvisPlumbingNew.HELPERS
 {
     class JigBlock : EntityJig
     {
-        Point3d p;
         Entity bref;
         Transaction tr; // The Jig Block Attribute if we have it.
         public Point3d insertPoint;
@@ -20,6 +19,7 @@ namespace GouvisPlumbingNew.HELPERS
         {
             this.bref = bref;
             this.tr = tr;
+            this.atts = atts;
         }
         protected override SamplerStatus Sampler(JigPrompts prompts)
         {

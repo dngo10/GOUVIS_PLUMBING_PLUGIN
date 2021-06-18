@@ -45,6 +45,8 @@ namespace GouvisPlumbingNew.DATABASE.Controllers
                 DBFixtureBeingUsedArea.CreateTable(sqliteConn);
                 DBDwgFile.CreateTable(sqliteConn);
                 DBTable.CreateTable(sqliteConn);
+                DBFixture_Unit.CreateTable(sqliteConn);
+                DBAreaBorder.CreateTable(sqliteConn);
 
                 if (projectElement.P_NOTE != null) projectElement.P_NOTE.WriteToDatabase(sqliteConn);
 

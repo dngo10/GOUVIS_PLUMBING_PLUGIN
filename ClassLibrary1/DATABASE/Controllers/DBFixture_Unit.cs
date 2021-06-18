@@ -73,6 +73,10 @@ namespace ClassLibrary1.DATABASE.Controllers
 				if (model.hotStub != null) { DBPoint3D.DeleteRow(connection, model.hotStub.ID); };
 				if (model.coldStub != null) { DBPoint3D.DeleteRow(connection, model.coldStub.ID); };
 				if (model.drainPos != null) { DBPoint3D.DeleteRow(connection, model.drainPos.ID); };
+
+				if(model.R1 != null) { DBPoint3D.DeleteRow(connection, model.R1.ID); }
+				if(model.V != null) { DBPoint3D.DeleteRow(connection, model.V.ID); }
+				if(model.M != null) { DBPoint3D.DeleteRow(connection, model.M.ID); }
 			}
 		}
 
@@ -100,13 +104,24 @@ namespace ClassLibrary1.DATABASE.Controllers
 			model.ID = (long)reader[DBFixtureUnitName.ID];
 			long FILE_ID = (long)reader[DBFixtureUnitName.FILE_ID];
 
+			model.A2 = (double)reader[DBFixtureUnitName.A2];
+			model.Y2 = (double)reader[DBFixtureUnitName.Y2];
+			model.X2 = (double)reader[DBFixtureUnitName.X2];
+			model.X2_2 = (double)reader[DBFixtureUnitName.X2_2];
+			model.A3 = (double)reader[DBFixtureUnitName.A3];
+			model.A1 = (double)reader[DBFixtureUnitName.A1];
+			model.D1 = (double)reader[DBFixtureUnitName.D1];
+
+
 			long tagID = (long)reader[DBFixtureUnitName.tagPos];
 			long ventID = (long)reader[DBFixtureUnitName.ventPos];
 			long hotStubID = (long)reader[DBFixtureUnitName.hotStub];
 			long coldStubID = (long)reader[DBFixtureUnitName.coldStub];
 			long drainPosID = (long)reader[DBFixtureUnitName.drainPos];
-			model.drainType = (long)reader[DBFixtureUnitName.drainType];
-			model.studLength = (double)reader[DBFixtureUnitName.studLength];
+
+			long M_ID = (long)reader[DBFixtureUnitName.M_ID];
+			long R1_ID = (long)reader[DBFixtureUnitName.R1_ID];
+			long V_ID = (long)reader[DBFixtureUnitName.V_ID];
 
 			model.matrixTransform = DBMatrix3d.SelectRow(connection, TRANSFORM_ID);
 			model.position = DBPoint3D.SelectRow(connection, POSITION_ID);
@@ -117,6 +132,10 @@ namespace ClassLibrary1.DATABASE.Controllers
 			model.hotStub = DBPoint3D.SelectRow(connection, hotStubID);
 			model.coldStub = DBPoint3D.SelectRow(connection, coldStubID);
 			model.drainPos = DBPoint3D.SelectRow(connection, drainPosID);
+
+			model.M = DBPoint3D.SelectRow(connection, M_ID);
+			model.R1 = DBPoint3D.SelectRow(connection, R1_ID);
+			model.V = DBPoint3D.SelectRow(connection, V_ID);
 
 			return model;
 		}
@@ -172,6 +191,8 @@ namespace ClassLibrary1.DATABASE.Controllers
 			paraDict.Add(DBFixtureUnitName_AT.id, model.ID);
 
 			DBCommand.UpdateRow(DBFixtureUnitName.name, variables, conDict, paraDict, command);
+
+
 		}
 		public static void InsertRow(FixtureUnitModel model, SQLiteCommand command)
 		{
@@ -214,8 +235,17 @@ namespace ClassLibrary1.DATABASE.Controllers
 				new List<object>{DBFixtureUnitName.hotStub, DBFixtureUnitName_AT.hotStub, model.hotStub.ID },
 				new List<object>{DBFixtureUnitName.coldStub, DBFixtureUnitName_AT.coldStub, model.coldStub.ID },
 				new List<object>{DBFixtureUnitName.drainPos, DBFixtureUnitName_AT.drainPos, model.drainPos.ID },
-				new List<object>{DBFixtureUnitName.drainType, DBFixtureUnitName_AT.drainType, model.drainType },
-				new List<object>{DBFixtureUnitName.studLength, DBFixtureUnitName_AT.studLength, model.studLength},
+
+				new List<object>{DBFixtureUnitName.R1_ID, DBFixtureUnitName_AT.R1, model.R1.ID },
+				new List<object>{DBFixtureUnitName.A2, DBFixtureUnitName_AT.A2, model.A2},
+				new List<object>{DBFixtureUnitName.Y2, DBFixtureUnitName_AT.Y2, model.Y2},
+				new List<object>{DBFixtureUnitName.X2, DBFixtureUnitName_AT.X2, model.X2},
+				new List<object>{DBFixtureUnitName.X2_2, DBFixtureUnitName_AT.X2_2, model.X2_2},
+				new List<object>{DBFixtureUnitName.A3, DBFixtureUnitName_AT.A3, model.A3},
+				new List<object>{DBFixtureUnitName.A1, DBFixtureUnitName_AT.A1, model.A1},
+				new List<object>{DBFixtureUnitName.D1, DBFixtureUnitName_AT.D1, model.D1},
+				new List<object>{DBFixtureUnitName.V_ID, DBFixtureUnitName_AT.V, model.V.ID},
+				new List<object>{DBFixtureUnitName.M_ID, DBFixtureUnitName_AT.M, model.M.ID},
 
 			};
 
@@ -253,6 +283,23 @@ namespace ClassLibrary1.DATABASE.Controllers
 			builder.Append(string.Format($"'{DBFixtureUnitName.drainType}' INTEGER, "));
 			builder.Append(string.Format($"'{DBFixtureUnitName.studLength}' REAL, "));
 
+			builder.Append(string.Format($"'{DBFixtureUnitName.R1_ID}' INTEGER, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.V_ID}' INTEGER, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.M_ID}' INTEGER, "));
+
+			builder.Append(string.Format($"'{DBFixtureUnitName.A2}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.Y2}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.X2}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.X2_2}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.A3}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.A1}' REAL, "));
+			builder.Append(string.Format($"'{DBFixtureUnitName.D1}' REAL, "));
+
+
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.R1_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.V_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.M_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
+
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.tagPos}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.ventPos}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.drainPos}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
@@ -260,9 +307,8 @@ namespace ClassLibrary1.DATABASE.Controllers
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.coldStub}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.drainType}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE, "));
 
-
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.MATRIX_ID}') REFERENCES '{DBMatrixName.name}'('{DBMatrixName.ID}') ON DELETE CASCADE, "));
-			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.FILE_ID}') REFERENCES '{DBMatrixName.name}'('{DBDwgFileName.ID}') ON DELETE CASCADE, "));
+			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.FILE_ID}') REFERENCES '{DBDwgFileName.name}'('{DBDwgFileName.ID}') ON DELETE CASCADE, "));
 			builder.Append(string.Format($"FOREIGN KEY('{DBFixtureUnitName.POSITION_ID}') REFERENCES '{DBPoint3DName.tableName}'('{DBPoint3DName.ID}') ON DELETE CASCADE"));
 			builder.Append(string.Format(");"));
 			command.CommandText = builder.ToString();
@@ -289,7 +335,7 @@ namespace ClassLibrary1.DATABASE.Controllers
         public const string WSFU = "WSFU";
         public const string CWSFU = "CWSFU";
         public const string HWSFU = "HWSFU";
-        public const string DFU = "HWSFU";
+        public const string DFU = "DFU";
 
 		public const string tagPos = "TAGPOS";
 		public const string ventPos = "VENTPOS";
@@ -298,7 +344,18 @@ namespace ClassLibrary1.DATABASE.Controllers
         public const string coldStub = "COLDSTUB";
         public const string drainType = "DRAIN_TYPE";
         public const string studLength = "STUD_LENGTH";
-    }
+
+		public const string R1_ID = "R1_ID";
+		public const string A2 = "A2";
+		public const string Y2 = "Y2";
+		public const string X2 = "X2";
+		public const string X2_2 = "X2_2";
+		public const string A3 = "A3";
+		public const string A1 = "A1";
+		public const string D1 = "D1";
+		public const string V_ID = "V_ID";
+		public const string M_ID = "M_ID";
+	}
 
     class DBFixtureUnitName_AT : DBBlockName_AT
     {
@@ -321,7 +378,16 @@ namespace ClassLibrary1.DATABASE.Controllers
         public const string drainPos = "@drainPos";
         public const string hotStub = "@hotStub";
         public const string coldStub = "@coldStub";
-        public const string drainType = "@drainType";
-        public const string studLength = "@studLength";
+
+		public const string R1 = "@R1";
+		public const string A2 = "@A2";
+		public const string Y2 = "@Y2";
+		public const string X2 = "@X2";
+		public const string X2_2 = "@X2_2";
+		public const string A3 = "@A3";
+		public const string A1 = "@A1";
+		public const string D1 = "@D1";
+		public const string V = "@V";
+		public const string M = "@M";
     }
 }

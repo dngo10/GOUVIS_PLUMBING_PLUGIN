@@ -118,12 +118,12 @@ namespace GouvisPlumbingNew.PNOTE
 
             foreach(AreaBorder am in AreaModelSet)
             {
-                am.model.WriteToDatabase
+                am.model.WriteToDatabase(connection);
             }
 
             foreach(FixtureUnit fixture in FixtureUnitsSet)
             {
-                fixture.model.
+                fixture.model.WriteToDabase(connection);
             }
         }
 

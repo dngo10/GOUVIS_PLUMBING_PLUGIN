@@ -14,7 +14,7 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
         public double X = ConstantName.invalidNum;
         public double Y = ConstantName.invalidNum;
         public double Z = ConstantName.invalidNum;
-        public long ID = ConstantName.invalidNum;
+        public long ID  = ConstantName.invalidNum;
 
         public Point3dModel(double X, double Y, double Z, long ID = ConstantName.invalidNum)
         {

@@ -98,9 +98,9 @@ namespace GouvisPlumbingNew.HELPERS
             Database dbDest = Application.DocumentManager.MdiActiveDocument.Database;
             if (HasBlockDefinition(blockName, dbDest)) return;
 
-            using (Database db = new Database())
+            using (Database db = new Database(false, true))
             {
-                db.ReadDwgFile(blockDrawingFile, System.IO.FileShare.Read, true, "");
+                db.ReadDwgFile(blockDrawingFile, FileOpenMode.OpenForReadAndAllShare, false, null);
                 ObjectIdCollection ids = new ObjectIdCollection();
                 using (Transaction tr = db.TransactionManager.StartTransaction())
                 {
@@ -132,7 +132,7 @@ namespace GouvisPlumbingNew.HELPERS
         }
 
         //INSERT DYNAMIC BLOCK INTO DATABASE
-        public static Dictionary<ObjectId, ObjectId> InsertDynamicBlock(string blockName, Database db)
+        public static Dictionary<ObjectId, ObjectId> InsertDynamicBlock(string blockName, Database db, ref BlockReference bref)
         {
             Dictionary<ObjectId, ObjectId> atts = new System.Collections.Generic.Dictionary<ObjectId, ObjectId>();
             using (Transaction tr = db.TransactionManager.StartTransaction())
@@ -141,7 +141,7 @@ namespace GouvisPlumbingNew.HELPERS
                 BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
                 if (bt.Has(blockName))
                 {
-                    BlockReference bref = new BlockReference(Point3d.Origin, bt[blockName]);
+                    bref = new BlockReference(Point3d.Origin, bt[blockName]);
                     btr.AppendEntity(bref);
                     tr.AddNewlyCreatedDBObject(bref, true);
 

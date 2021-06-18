@@ -120,6 +120,7 @@
     <Compile Include="DWG\FIXTUREUNIT\FixtureUnit.cs" />
     <Compile Include="HELPERS\BLOCKS\AreaBorder.cs" />
     <Compile Include="HELPERS\BLOCKS\FixtureUnit.cs" />
+    <Compile Include="HELPERS\BLOCKS\FixtureUnitBlocks\FixtureUnitBlock.cs" />
     <Compile Include="HELPERS\ConstantName.cs" />
     <Compile Include="HELPERS\ConstantNameNoExecutable.cs" />
     <Compile Include="HELPERS\FileStatus.cs" />

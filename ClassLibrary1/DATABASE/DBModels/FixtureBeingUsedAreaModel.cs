@@ -33,9 +33,11 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
                 var temp = this;
                 ID = DBFixtureBeingUsedArea.InsertRow(connection, ref temp);
                 WriteToDatabase0(connection);
-                DBPoint3D.InsertRow(ref origin, connection);
-                DBPoint3D.InsertRow(ref pointTop, connection);
-                DBPoint3D.InsertRow(ref pointBottom, connection);
+
+
+                origin.WriteToDatabase(connection);
+                pointTop.WriteToDatabase(connection);
+                pointBottom.WriteToDatabase(connection);
             }
             else
             {
@@ -48,9 +50,9 @@ namespace GouvisPlumbingNew.DATABASE.DBModels
                 pointTop.ID = model.pointTop.ID;
                 pointBottom.ID = model.pointBottom.ID;
 
-                DBPoint3D.UpdateRow(origin, connection);
-                DBPoint3D.UpdateRow(pointTop, connection);
-                DBPoint3D.UpdateRow(pointBottom, connection);
+                origin.WriteToDatabase(connection);
+                pointTop.WriteToDatabase(connection);
+                pointBottom.WriteToDatabase(connection);
 
                 DBFixtureBeingUsedArea.UpdateRow(connection, this);
             }

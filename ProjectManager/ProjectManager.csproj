@@ -118,6 +118,9 @@
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\BlockInterFace\DBBlockRef.cs">
       <Link>DATABASE\Controllers\BlockInterFace\DBBlockRef.cs</Link>
     </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBAreaBorder.cs">
+      <Link>DATABASE\Controllers\DBAreaBorder.cs</Link>
+    </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBCommand.cs">
       <Link>DATABASE\Controllers\DBCommand.cs</Link>
     </Compile>
@@ -129,6 +132,9 @@
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBFixtureDetails.cs">
       <Link>DATABASE\Controllers\DBFixtureDetails.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBFixture_Unit.cs">
+      <Link>DATABASE\Controllers\DBFixture_Unit.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\DBInsertPoint.cs">
       <Link>DATABASE\Controllers\DBInsertPoint.cs</Link>
@@ -144,6 +150,9 @@
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\Controllers\PlumbingDatabaseManager.cs">
       <Link>DATABASE\Controllers\PlumbingDatabaseManager.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\AreaBorderModel.cs">
+      <Link>DATABASE\DBModels\AreaBorderModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\BaseBlockModel\BlockModelBase.cs">
       <Link>DATABASE\DBModels\BaseBlockModel\BlockModelBase.cs</Link>
@@ -163,11 +172,17 @@
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\FixtureDetailsModel.cs">
       <Link>DATABASE\DBModels\FixtureDetailsModel.cs</Link>
     </Compile>
+    <Compile Include="..\ClassLibrary1\DATABASE\DBModels\FixtureUnitModel.cs">
+      <Link>DATABASE\DBModels\FixtureUnitModel.cs</Link>
+    </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\InsertPointModel.cs">
       <Link>DATABASE\DBModels\InsertPointModel.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\DATABASE\DBModels\TableModel.cs">
       <Link>DATABASE\DBModels\TableModel.cs</Link>
+    </Compile>
+    <Compile Include="..\ClassLibrary1\HELPERS\BLOCKS\FixtureUnitBlocks\FixtureUnitBlock.cs">
+      <Link>HELPERS\BLOCKS\FixtureUnitBlocks\FixtureUnitBlock.cs</Link>
     </Compile>
     <Compile Include="..\ClassLibrary1\HELPERS\ConstantName.cs">
       <Link>ConstantName.cs</Link>
