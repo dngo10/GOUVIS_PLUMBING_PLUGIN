@@ -220,7 +220,7 @@ namespace GouvisPlumbingNew.HELPERS
             while (!string.IsNullOrEmpty(directoryPath))
             {
                 dataPath = directoryPath + "\\" + ConstantName.centerFolder + "\\" + ConstantName.databasePostFix;
-                if (File.Exists(dataPath))
+                if (File.Exists(dataPath) && !dataPath.ToLower().Contains("_backup"))
                 {
                     return dataPath;
                 }

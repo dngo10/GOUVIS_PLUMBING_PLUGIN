@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.HELPERS
 {
-    class FixtureDetails : ObjectData
+    public class FixtureDetails : ObjectData
     {
         public FixtureDetailsModel model = new FixtureDetailsModel();
 

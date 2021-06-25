@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class DwgFileModel : IEqualityComparer<DwgFileModel>, IEquatable<DwgFileModel>
+    public class DwgFileModel : IEqualityComparer<DwgFileModel>, IEquatable<DwgFileModel>
     {
         public long ID;
         public string relativePath;

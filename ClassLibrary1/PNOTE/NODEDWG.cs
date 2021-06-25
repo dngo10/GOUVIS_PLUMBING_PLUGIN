@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace GouvisPlumbingNew.PNOTE
 {
-    class NODEDWG
+    public class NODEDWG
     {
         public DwgFileModel file = null;
         public SortedSet<FixtureBeingUsedArea> FixtureBoxSet = new SortedSet<FixtureBeingUsedArea>(Comparer<FixtureBeingUsedArea>.Create((a, b) => a.model.ID.CompareTo(b.model.ID)));

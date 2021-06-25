@@ -12,7 +12,7 @@ using GouvisPlumbingNew.DATABASE.Controllers;
 
 namespace ClassLibrary1.DATABASE.DBModels
 {
-    class AreaBorderModel : BlockModelBase
+    public class AreaBorderModel : BlockModelBase
     {
         public string type = "";
         public string alias = "";

@@ -68,15 +68,15 @@ namespace ClassLibrary1.DATABASE.Controllers
 				if (model.matrixTransform != null) { DBMatrix3d.DeleteRow(connection, model.matrixTransform.ID); };
 				if (model.position != null) { DBPoint3D.DeleteRow(connection, model.position.ID); };
 
-				if (model.tagPos != null) { DBPoint3D.DeleteRow(connection, model.tagPos.ID); };
-				if (model.ventPos != null) { DBPoint3D.DeleteRow(connection, model.ventPos.ID); };
-				if (model.hotStub != null) { DBPoint3D.DeleteRow(connection, model.hotStub.ID); };
+				if (model.tagPos   != null) { DBPoint3D.DeleteRow(connection, model.tagPos.ID); };
+				if (model.ventPos  != null) { DBPoint3D.DeleteRow(connection, model.ventPos.ID); };
+				if (model.hotStub  != null) { DBPoint3D.DeleteRow(connection, model.hotStub.ID); };
 				if (model.coldStub != null) { DBPoint3D.DeleteRow(connection, model.coldStub.ID); };
 				if (model.drainPos != null) { DBPoint3D.DeleteRow(connection, model.drainPos.ID); };
 
 				if(model.R1 != null) { DBPoint3D.DeleteRow(connection, model.R1.ID); }
-				if(model.V != null) { DBPoint3D.DeleteRow(connection, model.V.ID); }
-				if(model.M != null) { DBPoint3D.DeleteRow(connection, model.M.ID); }
+				if(model.V  != null) { DBPoint3D.DeleteRow(connection, model.V.ID); }
+				if(model.M  != null) { DBPoint3D.DeleteRow(connection, model.M.ID); }
 			}
 		}
 
@@ -86,56 +86,56 @@ namespace ClassLibrary1.DATABASE.Controllers
         {
 			FixtureUnitModel model = new FixtureUnitModel();
 
-			long POSITION_ID = (long)reader[DBFixtureUnitName.POSITION_ID];
+			long POSITION_ID  = (long)reader[DBFixtureUnitName.POSITION_ID];
 			long TRANSFORM_ID = (long)reader[DBFixtureUnitName.MATRIX_ID];
-			model.handle = (string)reader[DBFixtureUnitName.HANDLE];
-			model.INDEX = (double)reader[DBFixtureUnitName.INDEX];
-			model.TAG = (string)reader[DBFixtureUnitName.TAG];
-			model.NUMBER = (string)reader[DBFixtureUnitName.NUMBER];
-			model.CW_DIA = (double)reader[DBFixtureUnitName.CW_DIA];
-			model.HW_DIA = (double)reader[DBFixtureUnitName.HW_DIA];
-			model.WASTE_DIA = (double)reader[DBFixtureUnitName.WASTE_DIA];
-			model.VENT_DIA = (double)reader[DBFixtureUnitName.VENT_DIA];
-			model.STORM_DIA = (double)reader[DBFixtureUnitName.STORM_DIA];
-			model.WSFU = (double)reader[DBFixtureUnitName.WSFU];
-			model.CWSFU = (double)reader[DBFixtureUnitName.CWSFU];
-			model.HWSFU = (double)reader[DBFixtureUnitName.HWSFU];
-			model.DFU = (double)reader[DBFixtureUnitName.DFU];
-			model.ID = (long)reader[DBFixtureUnitName.ID];
-			long FILE_ID = (long)reader[DBFixtureUnitName.FILE_ID];
+			model.handle      = (string)reader[DBFixtureUnitName.HANDLE];
+			model.INDEX       = (double)reader[DBFixtureUnitName.INDEX];
+			model.TAG         = (string)reader[DBFixtureUnitName.TAG];
+			model.NUMBER      = (string)reader[DBFixtureUnitName.NUMBER];
+			model.CW_DIA      = (double)reader[DBFixtureUnitName.CW_DIA];
+			model.HW_DIA      = (double)reader[DBFixtureUnitName.HW_DIA];
+			model.WASTE_DIA   = (double)reader[DBFixtureUnitName.WASTE_DIA];
+			model.VENT_DIA    = (double)reader[DBFixtureUnitName.VENT_DIA];
+			model.STORM_DIA   = (double)reader[DBFixtureUnitName.STORM_DIA];
+			model.WSFU        = (double)reader[DBFixtureUnitName.WSFU];
+			model.CWSFU       = (double)reader[DBFixtureUnitName.CWSFU];
+			model.HWSFU       = (double)reader[DBFixtureUnitName.HWSFU];
+			model.DFU         = (double)reader[DBFixtureUnitName.DFU];
+			model.ID          = (long)reader[DBFixtureUnitName.ID];
+			long FILE_ID      = (long)reader[DBFixtureUnitName.FILE_ID];
 
-			model.A2 = (double)reader[DBFixtureUnitName.A2];
-			model.Y2 = (double)reader[DBFixtureUnitName.Y2];
-			model.X2 = (double)reader[DBFixtureUnitName.X2];
+			model.A2   = (double)reader[DBFixtureUnitName.A2];
+			model.Y2   = (double)reader[DBFixtureUnitName.Y2];
+			model.X2   = (double)reader[DBFixtureUnitName.X2];
 			model.X2_2 = (double)reader[DBFixtureUnitName.X2_2];
-			model.A3 = (double)reader[DBFixtureUnitName.A3];
-			model.A1 = (double)reader[DBFixtureUnitName.A1];
-			model.D1 = (double)reader[DBFixtureUnitName.D1];
+			model.A3   = (double)reader[DBFixtureUnitName.A3];
+			model.A1   = (double)reader[DBFixtureUnitName.A1];
+			model.D1   = (double)reader[DBFixtureUnitName.D1];
 
 
-			long tagID = (long)reader[DBFixtureUnitName.tagPos];
-			long ventID = (long)reader[DBFixtureUnitName.ventPos];
-			long hotStubID = (long)reader[DBFixtureUnitName.hotStub];
+			long tagID      = (long)reader[DBFixtureUnitName.tagPos];
+			long ventID     = (long)reader[DBFixtureUnitName.ventPos];
+			long hotStubID  = (long)reader[DBFixtureUnitName.hotStub];
 			long coldStubID = (long)reader[DBFixtureUnitName.coldStub];
 			long drainPosID = (long)reader[DBFixtureUnitName.drainPos];
 
-			long M_ID = (long)reader[DBFixtureUnitName.M_ID];
+			long M_ID  = (long)reader[DBFixtureUnitName.M_ID];
 			long R1_ID = (long)reader[DBFixtureUnitName.R1_ID];
-			long V_ID = (long)reader[DBFixtureUnitName.V_ID];
+			long V_ID  = (long)reader[DBFixtureUnitName.V_ID];
 
 			model.matrixTransform = DBMatrix3d.SelectRow(connection, TRANSFORM_ID);
-			model.position = DBPoint3D.SelectRow(connection, POSITION_ID);
-			model.file = DBDwgFile.SelectRow(connection, FILE_ID);
+			model.position        = DBPoint3D.SelectRow(connection, POSITION_ID);
+			model.file            = DBDwgFile.SelectRow(connection, FILE_ID);
 
-			model.tagPos = DBPoint3D.SelectRow(connection, tagID);
-			model.ventPos = DBPoint3D.SelectRow(connection, ventID);
-			model.hotStub = DBPoint3D.SelectRow(connection, hotStubID);
+			model.tagPos   = DBPoint3D.SelectRow(connection, tagID);
+			model.ventPos  = DBPoint3D.SelectRow(connection, ventID);
+			model.hotStub  = DBPoint3D.SelectRow(connection, hotStubID);
 			model.coldStub = DBPoint3D.SelectRow(connection, coldStubID);
 			model.drainPos = DBPoint3D.SelectRow(connection, drainPosID);
 
-			model.M = DBPoint3D.SelectRow(connection, M_ID);
+			model.M  = DBPoint3D.SelectRow(connection, M_ID);
 			model.R1 = DBPoint3D.SelectRow(connection, R1_ID);
-			model.V = DBPoint3D.SelectRow(connection, V_ID);
+			model.V  = DBPoint3D.SelectRow(connection, V_ID);
 
 			return model;
 		}
@@ -324,70 +324,70 @@ namespace ClassLibrary1.DATABASE.Controllers
     {
 		public const string name = "FIXTURE_UNIT";
 
-        public const string INDEX = "INDEXX";
-        public const string TAG = "TAG";
-        public const string NUMBER = "NUM";
-        public const string CW_DIA = "CW_DIA";
-        public const string HW_DIA = "HW_DIA";
+        public const string INDEX     = "INDEXX";
+        public const string TAG       = "TAG";
+        public const string NUMBER    = "NUM";
+        public const string CW_DIA    = "CW_DIA";
+        public const string HW_DIA    = "HW_DIA";
         public const string WASTE_DIA = "WASTE_DIA";
-        public const string VENT_DIA = "VENT_DIA";
+        public const string VENT_DIA  = "VENT_DIA";
         public const string STORM_DIA = "STORM_DIA";
-        public const string WSFU = "WSFU";
-        public const string CWSFU = "CWSFU";
-        public const string HWSFU = "HWSFU";
-        public const string DFU = "DFU";
+        public const string WSFU      = "WSFU";
+        public const string CWSFU     = "CWSFU";
+        public const string HWSFU     = "HWSFU";
+        public const string DFU       = "DFU";
 
-		public const string tagPos = "TAGPOS";
-		public const string ventPos = "VENTPOS";
-        public const string drainPos = "DRAINPOS";
-        public const string hotStub = "HOTSTUB";
-        public const string coldStub = "COLDSTUB";
-        public const string drainType = "DRAIN_TYPE";
+		public const string tagPos     = "TAGPOS";
+		public const string ventPos    = "VENTPOS";
+        public const string drainPos   = "DRAINPOS";
+        public const string hotStub    = "HOTSTUB";
+        public const string coldStub   = "COLDSTUB";
+        public const string drainType  = "DRAIN_TYPE";
         public const string studLength = "STUD_LENGTH";
 
 		public const string R1_ID = "R1_ID";
-		public const string A2 = "A2";
-		public const string Y2 = "Y2";
-		public const string X2 = "X2";
-		public const string X2_2 = "X2_2";
-		public const string A3 = "A3";
-		public const string A1 = "A1";
-		public const string D1 = "D1";
-		public const string V_ID = "V_ID";
-		public const string M_ID = "M_ID";
+		public const string A2    = "A2";
+		public const string Y2    = "Y2";
+		public const string X2    = "X2";
+		public const string X2_2  = "X2_2";
+		public const string A3    = "A3";
+		public const string A1    = "A1";
+		public const string D1    = "D1";
+		public const string V_ID  = "V_ID";
+		public const string M_ID  = "M_ID";
 	}
 
     class DBFixtureUnitName_AT : DBBlockName_AT
     {
-        public static string indexx = "@indexx";
+        public static string indexx  = "@indexx";
         public static string fixture = "@fixture";
-        public static string tag = "@tag";
-        public static string num = "@num";
-        public static string cwD = "@cwD";
-        public static string hwD = "@hwD";
-        public static string wD = "@wasteDia";
-        public static string vD = "@ventDia";
-        public static string sD = "@stormIDia";
-        public static string wsfu = "@wsfu";
-        public static string cwsfu = "@cwsfu";
-        public static string hwsfu = "@hwsfu";
-        public static string dfu = "@dfu";
+        public static string tag     = "@tag";
+        public static string num     = "@num";
+        public static string cwD     = "@cwD";
+        public static string hwD     = "@hwD";
+        public static string wD      = "@wasteDia";
+        public static string vD      = "@ventDia";
+        public static string sD      = "@stormIDia";
+        public static string wsfu    = "@wsfu";
+        public static string cwsfu   = "@cwsfu";
+        public static string hwsfu   = "@hwsfu";
+        public static string dfu     = "@dfu";
 
-		public const string tagPos = "@tagPos";
-        public const string ventPos = "@ventPos";
+		public const string tagPos   = "@tagPos";
+        public const string ventPos  = "@ventPos";
         public const string drainPos = "@drainPos";
-        public const string hotStub = "@hotStub";
+        public const string hotStub  = "@hotStub";
         public const string coldStub = "@coldStub";
 
-		public const string R1 = "@R1";
-		public const string A2 = "@A2";
-		public const string Y2 = "@Y2";
-		public const string X2 = "@X2";
+		public const string R1   = "@R1";
+		public const string A2   = "@A2";
+		public const string Y2   = "@Y2";
+		public const string X2   = "@X2";
 		public const string X2_2 = "@X2_2";
-		public const string A3 = "@A3";
-		public const string A1 = "@A1";
-		public const string D1 = "@D1";
-		public const string V = "@V";
-		public const string M = "@M";
-    }
+		public const string A3   = "@A3";
+		public const string A1   = "@A1";
+		public const string D1   = "@D1";
+		public const string V    = "@V";
+		public const string M    = "@M";
+	}
 }

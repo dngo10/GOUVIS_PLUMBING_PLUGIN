@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.DATABASE.DBModels
 {
-    class FixtureUnitModel : BlockModelBase
+    public class FixtureUnitModel : BlockModelBase
     {
         public double INDEX = ConstantName.invalidNum;
         public string TAG = ConstantName.invalidStr;

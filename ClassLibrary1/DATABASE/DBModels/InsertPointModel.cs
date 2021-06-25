@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class InsertPointModel : BlockModelBase
+    public class InsertPointModel : BlockModelBase
     {
         public string alias = ConstantName.invalidStr;
         public string name = ConstantName.invalidStr;

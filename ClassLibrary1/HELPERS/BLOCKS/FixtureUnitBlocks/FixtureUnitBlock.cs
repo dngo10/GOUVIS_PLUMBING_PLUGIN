@@ -118,7 +118,7 @@ namespace ClassLibrary1.HELPERS.BLOCKS.FixtureUnitBlocks
 
     }
 
-    class FixtureUnitBlockStatic
+    public class FixtureUnitBlockStatic
     {
         public int drain; //0: no drain, 1: single drain above, 2: single drain below, 3: double drain above, 4: double drain below
         public int waterSupply; // 0: no water supply, 1: hot water supply, 2: cold water supply, 3: hot and cold water supply

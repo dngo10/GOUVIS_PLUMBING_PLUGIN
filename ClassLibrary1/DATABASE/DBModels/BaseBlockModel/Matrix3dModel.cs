@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class Matrix3dModel
+    public class Matrix3dModel
     {
         public List<double> index = null;
         public long ID = ConstantName.invalidNum;

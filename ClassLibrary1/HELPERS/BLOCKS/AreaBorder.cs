@@ -14,7 +14,7 @@ using ClassLibrary1.DATABASE.DBModels;
 
 namespace GouvisPlumbingNew.HELPERS
 {
-    class AreaBorder : ObjectData
+    public class AreaBorder : ObjectData
     {
         //x and y are width and height of the XY dynamic dimension.
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class FixtureDetailsModel : BlockModelBase
+    public class FixtureDetailsModel : BlockModelBase
     {
         public double INDEX = ConstantName.invalidNum;
         public string FIXTURENAME = ConstantName.invalidStr;

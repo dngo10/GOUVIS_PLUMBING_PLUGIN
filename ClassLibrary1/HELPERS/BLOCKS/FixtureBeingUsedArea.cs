@@ -13,7 +13,7 @@ using System.Data.SQLite;
 
 namespace GouvisPlumbingNew.HELPERS
 {
-    class FixtureBeingUsedArea : ObjectData
+    public class FixtureBeingUsedArea : ObjectData
     {
         //x and y are width and height of the XY dynamic dimension.
 

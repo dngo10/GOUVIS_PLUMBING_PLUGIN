@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class FixtureBeingUsedAreaModel : BlockModelBase
+    public class FixtureBeingUsedAreaModel : BlockModelBase
     {
         public double X = ConstantName.invalidNum;
         public double Y = ConstantName.invalidNum;

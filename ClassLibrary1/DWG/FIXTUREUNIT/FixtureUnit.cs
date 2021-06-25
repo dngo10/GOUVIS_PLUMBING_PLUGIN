@@ -14,13 +14,12 @@ namespace ClassLibrary1.FIXTUREUNIT
     {
         public static void InsertFixtureUnit()
         {
+
             Goodies.AddBlockToActiveDrawing("C:\\Users\\dngo\\Desktop\\SAMPLES\\VERSION1.dwg", "FIX_26");
             
 
             Document doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
-
-            
 
             Database db = doc.Database;
 
@@ -31,11 +30,8 @@ namespace ClassLibrary1.FIXTUREUNIT
             {
                 using(Transaction tr = db.TransactionManager.StartTransaction())
                 {
-
                     BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForRead);
-
-                    
+                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForRead); 
                 }    
             }
         }

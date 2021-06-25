@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.HELPERS.BLOCKS
 {
-    class FixtureUnit
+    public class FixtureUnit
     {
         public FixtureUnitModel model;
 

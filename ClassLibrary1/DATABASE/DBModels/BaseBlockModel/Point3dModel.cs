@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.DATABASE.DBModels
 {
-    class Point3dModel
+    public class Point3dModel
     {
         public double X = ConstantName.invalidNum;
         public double Y = ConstantName.invalidNum;

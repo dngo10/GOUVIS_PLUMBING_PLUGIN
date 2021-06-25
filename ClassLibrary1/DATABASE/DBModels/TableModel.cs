@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.DATABASE.DBModels
 {
-    class TableModel : BlockModelBase
+    public class TableModel : BlockModelBase
     {
         public string ALIAS = ConstantName.invalidStr;
         public string A_VALUE = ConstantName.invalidStr;

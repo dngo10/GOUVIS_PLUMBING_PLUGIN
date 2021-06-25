@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GouvisPlumbingNew.HELPERS
 {
-    abstract class ObjectData
+    public abstract class ObjectData
     {
         public Handle handle;
         public Point3d position;

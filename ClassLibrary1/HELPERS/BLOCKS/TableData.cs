@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.HELPERS
 {
-    class TableData
+    public class TableData
     {
         public TableModel model = new TableModel();
 

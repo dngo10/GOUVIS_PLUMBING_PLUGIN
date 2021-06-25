@@ -26,6 +26,7 @@ namespace GouvisPlumbingNew
         public void ReadData()
         {
             string dwgPath = Application.DocumentManager.MdiActiveDocument.Name;
+
             string dbPath = GoodiesPath.GetDatabasePathFromDwgPath(dwgPath);
 
             if (string.IsNullOrEmpty(dbPath))
@@ -51,6 +52,7 @@ namespace GouvisPlumbingNew
         [CommandMethod("ADDFIXTUREUNIT")]
         public void RunTest4()
         {
+            
             FixtureUnitInsert.InsertFixtureUnit();
         }
 

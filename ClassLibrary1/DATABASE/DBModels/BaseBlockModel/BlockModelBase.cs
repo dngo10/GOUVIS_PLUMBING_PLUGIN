@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary1.DATABASE.DBModels.BaseBlockModel
 {
-    abstract class BlockModelBase
+    public abstract class BlockModelBase
     {
         public long ID = ConstantName.invalidNum;
         public string handle = ConstantName.invalidStr;

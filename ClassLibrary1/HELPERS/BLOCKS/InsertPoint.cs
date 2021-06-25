@@ -11,7 +11,7 @@ using GouvisPlumbingNew.DATABASE.Controllers;
 
 namespace GouvisPlumbingNew.HELPERS
 {
-    class InsertPoint : ObjectData
+    public class InsertPoint : ObjectData
     {
         public InsertPointModel model;
 
