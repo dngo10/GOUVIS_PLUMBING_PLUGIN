@@ -85,30 +85,31 @@ namespace ClassLibrary1.HELPERS.BLOCKS
                 {
                     model.VENT_DIA = Convert.ToDouble(attRef.TextString);
                 }
-                else if(attRef.Tag == FixtureUnitModelName.WASTE_DIA)
+                else if (attRef.Tag == FixtureUnitModelName.WASTE_DIA)
                 {
                     model.WASTE_DIA = Convert.ToDouble(attRef.TextString);
                 }
-                else if(attRef.Tag == FixtureUnitModelName.STORM_DIA)
+                else if (attRef.Tag == FixtureUnitModelName.STORM_DIA)
                 {
                     model.STORM_DIA = Convert.ToDouble(attRef.TextString);
                 }
-                else if(attRef.Tag == FixtureUnitModelName.DFU)
+                else if (attRef.Tag == FixtureUnitModelName.DFU)
                 {
                     model.DFU = Convert.ToDouble(attRef.TextString);
-                }    
-                else if(attRef.Tag == FixtureUnitModelName.HW_DIA)
+                }
+                else if (attRef.Tag == FixtureUnitModelName.HW_DIA)
                 {
                     model.HW_DIA = Convert.ToDouble(attRef.TextString);
-                }    
-                else if(attRef.Tag == FixtureUnitModelName.CW_DIA)
+                }
+                else if (attRef.Tag == FixtureUnitModelName.CW_DIA)
                 {
                     model.CW_DIA = Convert.ToDouble(attRef.TextString);
-                }    
-                else if(attRef.Tag == FixtureUnitModelName.INDEX)
+                }
+                else if (attRef.Tag == FixtureUnitModelName.INDEX)
                 {
                     model.INDEX = Convert.ToDouble(attRef.TextString);
-                }else if(attRef.Tag == FixtureUnitModelName.TAG)
+                }
+                else if (attRef.Tag == FixtureUnitModelName.TAG)
                 {
                     throw new Exception("Check This Out.");
                 }
@@ -139,6 +140,34 @@ namespace ClassLibrary1.HELPERS.BLOCKS
                 return ConstantNameNoExecutable.inValidPoint;
             }
         }
-        
     }
 }
+
+/*
+ Routing:
+    filesystem-based router.
+    2 types:
+        pages
+        endpoints.
+
+    pages:
+        - typically generate HTML to display to the user.
+        - Pages are rendered on both the client and server.
+
+    Endpoints:
+        - run only on the server or prerendering.
+        - it's the place to do things like:
+                - access databases
+                - APIs
+    Pages:
+        - svelte components.
+        ** By default:
+            When a user first visits the application, they will be served
+            a server-rendered version of the page + some Javascript 'hydrate' the
+            page and initialse a client-side router.
+        ** Dynamic parameters are encoded using [brakes].
+        ** A file or directory can have multiple dynamic parts, like [id]-[category].svelte
+        
+        ** 
+    
+ */

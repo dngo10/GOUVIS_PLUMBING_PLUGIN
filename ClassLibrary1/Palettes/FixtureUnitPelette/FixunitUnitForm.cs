@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClassLibrary1.ProjectManagement;
 using GouvisPlumbingNew.HELPERS;
+using ClassLibrary1.HELPERS.BLOCKS.FixtureUnitBlocks;
 
 namespace ClassLibrary1.Palettes.FixtureUnitPelette
 {
@@ -23,6 +24,8 @@ namespace ClassLibrary1.Palettes.FixtureUnitPelette
         {
             InitializeComponent();
             this.node = node;
+            VentTypeComboBox.Items.AddRange(FixtureUnitBlockStatic.ventType.ToArray());
+            DrainTypeComboBox.Items.AddRange(FixtureUnitBlockStatic.drainType.ToArray());
         }
 
         private void FixtureUnitForm_Load(object sender, EventArgs e)
@@ -66,8 +69,8 @@ namespace ClassLibrary1.Palettes.FixtureUnitPelette
             details.Clear();
 
             FixtureComboBox.Items.Clear();
-            VentTypeComboBox.Items.Clear();
-            DrainTypeComboBox.Items.Clear();
+            //VentTypeComboBox.Items.Clear(); //no need to clear, you only need it once.
+            //DrainTypeComboBox.Items.Clear(); //no need to clear, it will not change
             HWCheckBox.Checked = false;
             CWCheckBox.Checked = false;
             VentCheckBox.Checked = false;
@@ -140,5 +143,41 @@ namespace ClassLibrary1.Palettes.FixtureUnitPelette
                 drainDiaTextBox.Text = "";
             }
         }
+
+        private void InsertButton_Click(object sender, EventArgs e)
+        {
+            FixtureDetails detail = details[FixtureComboBox.SelectedIndex];
+            int DrainType = 0;
+            int WaterSupplyType = 0;
+            int VentType = 0;
+
+            if (!DrainCheckBox.Checked)
+            {
+                DrainType = 0;
+            }
+            else
+            {
+                DrainType = DrainTypeComboBox.SelectedIndex + 1;
+            }
+
+            if (!VentCheckBox.Checked)
+            {
+                VentType = 0;
+            }
+            else
+            {
+                VentType = Vent
+            }
+
+            
+        }
+    }
+
+    public class FUInfo
+    {
+        public FixtureDetails detail;
+        public bool WaterSupplyType;
+        public bool VentType;
+        public bool DrainType;
     }
 }

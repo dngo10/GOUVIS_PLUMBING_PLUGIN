@@ -10,14 +10,14 @@ namespace ClassLibrary1.HELPERS.BLOCKS.FixtureUnitBlocks
     {
         public static Dictionary<string, FixtureUnitBlockStatic> FixtureUnitDict = new Dictionary<string, FixtureUnitBlockStatic>
         {
-            {"FIX_35" , new FixtureUnitBlockStatic(0, 0, 0) },
+            {"FIX_35" , new FixtureUnitBlockStatic(0, 0, 0)},
 
             //Drain Only (Single Drain)
-            {"FIX_36", new FixtureUnitBlockStatic(1, 0, 0) },
-            {"FIX_1",  new FixtureUnitBlockStatic(2, 0, 0) },
-            { "FIX_2", new FixtureUnitBlockStatic(5, 0, 0) },
-            { "FIX_3", new FixtureUnitBlockStatic(6, 0, 0) },
-            { "FIX_4", new FixtureUnitBlockStatic(0, 0, 1) },
+            {"FIX_36", new FixtureUnitBlockStatic(1, 0, 0)},
+            {"FIX_1",  new FixtureUnitBlockStatic(2, 0, 0)},
+            { "FIX_2", new FixtureUnitBlockStatic(5, 0, 0)},
+            { "FIX_3", new FixtureUnitBlockStatic(6, 0, 0)},
+            { "FIX_4", new FixtureUnitBlockStatic(0, 0, 1)},
 
             //Stub Only (Single)
             { "FIX_37", new FixtureUnitBlockStatic(0, 1, 0) },
@@ -115,12 +115,16 @@ namespace ClassLibrary1.HELPERS.BLOCKS.FixtureUnitBlocks
             }
             return null;
         }
-
     }
 
     public class FixtureUnitBlockStatic
     {
-        public int drain; //0: no drain, 1: single drain above, 2: single drain below, 3: double drain above, 4: double drain below
+        
+        public static List<string> drainType = new List<string> {"single drain above", "single drain below", "double drain above", "double drain below", "overfloor drain", "deck drain" };
+        public static List<string> waterSupplyType = new List<string> {"hot", "cold", "hot and cold" };
+        public static List<string> ventType = new List<string> { "vent up", "vent down" };
+
+        public int drain; //0: no drain, 1: single drain above, 2: single drain below, 3: double drain above, 4: double drain below, 5: ODF, 6: deck drain
         public int waterSupply; // 0: no water supply, 1: hot water supply, 2: cold water supply, 3: hot and cold water supply
         public int vent; //0: no vent, 1: vent up, 2: vent down
 

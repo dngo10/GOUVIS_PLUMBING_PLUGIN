@@ -58,6 +58,7 @@ namespace ClassLibrary1.Palettes.FixtureUnitPelette
             this.InsertButton.TabIndex = 0;
             this.InsertButton.Text = "Insert";
             this.InsertButton.UseVisualStyleBackColor = true;
+            this.InsertButton.Click += new System.EventHandler(this.InsertButton_Click);
             // 
             // HWCheckBox
             // 

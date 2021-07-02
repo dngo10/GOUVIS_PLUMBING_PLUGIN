@@ -12,7 +12,7 @@ namespace ClassLibrary1.FIXTUREUNIT
 {
     class FixtureUnitInsert
     {
-        public static void InsertFixtureUnit()
+        public static void InsertFixtureUnit(FixtureDetails fd)
         {
 
             Goodies.AddBlockToActiveDrawing("C:\\Users\\dngo\\Desktop\\SAMPLES\\VERSION1.dwg", "FIX_26");
@@ -35,5 +35,9 @@ namespace ClassLibrary1.FIXTUREUNIT
                 }    
             }
         }
+
+        public static void GetCorrectFixture
+
+
     }
 }

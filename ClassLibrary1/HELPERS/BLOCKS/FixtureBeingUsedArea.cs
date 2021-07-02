@@ -84,7 +84,5 @@ namespace GouvisPlumbingNew.HELPERS
         {
             return IsInsideTheBox(bref.Position);
         }
-
-
     }
 }
